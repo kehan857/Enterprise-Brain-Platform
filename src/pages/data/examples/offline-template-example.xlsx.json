@@ -1,0 +1,167 @@
+{
+  "templates": [
+    {
+      "name": "生产数据模板",
+      "description": "用于批量导入生产相关数据",
+      "sheets": [
+        {
+          "name": "产量数据",
+          "headers": [
+            {
+              "field": "date",
+              "name": "日期",
+              "type": "date",
+              "required": true,
+              "format": "YYYY-MM-DD",
+              "example": "2024-01-01"
+            },
+            {
+              "field": "shift",
+              "name": "班次",
+              "type": "string",
+              "required": true,
+              "example": "早班"
+            },
+            {
+              "field": "line_id",
+              "name": "产线编号",
+              "type": "string",
+              "required": true,
+              "example": "LINE_001"
+            },
+            {
+              "field": "product_code",
+              "name": "产品编码",
+              "type": "string",
+              "required": true,
+              "example": "PROD_001"
+            },
+            {
+              "field": "output_qty",
+              "name": "产出数量",
+              "type": "number",
+              "required": true,
+              "example": 100
+            },
+            {
+              "field": "defect_qty",
+              "name": "不良品数量",
+              "type": "number",
+              "required": true,
+              "example": 2
+            }
+          ]
+        },
+        {
+          "name": "设备运行数据",
+          "headers": [
+            {
+              "field": "date",
+              "name": "日期",
+              "type": "date",
+              "required": true,
+              "format": "YYYY-MM-DD",
+              "example": "2024-01-01"
+            },
+            {
+              "field": "equipment_id",
+              "name": "设备编号",
+              "type": "string",
+              "required": true,
+              "example": "EQP_001"
+            },
+            {
+              "field": "runtime_minutes",
+              "name": "运行时间(分钟)",
+              "type": "number",
+              "required": true,
+              "example": 480
+            },
+            {
+              "field": "downtime_minutes",
+              "name": "停机时间(分钟)",
+              "type": "number",
+              "required": true,
+              "example": 30
+            },
+            {
+              "field": "maintenance_type",
+              "name": "维护类型",
+              "type": "string",
+              "required": false,
+              "example": "日常保养"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "质量数据模板",
+      "description": "用于批量导入质量检测数据",
+      "sheets": [
+        {
+          "name": "检测记录",
+          "headers": [
+            {
+              "field": "inspection_time",
+              "name": "检测时间",
+              "type": "datetime",
+              "required": true,
+              "format": "YYYY-MM-DD HH:mm:ss",
+              "example": "2024-01-01 10:30:00"
+            },
+            {
+              "field": "batch_no",
+              "name": "批次号",
+              "type": "string",
+              "required": true,
+              "example": "BATCH_001"
+            },
+            {
+              "field": "inspector",
+              "name": "检验员",
+              "type": "string",
+              "required": true,
+              "example": "张三"
+            },
+            {
+              "field": "item_code",
+              "name": "检测项目编码",
+              "type": "string",
+              "required": true,
+              "example": "CHECK_001"
+            },
+            {
+              "field": "result",
+              "name": "检测结果",
+              "type": "string",
+              "required": true,
+              "example": "合格"
+            },
+            {
+              "field": "measured_value",
+              "name": "测量值",
+              "type": "number",
+              "required": false,
+              "example": 98.5
+            },
+            {
+              "field": "standard_value",
+              "name": "标准值",
+              "type": "number",
+              "required": false,
+              "example": 100
+            },
+            {
+              "field": "tolerance",
+              "name": "误差范围",
+              "type": "string",
+              "required": false,
+              "example": "±2%"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

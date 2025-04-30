@@ -1,0 +1,71 @@
+{
+  "sourceFields": [
+    {
+      "name": "device_id",
+      "type": "string",
+      "description": "设备ID",
+      "example": "DEV_001"
+    },
+    {
+      "name": "temperature",
+      "type": "number",
+      "description": "温度值",
+      "example": 25.6
+    },
+    {
+      "name": "timestamp",
+      "type": "datetime",
+      "description": "时间戳",
+      "example": "2024-01-01 10:00:00"
+    },
+    {
+      "name": "status",
+      "type": "string",
+      "description": "设备状态",
+      "example": "running"
+    }
+  ],
+  "targetIndicators": [
+    {
+      "name": "equipment_temperature",
+      "code": "IND_TEMP_001",
+      "description": "设备运行温度",
+      "unit": "℃",
+      "dimensions": [
+        "time",
+        "device"
+      ],
+      "formula": "temperature",
+      "example": 25.6
+    },
+    {
+      "name": "equipment_status",
+      "code": "IND_STATUS_001",
+      "description": "设备运行状态",
+      "dimensions": [
+        "time",
+        "device"
+      ],
+      "formula": "status",
+      "example": "running"
+    }
+  ],
+  "mappingRules": [
+    {
+      "sourceField": "device_id",
+      "targetDimension": "device"
+    },
+    {
+      "sourceField": "timestamp",
+      "targetDimension": "time"
+    },
+    {
+      "sourceField": "temperature",
+      "targetIndicator": "equipment_temperature"
+    },
+    {
+      "sourceField": "status",
+      "targetIndicator": "equipment_status"
+    }
+  ]
+}

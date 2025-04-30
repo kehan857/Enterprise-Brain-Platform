@@ -1,0 +1,46 @@
+.guide-tour .ant-tour-mask {
+  --mask-color: rgba(0, 0, 0, 0.7);
+  background: var(--mask-color) !important;
+}
+
+.guide-tour .ant-tour-target-placeholder {
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.16);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.guide-tour .ant-tour-target-placeholder:hover {
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.24);
+}
+
+.guide-tour .ant-tour-inner {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.guide-tour .ant-tour-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.guide-tour .ant-tour-description {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.guide-tour .ant-tour-buttons {
+  margin-top: 16px;
+}
+
+.guide-tour .ant-tour-next-btn {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.guide-tour .ant-tour-next-btn:hover {
+  background: #40a9ff;
+  border-color: #40a9ff;
+}
