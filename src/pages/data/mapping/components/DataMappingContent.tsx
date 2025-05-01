@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Table, Divider, Space, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -13,9 +13,13 @@ interface DataItem {
   mappingRule: string;
 }
 
-const DataMappingContent: React.FC = () => {
+interface DataMappingContentProps {
+  searchParams?: Record<string, any>;
+}
+
+const DataMappingContent: React.FC<DataMappingContentProps> = ({ searchParams = {} }) => {
   // 示例数据
-  const dataSource: DataItem[] = [
+  const originalData: DataItem[] = [
     {
       key: '1',
       sourceField: 'product_code',
@@ -46,7 +50,102 @@ const DataMappingContent: React.FC = () => {
       targetExample: '100',
       mappingRule: '数值转换',
     },
+    {
+      key: '4',
+      sourceField: 'production_date',
+      sourceType: 'DATE',
+      sourceExample: '2023-12-20',
+      targetField: '生产日期',
+      targetType: 'DATE',
+      targetExample: '2023-12-20',
+      mappingRule: '直接映射',
+    },
+    {
+      key: '5',
+      sourceField: 'quality_pass',
+      sourceType: 'BOOLEAN',
+      sourceExample: 'true',
+      targetField: '质检通过',
+      targetType: 'BOOLEAN',
+      targetExample: '是',
+      mappingRule: '条件映射',
+    },
+    {
+      key: '6',
+      sourceField: 'full_name',
+      sourceType: 'STRING',
+      sourceExample: '高速电机-A型',
+      targetField: '产品全称',
+      targetType: 'STRING',
+      targetExample: '高速电机-A型',
+      mappingRule: '拼接',
+    },
   ];
+
+  const [filteredData, setFilteredData] = useState<DataItem[]>(originalData);
+
+  // 当搜索参数变化时，过滤数据
+  useEffect(() => {
+    let filtered = [...originalData];
+    
+    // 处理基础搜索
+    if (searchParams._keyword) {
+      // 全字段搜索
+      filtered = filtered.filter(item => 
+        item.sourceField.toLowerCase().includes(searchParams._keyword.toLowerCase()) ||
+        item.targetField.toLowerCase().includes(searchParams._keyword.toLowerCase()) ||
+        item.mappingRule.toLowerCase().includes(searchParams._keyword.toLowerCase())
+      );
+    } else if (searchParams.sourceField) {
+      // 源字段搜索
+      filtered = filtered.filter(item => 
+        item.sourceField.toLowerCase().includes(searchParams.sourceField.toLowerCase())
+      );
+    } else if (searchParams.targetField) {
+      // 目标字段搜索
+      filtered = filtered.filter(item => 
+        item.targetField.toLowerCase().includes(searchParams.targetField.toLowerCase())
+      );
+    } else if (searchParams.mappingRule) {
+      // 映射规则搜索
+      filtered = filtered.filter(item => 
+        item.mappingRule.toLowerCase().includes(searchParams.mappingRule.toLowerCase())
+      );
+    }
+    
+    // 处理高级筛选
+    if (searchParams.sourceType) {
+      filtered = filtered.filter(item => item.sourceType === searchParams.sourceType);
+    }
+    
+    if (searchParams.targetType) {
+      filtered = filtered.filter(item => item.targetType === searchParams.targetType);
+    }
+    
+    if (searchParams.mappingType) {
+      const mappingTypeMap: Record<string, string> = {
+        'direct': '直接映射',
+        'conversion': '数值转换',
+        'concatenation': '拼接',
+        'conditional': '条件映射'
+      };
+      filtered = filtered.filter(item => item.mappingRule === mappingTypeMap[searchParams.mappingType]);
+    }
+    
+    // 处理排序
+    if (searchParams.sortBy) {
+      const [field, order] = searchParams.sortBy.split(',');
+      filtered = [...filtered].sort((a, b) => {
+        if (order === 'asc') {
+          return a[field as keyof DataItem] > b[field as keyof DataItem] ? 1 : -1;
+        } else {
+          return a[field as keyof DataItem] < b[field as keyof DataItem] ? 1 : -1;
+        }
+      });
+    }
+    
+    setFilteredData(filtered);
+  }, [searchParams]);
 
   const columns: ColumnsType<DataItem> = [
     {
@@ -93,7 +192,7 @@ const DataMappingContent: React.FC = () => {
     <Card title="数据映射内容" className="mapping-content-card">
       <Table<DataItem>
         columns={columns}
-        dataSource={dataSource}
+        dataSource={filteredData}
         pagination={false}
         size="middle"
         bordered

@@ -1,0 +1,105 @@
+.report-center {
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    
+    .search-wrapper {
+      width: 70%;
+      max-width: 800px;
+    }
+    
+    .action-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-left: 16px;
+    }
+  }
+  
+  .ant-table-wrapper {
+    margin-top: 16px;
+    
+    .ant-table-tbody > tr > td {
+      vertical-align: top;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .header-actions {
+      flex-direction: column;
+      
+      .search-wrapper {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 16px;
+      }
+      
+      .action-wrapper {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-start;
+      }
+    }
+  }
+}
+
+/* 搜索组件样式修复 */
+.search-component {
+  margin-bottom: 16px;
+  
+  .basic-search {
+    .ant-input-group {
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-field-selector {
+      width: 120px;
+      border-right: 0;
+    }
+    
+    .search-input {
+      flex: 1;
+    }
+    
+    .search-button {
+      border-radius: 0 4px 4px 0;
+      width: 40px;
+    }
+    
+    .advanced-toggle {
+      width: 60px;
+      margin-left: 8px;
+    }
+    
+    .quick-filters {
+      margin-top: 8px;
+      
+      .ant-tag {
+        cursor: pointer;
+        padding: 4px 8px;
+        margin-right: 8px;
+      }
+      
+      .active-filter {
+        color: #fff;
+      }
+    }
+  }
+  
+  .advanced-search {
+    margin-top: 16px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+  }
+} 

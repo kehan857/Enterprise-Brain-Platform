@@ -1,0 +1,36 @@
+.searchBar {
+  margin-bottom: 16px;
+}
+
+.simpleSearch {
+  display: flex;
+  align-items: center;
+  
+  :global(.ant-input-affix-wrapper) {
+    border-radius: 4px;
+    border-color: #E5E6EB;
+    
+    &:hover, &:focus {
+      border-color: #1890ff;
+    }
+  }
+}
+
+.searchIcon {
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  
+  &:hover {
+    color: #1890ff;
+  }
+}
+
+.advancedButton {
+  margin-left: 8px;
+}
+
+.advancedSearchCard {
+  margin-top: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

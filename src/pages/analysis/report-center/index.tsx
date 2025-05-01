@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Space, Select, DatePicker, Row, Col } from 'antd';
 import { DownloadOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
+import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import './index.less';
 
 interface ReportData {
   key: string;
@@ -12,12 +14,14 @@ interface ReportData {
   status: string;
   size: string;
   reportId?: string;
+  [key: string]: any; // 添加索引签名
 }
 
 const { RangePicker } = DatePicker;
 
 const ReportCenter: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [filteredData, setFilteredData] = useState<ReportData[]>([]);
 
   const handlePreviewReport = (reportId: string) => {
     window.open(`/report-preview/${reportId}`, '_blank');
@@ -141,70 +145,187 @@ const ReportCenter: React.FC = () => {
     },
   ];
 
+  // 初始化过滤后的数据
+  useEffect(() => {
+    setFilteredData(mockData);
+  }, []);
+
+  // 搜索字段配置
+  const searchFields: SearchField[] = [
+    { label: '全部', value: 'all' },
+    { label: '报表名称', value: 'name' },
+    { label: '业务板块', value: 'category' },
+    { label: '报表类型', value: 'type' }
+  ];
+
+  // 高级搜索筛选条件
+  const filters: FilterConfig[] = [
+    { 
+      type: 'select', 
+      label: '业务板块', 
+      field: 'category',
+      span: 8,
+      options: [
+        { label: '企业诊断', value: '企业诊断' },
+        { label: '生产', value: '生产' },
+        { label: '营销', value: '营销' },
+        { label: '质控', value: '质控' },
+        { label: '财务', value: '财务' }
+      ]
+    },
+    { 
+      type: 'select', 
+      label: '报表类型', 
+      field: 'type',
+      span: 8,
+      options: [
+        { label: '诊断报告', value: '诊断报告' },
+        { label: '日报', value: '日报' },
+        { label: '周报', value: '周报' },
+        { label: '月度报表', value: '月度报表' }
+      ]
+    },
+    { 
+      type: 'select', 
+      label: '状态', 
+      field: 'status',
+      span: 8,
+      options: [
+        { label: '已完成', value: '已完成' },
+        { label: '生成中', value: '生成中' }
+      ]
+    },
+    { 
+      type: 'dateRange', 
+      label: '生成时间', 
+      field: 'createTime',
+      span: 12,
+      placeholder: ['开始日期', '结束日期']
+    }
+  ];
+
+  // 排序选项
+  const sortOptions: SortOption[] = [
+    { label: '生成时间：从新到旧', value: 'createTime,desc' },
+    { label: '生成时间：从旧到新', value: 'createTime,asc' }
+  ];
+
+  // 快捷筛选
+  const quickFilters: QuickFilter[] = [
+    { label: '已完成', value: { status: '已完成' }, color: 'green' },
+    { label: '生成中', value: { status: '生成中' }, color: 'blue' },
+    { label: '诊断报告', value: { type: '诊断报告' }, color: 'purple' },
+    { label: '企业诊断', value: { category: '企业诊断' }, color: 'cyan' },
+    { label: '月度报表', value: { type: '月度报表' }, color: 'orange' }
+  ];
+
+  // 处理搜索
+  const handleSearch = (params: Record<string, any>) => {
+    let filtered = [...mockData];
+    
+    // 处理基础搜索
+    if (params._keyword) {
+      // 全字段搜索
+      const keyword = params._keyword.toLowerCase();
+      filtered = filtered.filter(item => 
+        item.name.toLowerCase().includes(keyword) ||
+        item.category.toLowerCase().includes(keyword) ||
+        item.type.toLowerCase().includes(keyword)
+      );
+    } else {
+      // 特定字段搜索
+      Object.entries(params).forEach(([key, value]) => {
+        if (value && key !== 'sortBy') {
+          filtered = filtered.filter(item => 
+            String(item[key]).toLowerCase().includes(String(value).toLowerCase())
+          );
+        }
+      });
+    }
+    
+    setFilteredData(filtered);
+  };
+
+  // 处理高级筛选
+  const handleFilter = (params: Record<string, any>) => {
+    let filtered = [...mockData];
+    
+    // 筛选数据
+    Object.entries(params).forEach(([key, value]) => {
+      if (value && key !== 'sortBy') {
+        if (key === 'createTime' && Array.isArray(value) && value.length === 2) {
+          // 日期范围筛选
+          const [start, end] = value;
+          filtered = filtered.filter(item => {
+            const itemDate = new Date(item.createTime);
+            return itemDate >= start && itemDate <= end;
+          });
+        } else {
+          // 其他普通筛选
+          filtered = filtered.filter(item => item[key] === value);
+        }
+      }
+    });
+    
+    // 处理排序
+    if (params.sortBy) {
+      const [field, order] = params.sortBy.split(',');
+      filtered = [...filtered].sort((a, b) => {
+        if (order === 'asc') {
+          return a[field] > b[field] ? 1 : -1;
+        } else {
+          return a[field] < b[field] ? 1 : -1;
+        }
+      });
+    }
+    
+    setFilteredData(filtered);
+  };
+
+  // 处理导出
+  const handleExport = (params: Record<string, any>) => {
+    console.log('导出报表数据:', params);
+  };
+
   const handleRefresh = () => {
     setLoading(true);
     // 模拟刷新数据
     setTimeout(() => {
       setLoading(false);
+      setFilteredData(mockData);
     }, 1000);
   };
 
   return (
     <div className="report-center">
       <Card>
-        <div style={{ marginBottom: 16 }}>
-          <Row gutter={16} align="middle">
-            <Col>
-              <Select
-                defaultValue="all"
-                style={{ width: 120 }}
-                placeholder="业务板块"
-                options={[
-                  { value: 'all', label: '全部板块' },
-                  { value: 'operation', label: '经营' },
-                  { value: 'marketing', label: '营销' },
-                  { value: 'production', label: '生产' },
-                  { value: 'quality', label: '质控' },
-                  { value: 'rd', label: '研发' },
-                  { value: 'finance', label: '财务' },
-                  { value: 'hr', label: '人事' },
-                ]}
-              />
-            </Col>
-            <Col>
-              <Select
-                defaultValue="all"
-                style={{ width: 120 }}
-                placeholder="报表类型"
-                options={[
-                  { value: 'all', label: '全部类型' },
-                  { value: 'diagnosis', label: '诊断报告' },
-                  { value: 'daily', label: '日报' },
-                  { value: 'weekly', label: '周报' },
-                  { value: 'monthly', label: '月度报表' },
-                ]}
-              />
-            </Col>
-            <Col>
-              <RangePicker />
-            </Col>
-            <Col>
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<ReloadOutlined />}
-                  onClick={handleRefresh}
-                  loading={loading}
-                >
-                  刷新
-                </Button>
-              </Space>
-            </Col>
-          </Row>
+        <div className="header-actions">
+          <div className="search-wrapper">
+            <SearchComponent 
+              searchFields={searchFields}
+              filters={filters}
+              sortOptions={sortOptions}
+              quickFilters={quickFilters}
+              enableExport={true}
+              onSearch={handleSearch}
+              onFilter={handleFilter}
+              onExport={handleExport}
+            />
+          </div>
+          <div className="action-wrapper">
+            <Button
+              type="primary"
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh}
+              loading={loading}
+            >
+              刷新
+            </Button>
+          </div>
         </div>
         <Table
           columns={columns}
-          dataSource={mockData}
+          dataSource={filteredData}
           loading={loading}
           pagination={{
             total: 50,

@@ -23,6 +23,12 @@ const UserManage = lazy(() => import('@/pages/system/user-manage'));
 const RoleManage = lazy(() => import('@/pages/system/role-manage'));
 const SystemConfig = lazy(() => import('@/pages/system/system-config'));
 
+const HelpCenter = lazy(() => import('@/pages/help/index'));
+const UserGuide = lazy(() => import('@/pages/help/UserGuide'));
+const FAQ = lazy(() => import('@/pages/help/FAQ'));
+const VideoTutorials = lazy(() => import('@/pages/help/VideoTutorials'));
+const ContactSupport = lazy(() => import('@/pages/help/ContactSupport'));
+
 const ReportPreview = lazy(() => import('@/pages/analysis/report-preview'));
 
 export const routes: RouteObject[] = [
@@ -114,6 +120,31 @@ export const routes: RouteObject[] = [
       {
         path: 'market',
         element: <PredictionAgentMarket />
+      }
+    ]
+  },
+  {
+    path: 'help',
+    children: [
+      {
+        index: true,
+        element: <HelpCenter />
+      },
+      {
+        path: 'guide',
+        element: <UserGuide />
+      },
+      {
+        path: 'faq',
+        element: <FAQ />
+      },
+      {
+        path: 'videos',
+        element: <VideoTutorials />
+      },
+      {
+        path: 'contact',
+        element: <ContactSupport />
       }
     ]
   },

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, message, Upload } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
+import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import './index.less';
 
 interface DataSource {
   id: string;
@@ -12,6 +14,7 @@ interface DataSource {
   updateTime: string;
   docUrl?: string;
   docFile?: string;
+  [key: string]: any; // 添加索引签名
 }
 
 const { Option } = Select;
@@ -49,6 +52,63 @@ const DataSourcePage = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [filteredData, setFilteredData] = useState<DataSource[]>(dataSource);
+
+  // 搜索字段配置
+  const searchFields: SearchField[] = [
+    { label: '全部', value: 'all' },
+    { label: '数据源名称', value: 'name' },
+    { label: '数据源编码', value: 'code' }
+  ];
+
+  // 高级搜索筛选条件
+  const filters: FilterConfig[] = [
+    { 
+      type: 'select', 
+      label: '数据源类型', 
+      field: 'type',
+      span: 8,
+      options: [
+        { label: '数据库', value: 'database' },
+        { label: 'API接口', value: 'api' },
+        { label: '文件', value: 'file' },
+        { label: 'MQTT', value: 'mqtt' }
+      ]
+    },
+    { 
+      type: 'select', 
+      label: '状态', 
+      field: 'status',
+      span: 8,
+      options: [
+        { label: '已连接', value: 'connected' },
+        { label: '未连接', value: 'disconnected' },
+        { label: '错误', value: 'error' }
+      ]
+    },
+    { 
+      type: 'dateRange', 
+      label: '更新时间', 
+      field: 'updateTime',
+      span: 8,
+      placeholder: ['开始日期', '结束日期']
+    }
+  ];
+
+  // 排序选项
+  const sortOptions: SortOption[] = [
+    { label: '更新时间：从新到旧', value: 'updateTime,desc' },
+    { label: '更新时间：从旧到新', value: 'updateTime,asc' }
+  ];
+
+  // 快捷筛选
+  const quickFilters: QuickFilter[] = [
+    { label: '已连接', value: { status: 'connected' }, color: 'green' },
+    { label: '未连接', value: { status: 'disconnected' }, color: 'warning' },
+    { label: '错误', value: { status: 'error' }, color: 'red' },
+    { label: '数据库', value: { type: 'database' }, color: 'blue' },
+    { label: 'API接口', value: { type: 'api' }, color: 'purple' }
+  ];
 
   const columns: TableProps<DataSource>['columns'] = [
     {
@@ -119,6 +179,67 @@ const DataSourcePage = () => {
     },
   ];
 
+  // 处理搜索
+  const handleSearch = (params: Record<string, any>) => {
+    let filtered = [...dataSource];
+    
+    // 处理基础搜索
+    if (params._keyword) {
+      // 全字段搜索
+      filtered = filtered.filter(item => 
+        item.name.toLowerCase().includes(params._keyword.toLowerCase()) ||
+        item.code.toLowerCase().includes(params._keyword.toLowerCase())
+      );
+    } else {
+      // 特定字段搜索
+      Object.entries(params).forEach(([key, value]) => {
+        if (value && key !== 'sortBy') {
+          filtered = filtered.filter(item => 
+            String(item[key]).toLowerCase().includes(String(value).toLowerCase())
+          );
+        }
+      });
+    }
+    
+    setFilteredData(filtered);
+  };
+
+  // 处理高级筛选
+  const handleFilter = (params: Record<string, any>) => {
+    let filtered = [...dataSource];
+    
+    // 筛选数据
+    Object.entries(params).forEach(([key, value]) => {
+      if (value && key !== 'sortBy') {
+        if (key === 'updateTime' && Array.isArray(value) && value.length === 2) {
+          // 日期范围筛选
+          const [start, end] = value;
+          filtered = filtered.filter(item => {
+            const itemDate = new Date(item.updateTime);
+            return itemDate >= start && itemDate <= end;
+          });
+        } else {
+          // 其他普通筛选
+          filtered = filtered.filter(item => item[key] === value);
+        }
+      }
+    });
+    
+    // 处理排序
+    if (params.sortBy) {
+      const [field, order] = params.sortBy.split(',');
+      filtered = [...filtered].sort((a, b) => {
+        if (order === 'asc') {
+          return a[field] > b[field] ? 1 : -1;
+        } else {
+          return a[field] < b[field] ? 1 : -1;
+        }
+      });
+    }
+    
+    setFilteredData(filtered);
+  };
+
   const handleAdd = () => {
     form.resetFields();
     setIsModalVisible(true);
@@ -134,7 +255,9 @@ const DataSourcePage = () => {
       title: '确认删除',
       content: `确定要删除数据源「${record.name}」吗？`,
       onOk() {
-        setDataSource(prev => prev.filter(item => item.id !== record.id));
+        const newData = dataSource.filter(item => item.id !== record.id);
+        setDataSource(newData);
+        setFilteredData(newData);
         message.success('删除成功');
       }
     });
@@ -165,14 +288,18 @@ const DataSourcePage = () => {
       };
 
       if (values.id) {
-        setDataSource(prev =>
-          prev.map(item =>
-            item.id === values.id ? newDataSource : item
-          )
+        // 编辑现有数据源
+        const newData = dataSource.map(item =>
+          item.id === values.id ? newDataSource : item
         );
+        setDataSource(newData);
+        setFilteredData(newData);
         message.success('修改成功');
       } else {
-        setDataSource(prev => [...prev, newDataSource]);
+        // 添加新数据源
+        const newData = [...dataSource, newDataSource];
+        setDataSource(newData);
+        setFilteredData(newData);
         message.success('添加成功');
       }
 
@@ -180,8 +307,14 @@ const DataSourcePage = () => {
     });
   };
 
+  // 处理导出数据
+  const handleExport = (params: Record<string, any>) => {
+    message.success('数据导出成功');
+    console.log('导出数据参数:', params);
+  };
+
   return (
-    <div>
+    <div className="data-source-page">
       <Card
         title="数据源管理"
         extra={
@@ -194,10 +327,26 @@ const DataSourcePage = () => {
           </Button>
         }
       >
+        <div className="header-actions">
+          <div className="search-wrapper">
+            <SearchComponent 
+              searchFields={searchFields}
+              filters={filters}
+              sortOptions={sortOptions}
+              quickFilters={quickFilters}
+              enableExport={true}
+              onSearch={handleSearch}
+              onFilter={handleFilter}
+              onExport={handleExport}
+            />
+          </div>
+        </div>
+
         <Table 
           columns={columns} 
-          dataSource={dataSource}
+          dataSource={filteredData}
           rowKey="id"
+          pagination={{ pageSize: 10 }}
         />
       </Card>
 
@@ -248,15 +397,8 @@ const DataSourcePage = () => {
             name="docFile"
             label="上传文档"
           >
-            <Upload
-              maxCount={1}
-              accept=".pdf,.doc,.docx"
-              beforeUpload={(file) => {
-                form.setFieldsValue({ docFile: file.name });
-                return false;
-              }}
-            >
-              <Button icon={<UploadOutlined />}>选择文件</Button>
+            <Upload>
+              <Button icon={<UploadOutlined />}>上传文件</Button>
             </Upload>
           </Form.Item>
         </Form>

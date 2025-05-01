@@ -1,0 +1,135 @@
+/* 文档管理模块样式 */
+.doc-manage-page {
+  display: flex;
+  gap: 24px;
+  
+  .category-card {
+    width: 280px;
+    
+    .ant-card-body {
+      padding: 0;
+    }
+    
+    .ant-tree {
+      padding: 16px 0;
+    }
+  }
+  
+  .content-card {
+    flex: 1;
+    
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      .search-wrapper {
+        width: 70%;
+        max-width: 800px;
+      }
+    }
+    
+    .ant-table-wrapper {
+      margin-top: 16px;
+    }
+  }
+  
+  .ant-table-row {
+    cursor: pointer;
+  }
+  
+  .ant-table-cell {
+    vertical-align: middle;
+  }
+  
+  .ant-tag {
+    margin-bottom: 4px;
+  }
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    
+    .category-card {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    
+    .content-card {
+      .header-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        .search-wrapper {
+          width: 100%;
+          max-width: 100%;
+          margin-bottom: 16px;
+        }
+      }
+    }
+  }
+}
+
+/* 搜索组件样式 */
+.search-component {
+  margin-bottom: 16px;
+  
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .basic-search {
+    .ant-input-group {
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-field-selector {
+      width: 120px;
+      border-right: 0;
+    }
+    
+    .search-input {
+      flex: 1;
+    }
+    
+    .search-button {
+      border-radius: 0 4px 4px 0;
+      width: 40px;
+    }
+    
+    .advanced-toggle {
+      width: 60px;
+      margin-left: 8px;
+    }
+    
+    .quick-filters {
+      margin-top: 8px;
+      
+      .ant-tag {
+        cursor: pointer;
+        padding: 4px 8px;
+        margin-right: 8px;
+      }
+      
+      .active-filter {
+        color: #fff;
+      }
+    }
+  }
+  
+  .advanced-search {
+    margin-top: 16px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+  }
+} 

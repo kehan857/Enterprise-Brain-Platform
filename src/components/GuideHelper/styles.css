@@ -44,3 +44,152 @@
   background: #40a9ff;
   border-color: #40a9ff;
 }
+
+/* 引导样式 */
+.guide-annotation {
+  position: absolute;
+  z-index: 100;
+}
+
+.guide-annotation-content {
+  padding: 8px 12px;
+  background-color: #1677ff;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  max-width: 200px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 箭头指针 - 上 */
+.guide-annotation-pointer-top .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  margin-left: -8px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #1677ff transparent;
+}
+
+/* 箭头指针 - 右 */
+.guide-annotation-pointer-right .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  margin-top: -8px;
+  border-width: 8px 0 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent transparent #1677ff;
+}
+
+/* 箭头指针 - 下 */
+.guide-annotation-pointer-bottom .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  margin-left: -8px;
+  border-width: 8px 8px 0 8px;
+  border-style: solid;
+  border-color: #1677ff transparent transparent transparent;
+}
+
+/* 箭头指针 - 左 */
+.guide-annotation-pointer-left .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  margin-top: -8px;
+  border-width: 8px 8px 8px 0;
+  border-style: solid;
+  border-color: transparent #1677ff transparent transparent;
+}
+
+/* 箭头指针 - 右上 */
+.guide-annotation-pointer-top-right .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 16px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #1677ff transparent;
+}
+
+/* 箭头指针 - 左上 */
+.guide-annotation-pointer-top-left .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 16px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #1677ff transparent;
+}
+
+/* 箭头指针 - 右下 */
+.guide-annotation-pointer-bottom-right .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  right: 16px;
+  border-width: 8px 8px 0 8px;
+  border-style: solid;
+  border-color: #1677ff transparent transparent transparent;
+}
+
+/* 箭头指针 - 左下 */
+.guide-annotation-pointer-bottom-left .guide-annotation-content::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 16px;
+  border-width: 8px 8px 0 8px;
+  border-style: solid;
+  border-color: #1677ff transparent transparent transparent;
+}
+
+/* 引导图片样式 */
+.guide-image-container {
+  position: relative;
+  margin: 20px 0;
+}
+
+.guide-image {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+}
+
+/* 引导弹窗样式 */
+.guide-drawer .ant-drawer-content {
+  border-radius: 8px 0 0 8px;
+}
+
+.guide-drawer .ant-drawer-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.guide-drawer .ant-drawer-body {
+  padding: 24px;
+}
+
+.guide-drawer .ant-drawer-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+/* 流程指引样式 */
+.guide-steps .ant-steps-item-title {
+  font-weight: 500;
+}
+
+.guide-steps .ant-steps-item-description {
+  font-size: 12px;
+}

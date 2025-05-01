@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { Card, Table, Button, Space, Input, Tree, Tag, Modal, Form, Select, message, Upload } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, UploadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
+import { Card, Table, Button, Space, Tree, Tag, Modal, Form, Select, Input, message, Upload } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import type { DataNode } from 'antd/es/tree';
+import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import './index.less';
 
 interface FAQ {
   id: string;
@@ -59,13 +61,108 @@ const FaqManagePage = () => {
       creator: '李四',
       updateTime: '2023-12-20 09:30:00',
       status: 'active'
+    },
+    {
+      id: '3',
+      question: '企业大脑平台支持哪些数据源类型？',
+      answer: '企业大脑平台支持以下数据源类型：\n1. 关系型数据库（MySQL、SQL Server、Oracle等）\n2. API接口\n3. 文件数据（CSV、Excel等）\n4. MQTT设备数据',
+      category: '产品FAQ',
+      tags: ['数据源', '功能介绍'],
+      creator: '王五',
+      updateTime: '2023-12-19 14:20:00',
+      status: 'active'
+    },
+    {
+      id: '4',
+      question: '平台的数据分析功能有哪些？',
+      answer: '平台提供多种数据分析功能：\n1. 数据可视化\n2. 趋势分析\n3. 关联分析\n4. 异常检测\n5. 预测分析',
+      category: '产品FAQ',
+      tags: ['数据分析', '功能介绍'],
+      creator: '张三',
+      updateTime: '2023-12-18 11:30:00',
+      status: 'active'
+    },
+    {
+      id: '5',
+      question: '如何解决平台访问缓慢的问题？',
+      answer: '解决平台访问缓慢的问题：\n1. 检查网络连接\n2. 清除浏览器缓存\n3. 检查服务器负载\n4. 优化数据查询\n5. 升级服务器配置',
+      category: '技术FAQ',
+      tags: ['性能优化', '故障排查'],
+      creator: '李四',
+      updateTime: '2023-12-17 16:45:00',
+      status: 'active'
     }
   ]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const [searchText, setSearchText] = useState('');
   const [form] = Form.useForm();
+  const [filteredFaq, setFilteredFaq] = useState<FAQ[]>(faqList);
+
+  // 搜索字段配置
+  const searchFields: SearchField[] = [
+    { label: '全部', value: 'all' },
+    { label: '问题', value: 'question' },
+    { label: '答案', value: 'answer' },
+    { label: '标签', value: 'tags' }
+  ];
+
+  // 高级搜索筛选条件
+  const filters: FilterConfig[] = [
+    { 
+      type: 'select', 
+      label: '分类', 
+      field: 'category',
+      span: 8,
+      options: [
+        { label: '产品FAQ', value: '产品FAQ' },
+        { label: '技术FAQ', value: '技术FAQ' }
+      ]
+    },
+    { 
+      type: 'select', 
+      label: '状态', 
+      field: 'status',
+      span: 8,
+      options: [
+        { label: '已启用', value: 'active' },
+        { label: '已禁用', value: 'inactive' }
+      ]
+    },
+    { 
+      type: 'select', 
+      label: '创建人', 
+      field: 'creator',
+      span: 8,
+      options: [
+        { label: '张三', value: '张三' },
+        { label: '李四', value: '李四' },
+        { label: '王五', value: '王五' }
+      ]
+    },
+    { 
+      type: 'dateRange', 
+      label: '更新时间', 
+      field: 'updateTime',
+      span: 12,
+      placeholder: ['开始日期', '结束日期']
+    }
+  ];
+
+  // 排序选项
+  const sortOptions: SortOption[] = [
+    { label: '更新时间：从新到旧', value: 'updateTime,desc' },
+    { label: '更新时间：从旧到新', value: 'updateTime,asc' }
+  ];
+
+  // 快捷筛选
+  const quickFilters: QuickFilter[] = [
+    { label: '已启用', value: { status: 'active' }, color: 'green' },
+    { label: '产品FAQ', value: { category: '产品FAQ' }, color: 'blue' },
+    { label: '技术FAQ', value: { category: '技术FAQ' }, color: 'purple' },
+    { label: '入门指南', value: { tags: '入门指南' }, color: 'orange' },
+    { label: '故障排查', value: { tags: '故障排查' }, color: 'red' }
+  ];
 
   const columns: TableProps<FAQ>['columns'] = [
     {
@@ -155,6 +252,7 @@ const FaqManagePage = () => {
       content: `确定要删除问题「${record.question}」吗？`,
       onOk() {
         setFaqList(prev => prev.filter(item => item.id !== record.id));
+        applyFilters();
         message.success('删除成功');
       }
     });
@@ -184,11 +282,13 @@ const FaqManagePage = () => {
       }
 
       setIsModalVisible(false);
+      applyFilters();
     });
   };
 
-  const onSelect = (keys: string[]) => {
-    setSelectedKeys(keys);
+  const onSelect = (keys: React.Key[], info: any) => {
+    setSelectedKeys(keys as string[]);
+    applyFilters();
   };
 
   const handleImport = (info: any) => {
@@ -199,82 +299,166 @@ const FaqManagePage = () => {
     }
   };
 
-  const filteredFaq = faqList
-    .filter(item => 
-      item.question.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.answer.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.tags.some(tag => tag.toLowerCase().includes(searchText.toLowerCase()))
-    )
-    .filter(item => 
-      selectedKeys.length === 0 || 
-      item.category === treeData.find(node => 
-        node.children?.some(child => child.key === selectedKeys[0])
-      )?.title
-    );
+  // 处理搜索
+  const handleSearch = (params: Record<string, any>) => {
+    console.log('搜索参数:', params);
+    applyFilters(params);
+  };
+
+  // 处理高级筛选
+  const handleFilter = (params: Record<string, any>) => {
+    console.log('筛选参数:', params);
+    applyFilters(params);
+  };
+
+  // 应用筛选条件
+  const applyFilters = (searchParams: Record<string, any> = {}) => {
+    let filtered = [...faqList];
+    
+    // 处理基础搜索
+    if (searchParams._keyword) {
+      // 全字段搜索
+      filtered = filtered.filter(item => 
+        item.question.toLowerCase().includes(searchParams._keyword.toLowerCase()) ||
+        item.answer.toLowerCase().includes(searchParams._keyword.toLowerCase()) ||
+        item.tags.some(tag => tag.toLowerCase().includes(searchParams._keyword.toLowerCase()))
+      );
+    } else if (searchParams.question) {
+      // 问题搜索
+      filtered = filtered.filter(item => 
+        item.question.toLowerCase().includes(searchParams.question.toLowerCase())
+      );
+    } else if (searchParams.answer) {
+      // 答案搜索
+      filtered = filtered.filter(item => 
+        item.answer.toLowerCase().includes(searchParams.answer.toLowerCase())
+      );
+    } else if (searchParams.tags) {
+      // 标签搜索
+      filtered = filtered.filter(item => 
+        item.tags.some(tag => tag.toLowerCase().includes(searchParams.tags.toLowerCase()))
+      );
+    }
+    
+    // 处理高级筛选
+    if (searchParams.category) {
+      filtered = filtered.filter(item => item.category === searchParams.category);
+    }
+    
+    if (searchParams.status) {
+      filtered = filtered.filter(item => item.status === searchParams.status);
+    }
+    
+    if (searchParams.creator) {
+      filtered = filtered.filter(item => item.creator === searchParams.creator);
+    }
+    
+    if (searchParams.updateTime && Array.isArray(searchParams.updateTime) && searchParams.updateTime.length === 2) {
+      // 日期范围筛选
+      const [start, end] = searchParams.updateTime;
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.updateTime);
+        return itemDate >= start && itemDate <= end;
+      });
+    }
+    
+    // 处理排序
+    if (searchParams.sortBy) {
+      const [field, order] = searchParams.sortBy.split(',');
+      filtered = [...filtered].sort((a, b) => {
+        if (order === 'asc') {
+          return a[field as keyof FAQ] > b[field as keyof FAQ] ? 1 : -1;
+        } else {
+          return a[field as keyof FAQ] < b[field as keyof FAQ] ? 1 : -1;
+        }
+      });
+    }
+    
+    // 处理分类筛选
+    if (selectedKeys.length > 0) {
+      const categoryMap: Record<string, string> = {
+        '0-0-0': '产品FAQ',
+        '0-0-1': '产品FAQ',
+        '0-1-0': '技术FAQ',
+        '0-1-1': '技术FAQ'
+      };
+      
+      filtered = filtered.filter(item => item.category === categoryMap[selectedKeys[0]]);
+    }
+    
+    setFilteredFaq(filtered);
+  };
+
+  // 当选中的分类节点变化时触发过滤
+  useEffect(() => {
+    applyFilters();
+  }, [selectedKeys, faqList]);
 
   return (
-    <div style={{ display: 'flex', gap: 24 }}>
-      <Card
-        title="FAQ分类"
-        style={{ width: 280 }}
-        bodyStyle={{ padding: 0 }}
-      >
-        <DirectoryTree
-          defaultExpandAll
-          onSelect={onSelect}
-          treeData={treeData}
-        />
-      </Card>
+    <div className="faq-manage-page">
+      <div className="faq-manage-container">
+        <Card
+          title="FAQ分类"
+          className="category-card"
+        >
+          <DirectoryTree
+            defaultExpandAll
+            onSelect={onSelect}
+            treeData={treeData}
+          />
+        </Card>
 
-      <Card
-        title="FAQ管理"
-        style={{ flex: 1 }}
-        extra={
-          <Space>
-            <Input
-              placeholder="搜索FAQ"
-              prefix={<SearchOutlined />}
-              style={{ width: 200 }}
-              onChange={e => setSearchText(e.target.value)}
+        <Card
+          title="FAQ管理"
+          className="content-card"
+          extra={
+            <Space>
+              <Upload
+                action="/api/faq/import"
+                showUploadList={false}
+                onChange={handleImport}
+              >
+                <Button icon={<UploadOutlined />}>导入FAQ</Button>
+              </Upload>
+              <Button 
+                type="primary" 
+                icon={<PlusOutlined />} 
+                onClick={handleAdd}
+              >
+                新增FAQ
+              </Button>
+            </Space>
+          }
+        >
+          {/* 搜索组件 */}
+          <div className="search-section">
+            <SearchComponent 
+              searchFields={searchFields}
+              filters={filters}
+              sortOptions={sortOptions}
+              quickFilters={quickFilters}
+              onSearch={handleSearch}
+              onFilter={handleFilter}
+              enableExport={true}
             />
-            <Upload
-              action="/api/faq/import"
-              showUploadList={false}
-              onChange={handleImport}
-            >
-              <Button icon={<UploadOutlined />}>导入FAQ</Button>
-            </Upload>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />} 
-              onClick={handleAdd}
-            >
-              新建FAQ
-            </Button>
-          </Space>
-        }
-      >
-        <Table 
-          columns={columns} 
-          dataSource={filteredFaq}
-          rowKey="id"
-          expandable={{
-            expandedRowRender: (record) => (
-              <p style={{ margin: 0, whiteSpace: 'pre-line' }}>
-                {record.answer}
-              </p>
-            ),
-          }}
-        />
-      </Card>
+          </div>
+
+          <Table 
+            columns={columns} 
+            dataSource={filteredFaq}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+          />
+        </Card>
+      </div>
 
       <Modal
-        title={form.getFieldValue('id') ? '编辑FAQ' : '新建FAQ'}
+        title={form.getFieldValue('id') ? '编辑FAQ' : '新增FAQ'}
         open={isModalVisible}
         onOk={handleModalOk}
         onCancel={() => setIsModalVisible(false)}
-        width={800}
         destroyOnClose
+        width={700}
       >
         <Form
           form={form}
@@ -308,26 +492,12 @@ const FaqManagePage = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            name="domain"
-            label="所属领域"
-            rules={[{ required: true, message: '请选择所属领域' }]}
-          >
-            <Select placeholder="请选择所属领域">
-              <Option value="经营">经营</Option>
-              <Option value="营销">营销</Option>
-              <Option value="生产">生产</Option>
-              <Option value="质控">质控</Option>
-              <Option value="研发">研发</Option>
-              <Option value="财务">财务</Option>
-              <Option value="人事">人事</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
             name="tags"
             label="标签"
-            rules={[{ required: true, message: '请输入标签，多个标签用逗号分隔' }]}
+            rules={[{ required: true, message: '请输入标签' }]}
+            extra="多个标签请用逗号分隔"
           >
-            <Input placeholder="请输入标签，多个标签用逗号分隔" />
+            <Input placeholder="请输入标签，多个标签请用逗号分隔" />
           </Form.Item>
           <Form.Item
             name="status"
@@ -335,8 +505,8 @@ const FaqManagePage = () => {
             initialValue="active"
           >
             <Select>
-              <Option value="active">启用</Option>
-              <Option value="inactive">禁用</Option>
+              <Option value="active">已启用</Option>
+              <Option value="inactive">已禁用</Option>
             </Select>
           </Form.Item>
         </Form>

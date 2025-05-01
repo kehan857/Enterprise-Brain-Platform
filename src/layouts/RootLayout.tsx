@@ -16,6 +16,7 @@ import {
   AuditOutlined,
   CompassOutlined,
   MessageOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import EnterpriseDiagnosis from '@/components/EnterpriseDiagnosis';
 import GuideHelper from '@/components/GuideHelper';
@@ -84,6 +85,18 @@ const menuItems: MenuItem[] = [
     key: 'report-center',
     icon: <BarChartOutlined />,
     label: '报表中心',
+  },
+  {
+    key: 'help',
+    icon: <QuestionCircleOutlined />,
+    label: '帮助中心',
+    children: [
+      { key: 'help', label: '帮助中心首页' },
+      { key: 'help/guide', label: '使用指南' },
+      { key: 'help/faq', label: '常见问题' },
+      { key: 'help/videos', label: '视频教程' },
+      { key: 'help/contact', label: '联系支持' },
+    ],
   },
   {
     key: 'system',

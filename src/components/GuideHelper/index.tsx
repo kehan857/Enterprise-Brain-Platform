@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { Tour, Popover, Steps, Button } from 'antd';
 import type { TourProps } from 'antd';
 import './styles.css';
@@ -17,7 +17,7 @@ interface GuideHelperProps {
   // 帮助内容（用于上下文帮助类型）
   helpContent?: React.ReactNode;
   // 目标元素（用于上下文帮助类型）
-  targetElement?: HTMLElement;
+  targetElement?: ReactNode;
   // 当前步骤（用于流程指引类型）
   currentStep?: number;
   // 总步骤（用于流程指引类型）
@@ -172,7 +172,7 @@ const GuideHelper: React.FC<GuideHelperProps> = ({
   };
 
   // 渲染新手引导
-  if (type === 'tour') {
+  if (type === 'tour' && tourOpen) {
     return (
       <Tour
         open={tourOpen}
@@ -183,23 +183,12 @@ const GuideHelper: React.FC<GuideHelperProps> = ({
         rootClassName="guide-tour"
         zIndex={1000}
         arrow={true}
-        indicatorProps={{
-          style: {
-            fontSize: '14px',
-          },
-        }}
         mask={{
           style: {
             transition: 'all 0.3s ease-in-out',
           },
         }}
         closeIcon={allowSkip}
-        extra={allowSkip && (
-          <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
-            <Button size="small" onClick={onRemindLater}>稍后提醒</Button>
-            <Button size="small" onClick={handleTourClose}>跳过引导</Button>
-          </div>
-        )}
       />
     );
   }

@@ -1,0 +1,59 @@
+.faq-manage-page {
+  .faq-manage-container {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .category-card {
+    width: 280px;
+    
+    .ant-card-body {
+      padding: 0;
+    }
+    
+    .ant-tree {
+      padding: 16px 0;
+    }
+  }
+  
+  .content-card {
+    flex: 1;
+    
+    .search-section {
+      margin-bottom: 16px;
+    }
+    
+    .ant-table-wrapper {
+      .ant-table-row {
+        cursor: pointer;
+      }
+      
+      .ant-table-cell {
+        vertical-align: middle;
+      }
+    }
+  }
+  
+  .ant-modal {
+    .ant-form-item-label {
+      font-weight: 500;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .faq-manage-container {
+      flex-direction: column;
+    }
+    
+    .category-card {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    
+    .search-section {
+      .ant-form-item {
+        margin-bottom: 16px;
+      }
+    }
+  }
+} 

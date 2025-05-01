@@ -1,0 +1,122 @@
+.search-component {
+  margin-bottom: 16px;
+  
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    
+    .search-wrapper {
+      width: 70%;
+      max-width: 800px;
+    }
+    
+    .action-wrapper {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+  
+  .basic-search {
+    .ant-input-group {
+      display: flex;
+      align-items: center;
+    }
+    
+    .search-field-selector {
+      width: 120px;
+      border-right: 0;
+      
+      &:hover .ant-select-selector,
+      &:focus .ant-select-selector {
+        border-color: #d9d9d9;
+        box-shadow: none;
+      }
+    }
+    
+    .search-input {
+      flex: 1;
+    }
+    
+    .search-button {
+      border-radius: 0 4px 4px 0;
+      width: 40px;
+    }
+    
+    .advanced-toggle {
+      width: 60px;
+      margin-left: 8px;
+    }
+    
+    .quick-filters {
+      margin-top: 8px;
+      
+      .ant-tag {
+        cursor: pointer;
+        padding: 4px 8px;
+        margin-right: 8px;
+        
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+      
+      .active-filter {
+        color: #fff;
+      }
+    }
+  }
+  
+  .advanced-search {
+    margin-top: 16px;
+    background-color: #fafafa;
+    border-radius: 4px;
+    
+    .sort-options {
+      margin: 16px 0;
+      
+      .sort-label {
+        margin-right: 8px;
+        color: rgba(0, 0, 0, 0.85);
+      }
+    }
+    
+    .filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .search-component {
+    .header-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .search-wrapper {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 16px;
+      }
+    }
+    
+    .basic-search {
+      .search-field-selector {
+        width: 80px;
+      }
+      
+      .advanced-toggle {
+        width: 32px;
+      }
+    }
+    
+    .advanced-search {
+      .ant-form-item {
+        margin-bottom: 16px;
+      }
+    }
+  }
+} 

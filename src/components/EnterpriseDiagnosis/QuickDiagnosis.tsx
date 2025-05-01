@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Form, Card, Radio, Select, Space, Typography, Progress, Button, Divider, Checkbox } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Card, Radio, Select, Space, Typography, Progress, Button, Divider, Checkbox, message } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import { CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
@@ -29,20 +29,101 @@ const QuickDiagnosis: React.FC<QuickDiagnosisProps> = ({
   const [form] = Form.useForm();
   const [currentSection, setCurrentSection] = useState(1);
   const [currentStep, setCurrentStep] = useState(1);
+  const totalSections = 4;
+  const totalSteps = 5;
+
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('quick_diagnosis_progress');
+    const savedData = localStorage.getItem('quick_diagnosis_data');
+    
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      setCurrentSection(progress.section);
+      setCurrentStep(progress.step);
+    }
+    
+    if (savedData) {
+      form.setFieldsValue(JSON.parse(savedData));
+    }
+  }, [form]);
+
+  const calculateProgress = () => {
+    let completedSteps = 0;
+    if (currentSection === 1) {
+      completedSteps = 0;
+    } else if (currentSection === 2) {
+      completedSteps = 1;
+      if (currentStep === 2) {
+        completedSteps = 2;
+      }
+    } else if (currentSection === 3) {
+      completedSteps = 3;
+    } else if (currentSection === 4) {
+      completedSteps = 4;
+    }
+    return Math.round((completedSteps / (totalSteps - 1)) * 100);
+  };
+
+  const getCurrentStepName = () => {
+    if (currentSection === 1) return "基础信息";
+    if (currentSection === 2) {
+      if (currentStep === 1) return "系统选择";
+      if (currentStep === 2) return "系统评估";
+    }
+    if (currentSection === 3) return "数据管理";
+    if (currentSection === 4) return "AI就绪度";
+    return "";
+  };
+
+  const saveCurrentProgress = async () => {
+    try {
+      const values = await form.validateFields();
+      
+      localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+        section: currentSection,
+        step: currentStep
+      }));
+      
+      localStorage.setItem('quick_diagnosis_data', JSON.stringify(values));
+      
+      message.success('进度已保存');
+      return values;
+    } catch (error) {
+      console.error('表单验证或保存失败:', error);
+      return null;
+    }
+  };
 
   const handleSectionComplete = async () => {
     try {
       const values = await form.validateFields();
+      
+      localStorage.setItem('quick_diagnosis_data', JSON.stringify(values));
+      
       if (currentSection === 2) {
         if (currentStep === 1) {
           setCurrentStep(2);
+          localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+            section: 2,
+            step: 2
+          }));
         } else if (currentStep === 2) {
           setCurrentSection(3);
           setCurrentStep(1);
+          localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+            section: 3,
+            step: 1
+          }));
         }
       } else if (currentSection < 4) {
         setCurrentSection(currentSection + 1);
+        localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+          section: currentSection + 1,
+          step: 1
+        }));
       } else if (onComplete) {
+        localStorage.removeItem('quick_diagnosis_progress');
+        localStorage.removeItem('quick_diagnosis_data');
         onComplete(values);
       }
     } catch (error) {
@@ -53,10 +134,23 @@ const QuickDiagnosis: React.FC<QuickDiagnosisProps> = ({
   const handlePrevious = () => {
     if (currentSection === 2 && currentStep === 2) {
       setCurrentStep(1);
+      localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+        section: 2,
+        step: 1
+      }));
     } else if (currentSection > 1) {
       setCurrentSection(currentSection - 1);
       if (currentSection === 3) {
         setCurrentStep(2);
+        localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+          section: 2,
+          step: 2
+        }));
+      } else {
+        localStorage.setItem('quick_diagnosis_progress', JSON.stringify({
+          section: currentSection - 1,
+          step: 1
+        }));
       }
     }
   };
@@ -314,11 +408,31 @@ const QuickDiagnosis: React.FC<QuickDiagnosisProps> = ({
   );
 
   const renderProgressIndicator = () => (
-    <Progress
-      percent={((currentSection - 1) * 25) + (currentSection === 2 ? currentStep * 12.5 : 0)}
-      status="active"
-      style={{ marginBottom: 24 }}
-    />
+    <div style={{ marginBottom: 24 }}>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Text strong>诊断进度</Text>
+          <Text>{getCurrentStepName()} ({calculateProgress()}%)</Text>
+        </div>
+        <Progress 
+          percent={calculateProgress()} 
+          status="active"
+          strokeColor={{
+            '0%': '#108ee9',
+            '100%': '#87d068',
+          }}
+        />
+      </Space>
+    </div>
+  );
+
+  const renderSaveButton = () => (
+    <Button 
+      style={{ marginRight: 16 }}
+      onClick={saveCurrentProgress}
+    >
+      保存进度
+    </Button>
   );
 
   const renderCurrentSection = () => {
@@ -337,41 +451,31 @@ const QuickDiagnosis: React.FC<QuickDiagnosisProps> = ({
   };
 
   return (
-    <div style={{ padding: '20px 0' }}>
+    <Form form={form} layout="vertical" requiredMark={false}>
       {renderProgressIndicator()}
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          industry: undefined,
-          scale: undefined,
-          selected_systems: [],
-          data_collection: [],
-          data_quality: undefined,
-          ai_experience: undefined,
-          ai_expectation: []
-        }}
-      >
+      
+      <div>
         {renderCurrentSection()}
-        <Divider />
-        <div style={{ textAlign: 'right' }}>
-          {(currentSection > 1 || currentStep > 1) && (
-            <Button
-              style={{ marginRight: 8 }}
-              onClick={handlePrevious}
-            >
+      </div>
+      
+      <Divider />
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div>
+          {currentSection > 1 && (
+            <Button onClick={handlePrevious}>
               上一步
             </Button>
           )}
-          <Button
-            type="primary"
-            onClick={handleSectionComplete}
-          >
-            {currentSection < 4 || (currentSection === 2 && currentStep === 1) ? '下一步' : '完成诊断'}
+        </div>
+        <div>
+          {renderSaveButton()}
+          <Button type="primary" onClick={handleSectionComplete}>
+            {currentSection === 4 ? '完成诊断' : '下一步'}
           </Button>
         </div>
-      </Form>
-    </div>
+      </div>
+    </Form>
   );
 };
 

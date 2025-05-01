@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Typography, Tabs, Row, Col, Button, Tag, Modal, Form, Select, message } from 'antd';
-import { PlayCircleOutlined, SettingOutlined, BellOutlined } from '@ant-design/icons';
+import { Card, Typography, Tabs, Row, Col, Button, Tag, Modal, Form, Select, message, Divider, Radio } from 'antd';
+import { PlayCircleOutlined, SettingOutlined, BellOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
 
 const { Title, Paragraph } = Typography;
@@ -14,6 +14,24 @@ interface AgentItem {
   requiredData: string;
   status: 'not_enabled' | 'checking' | 'enabled' | 'failed';
 }
+
+// 模拟用户数据
+const mockUsers = [
+  { id: 'user1', name: '张三', department: '生产部' },
+  { id: 'user2', name: '李四', department: '质量部' },
+  { id: 'user3', name: '王五', department: '设备部' },
+  { id: 'user4', name: '赵六', department: '安全部' },
+  { id: 'user5', name: '钱七', department: '生产部' },
+  { id: 'user6', name: '孙八', department: '质量部' },
+];
+
+// 模拟群组数据
+const mockGroups = [
+  { id: 'group1', name: '生产部门群组', memberCount: 12 },
+  { id: 'group2', name: '设备维护团队', memberCount: 5 },
+  { id: 'group3', name: '质量控制群组', memberCount: 8 },
+  { id: 'group4', name: '安全监督小组', memberCount: 6 },
+];
 
 const mockAgents: AgentItem[] = [
   {
@@ -72,6 +90,7 @@ const AgentMarket: React.FC = () => {
   const [notifyModalVisible, setNotifyModalVisible] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<AgentItem | null>(null);
   const [form] = Form.useForm();
+  const [recipientType, setRecipientType] = useState<'users' | 'groups'>('users');
 
   const handleEnableAgent = (agent: AgentItem) => {
     message.loading({ content: '正在检查数据接入状态...', key: 'enableAgent' });
@@ -85,6 +104,7 @@ const AgentMarket: React.FC = () => {
 
   const handleNotifyModalOk = () => {
     form.validateFields().then(values => {
+      console.log('表单提交的值：', values);
       message.success('告警通知配置成功');
       setNotifyModalVisible(false);
       form.resetFields();
@@ -105,6 +125,27 @@ const AgentMarket: React.FC = () => {
   const filteredAgents = activeCategory === '全部' 
     ? mockAgents 
     : mockAgents.filter(agent => agent.category === activeCategory);
+
+  // 根据选择类型过滤不同的选项列表
+  const recipientOptions = recipientType === 'users'
+    ? mockUsers.map(user => ({
+        label: (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span><UserOutlined /> {user.name}</span>
+            <span style={{ color: '#999' }}>{user.department}</span>
+          </div>
+        ),
+        value: user.id
+      }))
+    : mockGroups.map(group => ({
+        label: (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span><TeamOutlined /> {group.name}</span>
+            <span style={{ color: '#999' }}>{group.memberCount}人</span>
+          </div>
+        ),
+        value: group.id
+      }));
 
   return (
     <div className="agent-market">
@@ -183,8 +224,9 @@ const AgentMarket: React.FC = () => {
         open={notifyModalVisible}
         onOk={handleNotifyModalOk}
         onCancel={() => setNotifyModalVisible(false)}
+        width={500}
       >
-        <Form form={form}>
+        <Form form={form} layout="vertical">
           <Form.Item
             name="severity"
             label="告警等级"
@@ -196,8 +238,9 @@ const AgentMarket: React.FC = () => {
               <Select.Option value="low">低</Select.Option>
             </Select>
           </Form.Item>
+          
           <Form.Item
-            name="channel"
+            name="channels"
             label="通知渠道"
             rules={[{ required: true, message: '请选择通知渠道' }]}
           >
@@ -207,6 +250,35 @@ const AgentMarket: React.FC = () => {
               <Select.Option value="email">邮件</Select.Option>
               <Select.Option value="sms">短信</Select.Option>
             </Select>
+          </Form.Item>
+          
+          <Form.Item label="通知对象" required style={{ marginBottom: 8 }}>
+            <Radio.Group 
+              value={recipientType} 
+              onChange={(e) => setRecipientType(e.target.value)}
+              style={{ marginBottom: 16 }}
+            >
+              <Radio.Button value="users">用户</Radio.Button>
+              <Radio.Button value="groups">群组</Radio.Button>
+            </Radio.Group>
+            
+            <Form.Item
+              name="recipients"
+              rules={[{ required: true, message: '请选择通知对象' }]}
+              style={{ marginBottom: 0 }}
+            >
+              <Select
+                mode="multiple"
+                placeholder={`请选择${recipientType === 'users' ? '用户' : '群组'}`}
+                style={{ width: '100%' }}
+                optionFilterProp="label"
+                options={recipientOptions}
+                showSearch
+                filterOption={(input, option) => 
+                  String(option?.label || '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </Form.Item>
           </Form.Item>
         </Form>
       </Modal>
