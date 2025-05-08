@@ -5,8 +5,8 @@ import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } f
 import './index.less';
 
 const DataMapping: React.FC = () => {
-  const [selectedSource, setSelectedSource] = useState<string>('');
-  const [selectedSystem, setSelectedSystem] = useState<string>('');
+  const [selectedSource, setSelectedSource] = useState<string>('erp'); // 默认选择ERP系统
+  const [selectedSystem, setSelectedSystem] = useState<string>('production'); // 默认选择生产指标
   const [searchParams, setSearchParams] = useState<Record<string, any>>({});
 
   // 搜索字段配置
@@ -85,9 +85,15 @@ const DataMapping: React.FC = () => {
     console.log('筛选参数:', params);
   };
 
+  // 处理查询
+  const handleQuery = () => {
+    console.log('查询数据源:', selectedSource, '指标体系:', selectedSystem);
+    // 这里可以根据所选数据源和指标体系更新数据
+  };
+
   return (
     <div className="data-mapping-page">
-      <Card title="数据映射配置" style={{ marginBottom: 24 }}>
+      <Card title="数据映射管理" style={{ marginBottom: 24 }}>
         <Form layout="inline" style={{ marginBottom: 24 }}>
           <Form.Item label="数据源">
             <Select
@@ -114,7 +120,7 @@ const DataMapping: React.FC = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary">查询</Button>
+            <Button type="primary" onClick={handleQuery}>查询</Button>
           </Form.Item>
         </Form>
 
@@ -122,7 +128,7 @@ const DataMapping: React.FC = () => {
         <div className="search-section">
           <SearchComponent 
             searchFields={searchFields}
-            filters={filters}
+            filters={[]}
             sortOptions={sortOptions}
             quickFilters={quickFilters}
             onSearch={handleSearch}
@@ -130,7 +136,8 @@ const DataMapping: React.FC = () => {
           />
         </div>
 
-        {selectedSource && selectedSystem && <DataMappingContent searchParams={searchParams} />}
+        {/* 直接显示数据列表，不需要根据条件判断是否显示 */}
+        <DataMappingContent searchParams={searchParams} />
       </Card>
     </div>
   );

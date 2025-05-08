@@ -314,18 +314,7 @@ const AlertCenter: React.FC = () => {
         const { text, color } = statusMap[status] || {};
         return <Tag color={color}>{text}</Tag>;
       },
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_: any, record: AlertRecord) => (
-        <Space size="middle">
-          <Button type="link">确认</Button>
-          <Button type="link">处理</Button>
-          <Button type="link">忽略</Button>
-        </Space>
-      ),
-    },
+    }
   ];
 
   // 告警规则列表
@@ -365,17 +354,7 @@ const AlertCenter: React.FC = () => {
         };
         return <Tag color={colorMap[severity]}>{severity.toUpperCase()}</Tag>;
       },
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: () => (
-        <Space size="middle">
-          <Button type="link">编辑</Button>
-          <Button type="link" danger>删除</Button>
-        </Space>
-      ),
-    },
+    }
   ];
 
   const items: TabsProps['items'] = [

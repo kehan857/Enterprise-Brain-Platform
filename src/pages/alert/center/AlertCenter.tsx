@@ -62,17 +62,6 @@ const AlertCenter: React.FC = () => {
       ),
     },
     { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <a>编辑</a>
-          <a>删除</a>
-          <a>{record.status === 'active' ? '停用' : '启用'}</a>
-        </Space>
-      ),
-    },
   ];
 
   // 告警记录列表
@@ -107,40 +96,8 @@ const AlertCenter: React.FC = () => {
     },
     { title: '告警时间', dataIndex: 'createTime', key: 'createTime' },
     { title: '处理人', dataIndex: 'handler', key: 'handler' },
-    { title: '处理时间', dataIndex: 'handleTime', key: 'handleTime' },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <a onClick={() => handleAlert(record)}>处理</a>
-          <a>查看详情</a>
-        </Space>
-      ),
-    },
+    { title: '处理时间', dataIndex: 'handleTime', key: 'handleTime' }
   ];
-
-  // 处理告警
-  const handleAlert = (record: AlertRecord) => {
-    form.setFieldsValue({
-      title: record.title,
-      level: record.level,
-      source: record.source,
-    });
-    setVisible(true);
-  };
-
-  // 提交处理
-  const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-      console.log('处理告警:', values);
-      setVisible(false);
-      form.resetFields();
-    } catch (error) {
-      console.error('表单验证失败:', error);
-    }
-  };
 
   return (
     <div>
@@ -221,36 +178,6 @@ const AlertCenter: React.FC = () => {
           </Card>
         </TabPane>
       </Tabs>
-
-      <Modal
-        title="处理告警"
-        open={visible}
-        onOk={handleSubmit}
-        onCancel={() => setVisible(false)}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item name="title" label="告警标题">
-            <Input disabled />
-          </Form.Item>
-          <Form.Item name="level" label="告警级别">
-            <Select disabled>
-              <Select.Option value="high">高</Select.Option>
-              <Select.Option value="medium">中</Select.Option>
-              <Select.Option value="low">低</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="source" label="告警来源">
-            <Input disabled />
-          </Form.Item>
-          <Form.Item
-            name="solution"
-            label="处理方案"
-            rules={[{ required: true, message: '请输入处理方案' }]}
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };

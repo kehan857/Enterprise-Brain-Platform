@@ -38,9 +38,8 @@ const menuItems: MenuItem[] = [
     className: 'ant-menu-submenu-data',
     children: [
       { key: 'data-source', label: '数据源管理' },
-      { key: 'data-mapping', label: '数据映射配置' },
-      { key: 'data-template', label: '线下数据模板' },
-      { key: 'data-quality', label: '数据质量' },
+      { key: 'data-template', label: '线下数据上传' },
+      { key: 'data-mapping', label: '数据映射管理' },
     ],
   },
   {
@@ -90,13 +89,6 @@ const menuItems: MenuItem[] = [
     key: 'help',
     icon: <QuestionCircleOutlined />,
     label: '帮助中心',
-    children: [
-      { key: 'help', label: '帮助中心首页' },
-      { key: 'help/guide', label: '使用指南' },
-      { key: 'help/faq', label: '常见问题' },
-      { key: 'help/videos', label: '视频教程' },
-      { key: 'help/contact', label: '联系支持' },
-    ],
   },
   {
     key: 'system',
@@ -124,10 +116,10 @@ const RootLayout = () => {
   ];
 
   // 递归查找菜单项
-  const findMenuItem = (key: string, items: MenuItem[]): MenuItem | null => {
+  const findMenuItem = (key: string, items: MenuItem[]): { icon?: React.ReactNode; label?: React.ReactNode } | null => {
     for (const item of items) {
       if (!item) continue;
-      if (item.key === key) return item;
+      if (item.key === key) return item as { icon?: React.ReactNode; label?: React.ReactNode };
       if ('children' in item && item.children) {
         const found = findMenuItem(key, item.children as MenuItem[]);
         if (found) return found;
@@ -163,26 +155,29 @@ const RootLayout = () => {
             最近访问
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', maxWidth: '600px', overflow: 'hidden' }}>
-            {recentItems.map(item => (
-              <Button
-                key={item.key}
-                icon={findMenuItem(item.key, menuItems)?.icon}
-                onClick={() => navigate(`/${item.key}`)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '4px 12px',
-                  height: '32px',
-                  background: '#f5f5f5',
-                  border: 'none',
-                  borderRadius: '4px',
-                  color: '#595959',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                {item.label}
-              </Button>
-            ))}
+            {recentItems.map(item => {
+              const menuItem = findMenuItem(item.key, menuItems);
+              return (
+                <Button
+                  key={item.key}
+                  icon={menuItem?.icon}
+                  onClick={() => navigate(`/${item.key}`)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '4px 12px',
+                    height: '32px',
+                    background: '#f5f5f5',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: '#595959',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {item.label}
+                </Button>
+              );
+            })}
           </div>
         </div>
         <div style={{ flex: 1 }} />

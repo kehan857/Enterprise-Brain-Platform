@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Card, Table, Button, Space, Tag, Modal, Form, Input, Select, message, Upload } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, DownloadOutlined, UploadOutlined, FileExcelOutlined } from '@ant-design/icons';
-import type { TableProps } from 'antd';
-import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import { Card, Button, Space, Tag, Modal, message, Upload, Row, Col, Alert, Divider } from 'antd';
+import { DownloadOutlined, UploadOutlined, FileExcelOutlined, InboxOutlined } from '@ant-design/icons';
+import type { UploadProps } from 'antd';
+import UploadGuideModal from '@/components/UploadGuideModal';
 import './index.less';
 
-interface DataTemplate {
+interface TemplateData {
   id: string;
   code: string;
   name: string;
@@ -19,10 +19,18 @@ interface DataTemplate {
   [key: string]: any;
 }
 
-const { Option } = Select;
+// 数据上传模板类型定义
 
-const DataTemplatePage = () => {
-  const [templates, setTemplates] = useState<DataTemplate[]>([
+const OfflineDataUploadPage = () => {
+  // 上传指引弹窗
+  const [uploadGuideVisible, setUploadGuideVisible] = useState(false);
+  // 上传提示弹窗
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  // 文件列表
+  const [fileList, setFileList] = useState<any[]>([]);
+  
+  // 模板数据
+  const [templates] = useState<TemplateData[]>([
     {
       id: '1',
       code: 'TPL00001',
@@ -56,446 +64,266 @@ const DataTemplatePage = () => {
       creator: '王五',
       createTime: '2023-12-05',
       updateTime: '2023-12-10',
-      status: 'disabled',
+      status: 'active',
       description: '用于记录库存盘点数据的CSV模板'
+    },
+    {
+      id: '4',
+      code: 'TPL00004',
+      name: '销售数据导入模板',
+      businessType: '销售数据',
+      fileType: 'excel',
+      creator: '李明',
+      createTime: '2023-12-15',
+      updateTime: '2023-12-15',
+      status: 'active',
+      description: '用于导入销售数据的Excel模板'
+    },
+    {
+      id: '5',
+      code: 'TPL00005',
+      name: '生产计划模板',
+      businessType: '生产计划',
+      fileType: 'excel',
+      creator: '赵云',
+      createTime: '2023-12-20',
+      updateTime: '2023-12-20',
+      status: 'active',
+      description: '用于导入生产计划数据的Excel模板'
+    },
+    {
+      id: '6',
+      code: 'TPL00006',
+      name: '员工考勤数据模板',
+      businessType: '人力资源',
+      fileType: 'csv',
+      creator: '周杰',
+      createTime: '2024-01-03',
+      updateTime: '2024-01-03',
+      status: 'active',
+      description: '用于导入员工考勤数据的CSV模板'
     }
   ]);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
-  const [filteredData, setFilteredData] = useState<DataTemplate[]>(templates);
-
-  // 搜索字段配置
-  const searchFields: SearchField[] = [
-    { label: '全部', value: 'all' },
-    { label: '模板名称', value: 'name' },
-    { label: '模板编码', value: 'code' },
-    { label: '业务类型', value: 'businessType' }
-  ];
-
-  // 高级搜索筛选条件
-  const filters: FilterConfig[] = [
-    { 
-      type: 'input', 
-      label: '模板名称', 
-      field: 'name',
-      span: 8,
-      placeholder: '请输入模板名称'
-    },
-    { 
-      type: 'input', 
-      label: '模板编码', 
-      field: 'code',
-      span: 8,
-      placeholder: '请输入模板编码'
-    },
-    { 
-      type: 'select', 
-      label: '业务类型', 
-      field: 'businessType',
-      span: 8,
-      options: [
-        { label: '质量管理', value: '质量管理' },
-        { label: '设备管理', value: '设备管理' },
-        { label: '库存管理', value: '库存管理' },
-        { label: '生产计划', value: '生产计划' },
-        { label: '销售数据', value: '销售数据' }
-      ]
-    },
-    { 
-      type: 'select', 
-      label: '文件类型', 
-      field: 'fileType',
-      span: 8,
-      options: [
-        { label: 'Excel文件', value: 'excel' },
-        { label: 'CSV文件', value: 'csv' }
-      ]
-    },
-    { 
-      type: 'select', 
-      label: '状态', 
-      field: 'status',
-      span: 8,
-      options: [
-        { label: '启用', value: 'active' },
-        { label: '停用', value: 'disabled' }
-      ]
-    },
-    { 
-      type: 'input', 
-      label: '创建人', 
-      field: 'creator',
-      span: 8,
-      placeholder: '请输入创建人'
-    },
-    { 
-      type: 'dateRange', 
-      label: '创建时间', 
-      field: 'createTime',
-      span: 8,
-      placeholder: ['开始日期', '结束日期']
-    }
-  ];
-
-  // 排序选项
-  const sortOptions: SortOption[] = [
-    { label: '创建时间：从新到旧', value: 'createTime,desc' },
-    { label: '创建时间：从旧到新', value: 'createTime,asc' },
-    { label: '更新时间：从新到旧', value: 'updateTime,desc' },
-    { label: '更新时间：从旧到新', value: 'updateTime,asc' }
-  ];
-
-  // 快捷筛选
-  const quickFilters: QuickFilter[] = [
-    { label: '已启用', value: { status: 'active' }, color: 'green' },
-    { label: '已停用', value: { status: 'disabled' }, color: 'red' },
-    { label: 'Excel模板', value: { fileType: 'excel' }, color: 'blue' },
-    { label: 'CSV模板', value: { fileType: 'csv' }, color: 'orange' }
-  ];
-
-  const columns: TableProps<DataTemplate>['columns'] = [
-    {
-      title: '模板编码',
-      dataIndex: 'code',
-      key: 'code',
-    },
-    {
-      title: '模板名称',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: '业务类型',
-      dataIndex: 'businessType',
-      key: 'businessType',
-    },
-    {
-      title: '文件类型',
-      dataIndex: 'fileType',
-      key: 'fileType',
-      render: (fileType: string) => {
-        const typeMap = {
-          excel: { icon: <FileExcelOutlined />, text: 'Excel文件' },
-          csv: { icon: <FileExcelOutlined />, text: 'CSV文件' }
-        };
-        const { icon, text } = typeMap[fileType as keyof typeof typeMap];
-        return (
-          <Space>
-            {icon}
-            {text}
-          </Space>
-        );
-      }
-    },
-    {
-      title: '创建人',
-      dataIndex: 'creator',
-      key: 'creator',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: string) => {
-        const statusMap = {
-          active: { color: 'success', text: '启用' },
-          disabled: { color: 'default', text: '停用' }
-        };
-        const { color, text } = statusMap[status as keyof typeof statusMap];
-        return <Tag color={color}>{text}</Tag>;
-      }
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button 
-            type="text" 
-            icon={<DownloadOutlined />}
-            onClick={() => handleDownload(record)}
-          >
-            下载
-          </Button>
-          <Button 
-            type="text" 
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            编辑
-          </Button>
-          <Button 
-            type="text" 
-            danger 
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
-          >
-            删除
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
-  // 处理搜索
-  const handleSearch = (params: Record<string, any>) => {
-    let filtered = [...templates];
-    
-    // 处理基础搜索
-    if (params._keyword) {
-      // 全字段搜索
-      filtered = filtered.filter(item => 
-        item.name.toLowerCase().includes(params._keyword.toLowerCase()) ||
-        item.code.toLowerCase().includes(params._keyword.toLowerCase()) ||
-        item.businessType.toLowerCase().includes(params._keyword.toLowerCase())
-      );
-    } else {
-      // 特定字段搜索
-      Object.entries(params).forEach(([key, value]) => {
-        if (value && key !== 'sortBy') {
-          filtered = filtered.filter(item => 
-            String(item[key]).toLowerCase().includes(String(value).toLowerCase())
-          );
-        }
-      });
-    }
-    
-    setFilteredData(filtered);
-  };
-
-  // 处理高级筛选
-  const handleFilter = (params: Record<string, any>) => {
-    let filtered = [...templates];
-    
-    // 筛选数据
-    Object.entries(params).forEach(([key, value]) => {
-      if (value && key !== 'sortBy') {
-        if (key === 'createTime' && Array.isArray(value) && value.length === 2) {
-          // 日期范围筛选
-          const [start, end] = value;
-          filtered = filtered.filter(item => {
-            const itemDate = new Date(item.createTime);
-            return itemDate >= start && itemDate <= end;
-          });
-        } else {
-          // 其他普通筛选
-          filtered = filtered.filter(item => item[key] === value);
-        }
-      }
-    });
-    
-    // 处理排序
-    if (params.sortBy) {
-      const [field, order] = params.sortBy.split(',');
-      filtered = [...filtered].sort((a, b) => {
-        if (order === 'asc') {
-          return a[field] > b[field] ? 1 : -1;
-        } else {
-          return a[field] < b[field] ? 1 : -1;
-        }
-      });
-    }
-    
-    setFilteredData(filtered);
-  };
-
-  const handleDownload = (record: DataTemplate) => {
+  // 处理模板下载
+  const handleDownload = (record: TemplateData) => {
     message.success(`正在下载模板：${record.name}`);
   };
 
-  const handleAdd = () => {
-    form.resetFields();
-    setIsModalVisible(true);
-  };
+  // 上传配置
 
-  const handleEdit = (record: DataTemplate) => {
-    form.setFieldsValue(record);
-    setIsModalVisible(true);
-  };
-
-  const handleDelete = (record: DataTemplate) => {
-    Modal.confirm({
-      title: '确认删除',
-      content: `确定要删除模板「${record.name}」吗？`,
-      onOk() {
-        const newData = templates.filter(item => item.id !== record.id);
-        setTemplates(newData);
-        setFilteredData(newData);
-        message.success('删除成功');
+  const uploadProps: UploadProps = {
+    name: 'file',
+    multiple: true,
+    maxCount: 5,
+    fileList,
+    beforeUpload: (file) => {
+      // 限制文件类型
+      const isExcelOrCSV = file.type === 'application/vnd.ms-excel' || 
+                          file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                          file.name.endsWith('.csv');
+      if (!isExcelOrCSV) {
+        message.error('只支持上传Excel或CSV文件!');
+        return Upload.LIST_IGNORE;
       }
-    });
-  };
-
-  const generateCode = () => {
-    const prefix = 'TPL';
-    const timestamp = Date.now().toString().slice(-5);
-    const random = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-    return `${prefix}${timestamp}${random}`;
-  };
-
-  const handleModalOk = () => {
-    form.validateFields().then(values => {
-      const newTemplate = {
-        ...values,
-        id: values.id || String(Date.now()),
-        code: values.id ? values.code : generateCode(),
-        updateTime: new Date().toISOString().split('T')[0],
-        createTime: values.id ? templates.find(item => item.id === values.id)?.createTime : new Date().toISOString().split('T')[0]
-      };
-
-      if (values.id) {
-        // 编辑现有模板
-        const newData = templates.map(item =>
-          item.id === values.id ? newTemplate : item
-        );
-        setTemplates(newData);
-        setFilteredData(newData);
-        message.success('修改成功');
-      } else {
-        // 添加新模板
-        const newData = [...templates, newTemplate];
-        setTemplates(newData);
-        setFilteredData(newData);
-        message.success('添加成功');
+      
+      // 限制文件大小
+      const isLessThan10M = file.size / 1024 / 1024 < 10;
+      if (!isLessThan10M) {
+        message.error('文件大小不能超过10MB!');
+        return Upload.LIST_IGNORE;
       }
-
-      setIsModalVisible(false);
-    });
-  };
-
-  // 处理导出数据
-  const handleExport = (params: Record<string, any>) => {
-    message.success('数据导出成功');
-    console.log('导出数据参数:', params);
+      
+      return true;
+    },
+    onChange(info) {
+      let newFileList = [...info.fileList];
+      
+      // 限制最多显示5个文件
+      newFileList = newFileList.slice(-5);
+      
+      // 更新文件状态
+      setFileList(newFileList);
+      
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} 上传成功`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} 上传失败`);
+      }
+    },
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
   };
 
   return (
     <div className="data-template-page">
-      <Card
-        title="线下数据模板"
-        extra={
-          <Button 
-            type="primary" 
-            icon={<PlusOutlined />} 
-            onClick={handleAdd}
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <Card 
+            title="线下数据上传"
+            className="upload-area-card"
           >
-            新建模板
-          </Button>
-        }
-      >
-        <div className="header-actions">
-          <div className="search-wrapper">
-            <SearchComponent 
-              searchFields={searchFields}
-              filters={filters}
-              sortOptions={sortOptions}
-              quickFilters={quickFilters}
-              enableExport={true}
-              onSearch={handleSearch}
-              onFilter={handleFilter}
-              onExport={handleExport}
+            <Alert
+              message="通过下方区域上传线下数据，或选择合适的模板进行填写"
+              description="上传前请确保数据格式与模板一致，支持Excel和CSV文件格式，单文件大小不超过10MB"
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
             />
-          </div>
-        </div>
+            
+            <Row gutter={24}>
+              <Col span={12}>
+                <Card title="数据文件上传" bordered={false}>
+                  <Upload.Dragger {...uploadProps}>
+                    <p className="ant-upload-drag-icon">
+                      <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
+                    <p className="ant-upload-hint">
+                      支持Excel、CSV格式文件
+                    </p>
+                  </Upload.Dragger>
+                  
+                  <div style={{ marginTop: 16, textAlign: 'center' }}>
+                    <Button
+                      type="primary"
+                      onClick={() => setUploadModalVisible(true)}
+                      disabled={fileList.length === 0}
+                    >
+                      确认上传
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+              
+              <Col span={12}>
+                <Card title="使用指引" bordered={false}>
+                  <div className="guide-steps">
+                    <div className="guide-step">
+                      <div className="step-number">1</div>
+                      <div className="step-content">
+                        <h4>下载合适的数据模板</h4>
+                        <p>从下方模板列表选择并下载符合您业务需求的数据模板</p>
+                      </div>
+                    </div>
+                    
+                    <div className="guide-step">
+                      <div className="step-number">2</div>
+                      <div className="step-content">
+                        <h4>按照模板格式填写数据</h4>
+                        <p>按照模板的要求填写您的线下数据，保持格式一致</p>
+                      </div>
+                    </div>
+                    
+                    <div className="guide-step">
+                      <div className="step-number">3</div>
+                      <div className="step-content">
+                        <h4>上传填写完成的文件</h4>
+                        <p>将填写好的文件拖拽到左侧上传区域或点击上传</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div style={{ marginTop: 16, textAlign: 'center' }}>
+                    <Button 
+                      icon={<DownloadOutlined />}
+                      onClick={() => setUploadGuideVisible(true)}
+                    >
+                      查看详细上传指引
+                    </Button>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+        
+        <Col span={24}>
+          <Card
+            title="可用模板"
+            bordered={false}
+          >
+            <Row gutter={[16, 16]}>
+              {templates.map(template => (
+                <Col span={8} key={template.id}>
+                  <Card 
+                    hoverable 
+                    size="small"
+                    className="template-card"
+                    actions={[
+                      <DownloadOutlined key="download" onClick={() => handleDownload(template)} />
+                    ]}
+                  >
+                    <div className="template-icon">
+                      <FileExcelOutlined style={{ fontSize: 24, color: template.fileType === 'excel' ? '#52c41a' : '#1890ff' }} />
+                    </div>
+                    <div className="template-info">
+                      <h4>{template.name}</h4>
+                      <p>{template.description}</p>
+                      <div className="template-meta">
+                        <Tag color={template.status === 'active' ? 'success' : 'default'}>
+                          {template.status === 'active' ? '已启用' : '已停用'}
+                        </Tag>
+                        <span className="template-type">{template.fileType === 'excel' ? 'Excel文件' : 'CSV文件'}</span>
+                      </div>
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Card>
+        </Col>
+      </Row>
 
-        <Table 
-          columns={columns} 
-          dataSource={filteredData}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
-        />
-      </Card>
+      {/* 上传指引模态框 */}
+      <UploadGuideModal
+        open={uploadGuideVisible}
+        onClose={() => setUploadGuideVisible(false)}
+        templateUrl="/templates/example-template.xlsx"
+        title="线下数据上传指引"
+        description="请按照以下步骤准备并上传您的线下数据文件"
+      />
 
+      {/* 数据上传确认模态框 */}
       <Modal
-        title={form.getFieldValue('id') ? '编辑模板' : '新建模板'}
-        open={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={() => setIsModalVisible(false)}
-        destroyOnClose
-        width={700}
+        title="确认上传数据"
+        open={uploadModalVisible}
+        onOk={() => {
+          message.success('数据上传成功，系统将进行处理');
+          setUploadModalVisible(false);
+          setFileList([]);
+        }}
+        onCancel={() => setUploadModalVisible(false)}
       >
-        <Form
-          form={form}
-          layout="vertical"
-        >
-          <Form.Item name="id" hidden>
-            <Input />
-          </Form.Item>
-          <Form.Item name="code" hidden>
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="name"
-            label="模板名称"
-            rules={[{ required: true, message: '请输入模板名称' }]}
-          >
-            <Input placeholder="请输入模板名称" />
-          </Form.Item>
-          <Form.Item
-            name="businessType"
-            label="业务类型"
-            rules={[{ required: true, message: '请选择业务类型' }]}
-          >
-            <Select placeholder="请选择业务类型">
-              <Option value="质量管理">质量管理</Option>
-              <Option value="设备管理">设备管理</Option>
-              <Option value="库存管理">库存管理</Option>
-              <Option value="生产计划">生产计划</Option>
-              <Option value="销售数据">销售数据</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="fileType"
-            label="文件类型"
-            rules={[{ required: true, message: '请选择文件类型' }]}
-          >
-            <Select placeholder="请选择文件类型">
-              <Option value="excel">Excel文件</Option>
-              <Option value="csv">CSV文件</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="creator"
-            label="创建人"
-            rules={[{ required: true, message: '请输入创建人' }]}
-          >
-            <Input placeholder="请输入创建人" />
-          </Form.Item>
-          <Form.Item
-            name="status"
-            label="状态"
-            rules={[{ required: true, message: '请选择状态' }]}
-          >
-            <Select placeholder="请选择状态">
-              <Option value="active">启用</Option>
-              <Option value="disabled">停用</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="描述"
-          >
-            <Input.TextArea rows={4} placeholder="请输入模板描述" />
-          </Form.Item>
-          <Form.Item
-            name="templateFile"
-            label="上传模板文件"
-            rules={[{ required: true, message: '请上传模板文件' }]}
-          >
-            <Upload>
-              <Button icon={<UploadOutlined />}>上传文件</Button>
-            </Upload>
-          </Form.Item>
-        </Form>
+        <Alert
+          message="请确认数据内容"
+          description="系统将根据文件名自动识别对应的模板并进行数据映射，请确保您的数据符合所选模板的格式要求。"
+          type="warning"
+          showIcon
+          style={{ marginBottom: 16 }}
+        />
+        
+        <div style={{ marginBottom: 16 }}>
+          <h4>待上传文件列表：</h4>
+          <ul>
+            {fileList.map((file, index) => (
+              <li key={index}>
+                {file.name} ({(file.size / 1024 / 1024).toFixed(2)}MB)
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        <div>
+          <p>点击"确定"按钮开始上传数据，上传成功后文件将被导入到系统中并进行处理。</p>
+        </div>
       </Modal>
     </div>
   );
 };
 
-export default DataTemplatePage;
+export default OfflineDataUploadPage;

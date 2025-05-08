@@ -24,7 +24,7 @@ const ReportCenter: React.FC = () => {
   const [filteredData, setFilteredData] = useState<ReportData[]>([]);
 
   const handlePreviewReport = (reportId: string) => {
-    window.open(`/report-preview/${reportId}`, '_blank');
+    window.open(`/report?reportId=${reportId}`, '_blank');
   };
 
   const columns: TableColumnsType<ReportData> = [

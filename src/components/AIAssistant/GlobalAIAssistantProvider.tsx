@@ -37,7 +37,6 @@ export const GlobalAIAssistantProvider: React.FC<{ children: React.ReactNode }> 
       <AIAssistant
         visible={visible}
         onClose={hideAssistant}
-        isGlobal={true}
       />
     </GlobalAIAssistantContext.Provider>
   );

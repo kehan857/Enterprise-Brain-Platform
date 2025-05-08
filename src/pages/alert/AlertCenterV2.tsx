@@ -144,10 +144,10 @@ const AlertCenterV2: React.FC = () => {
       key: 'status',
       render: (status: AlertAgent['status']) => {
         const statusConfig = {
-          uninitialized: { color: 'default', text: '未初始化' },
-          checking: { color: 'processing', text: '检查中' },
-          failed: { color: 'error', text: '启动失败' },
-          active: { color: 'success', text: '运行中' }
+          uninitialized: { color: 'default' as const, text: '未初始化' },
+          checking: { color: 'processing' as const, text: '检查中' },
+          failed: { color: 'error' as const, text: '启动失败' },
+          active: { color: 'success' as const, text: '运行中' }
         };
         return <Badge status={statusConfig[status].color} text={statusConfig[status].text} />;
       }
@@ -211,16 +211,6 @@ const AlertCenterV2: React.FC = () => {
       dataIndex: 'receivers',
       key: 'receivers',
       render: (receivers: string[]) => receivers.join(', ')
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: (_: any, record: AlertRecord) => (
-        <Space>
-          <Button size="small" type="link" onClick={() => handleViewDetail(record)}>查看</Button>
-          <Button size="small" type="link" onClick={() => handleProcessAlert(record)}>处理</Button>
-        </Space>
-      )
     }
   ];
 

@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, QuestionCir
 import type { TableProps } from 'antd';
 import type { DataNode } from 'antd/es/tree';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import UploadGuideModal from '@/components/UploadGuideModal';
 import './index.less';
 
 interface FAQ {
@@ -98,6 +99,7 @@ const FaqManagePage = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [form] = Form.useForm();
   const [filteredFaq, setFilteredFaq] = useState<FAQ[]>(faqList);
+  const [uploadGuideVisible, setUploadGuideVisible] = useState(false);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
@@ -291,6 +293,29 @@ const FaqManagePage = () => {
     applyFilters();
   };
 
+  // 显示上传指引模态框
+  const showUploadGuide = () => {
+    setUploadGuideVisible(true);
+  };
+
+  // 关闭上传指引模态框
+  const closeUploadGuide = () => {
+    setUploadGuideVisible(false);
+  };
+
+  // 处理模板下载
+  const handleDownloadTemplate = () => {
+    message.success('开始下载FAQ模板');
+    // 这里可以添加实际的模板下载逻辑
+  };
+
+  // 处理上传成功
+  const handleUploadSuccess = (fileList: any[]) => {
+    message.success(`成功导入 ${fileList.length} 个FAQ`);
+    // 这里可以添加上传后的数据刷新逻辑
+    setUploadGuideVisible(false);
+  };
+
   const handleImport = (info: any) => {
     if (info.file.status === 'done') {
       message.success(`${info.file.name} 导入成功`);
@@ -413,13 +438,12 @@ const FaqManagePage = () => {
           className="content-card"
           extra={
             <Space>
-              <Upload
-                action="/api/faq/import"
-                showUploadList={false}
-                onChange={handleImport}
+              <Button 
+                icon={<UploadOutlined />}
+                onClick={showUploadGuide}
               >
-                <Button icon={<UploadOutlined />}>导入FAQ</Button>
-              </Upload>
+                导入FAQ
+              </Button>
               <Button 
                 type="primary" 
                 icon={<PlusOutlined />} 
@@ -511,6 +535,23 @@ const FaqManagePage = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* 上传指引模态框 */}
+      <UploadGuideModal
+        open={uploadGuideVisible}
+        onClose={closeUploadGuide}
+        title="FAQ导入指引"
+        description="请按照以下步骤导入FAQ数据"
+        uploadTitle="上传FAQ数据文件"
+        uploadDescription="您可以上传Excel格式的FAQ数据"
+        templateButtonText="下载FAQ模板"
+        templateUrl="/templates/faq-template.xlsx"
+        onDownloadTemplate={handleDownloadTemplate}
+        onSuccess={handleUploadSuccess}
+        acceptTypes={['.xls', '.xlsx', '.csv']}
+        maxSize={10}
+        uploadUrl="/api/knowledge/faq/import"
+      />
     </div>
   );
 };

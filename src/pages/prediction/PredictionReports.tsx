@@ -98,7 +98,7 @@ const PredictionReports: React.FC = () => {
       dataIndex: 'pushStatus',
       key: 'pushStatus',
       width: '10%',
-      render: (status: string) => {
+      render: (status: 'success' | 'failed' | 'pending') => {
         const statusConfig = {
           success: { color: 'success', text: '已推送' },
           failed: { color: 'error', text: '推送失败' },
@@ -160,7 +160,7 @@ const PredictionReports: React.FC = () => {
           </Col>
         </Row>
 
-        <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Row gutter={16} style={{ marginBottom: 24 }}>
           <Col span={8}>
             <Input.Search
               placeholder="搜索报告标题或任务名称"
@@ -169,29 +169,61 @@ const PredictionReports: React.FC = () => {
               style={{ width: '100%' }}
             />
           </Col>
-          <Col span={8}>
-            <RangePicker
-              style={{ width: '100%' }}
-              onChange={(dates) => {
-                if (dates) {
-                  setDateRange([dates[0].format('YYYY-MM-DD'), dates[1].format('YYYY-MM-DD')]);
-                } else {
-                  setDateRange(null);
-                }
-              }}
-            />
-          </Col>
-          <Col span={8}>
-            <Select
-              style={{ width: '100%' }}
-              placeholder="选择任务类型"
-              allowClear
-              onChange={value => setSelectedTaskType(value)}
-            >
-              <Select.Option value="设备维护">设备维护</Select.Option>
-              <Select.Option value="销售预测">销售预测</Select.Option>
-              <Select.Option value="库存管理">库存管理</Select.Option>
-            </Select>
+          <Col span={16}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Tag.CheckableTag 
+                checked={!selectedTaskType} 
+                onChange={() => setSelectedTaskType(null)}
+                style={{ 
+                  border: '1px solid #d9d9d9', 
+                  padding: '0 8px', 
+                  marginRight: '0', 
+                  backgroundColor: !selectedTaskType ? '#e6f7ff' : 'transparent',
+                  borderColor: !selectedTaskType ? '#91d5ff' : '#d9d9d9'
+                }}
+              >
+                全部类型
+              </Tag.CheckableTag>
+              <Tag.CheckableTag 
+                checked={selectedTaskType === '设备维护'} 
+                onChange={() => setSelectedTaskType(selectedTaskType === '设备维护' ? null : '设备维护')}
+                style={{ 
+                  border: '1px solid #d9d9d9', 
+                  padding: '0 8px',
+                  marginRight: '0',
+                  backgroundColor: selectedTaskType === '设备维护' ? '#e6f7ff' : 'transparent',
+                  borderColor: selectedTaskType === '设备维护' ? '#91d5ff' : '#d9d9d9'
+                }}
+              >
+                设备维护
+              </Tag.CheckableTag>
+              <Tag.CheckableTag 
+                checked={selectedTaskType === '销售预测'} 
+                onChange={() => setSelectedTaskType(selectedTaskType === '销售预测' ? null : '销售预测')}
+                style={{ 
+                  border: '1px solid #d9d9d9', 
+                  padding: '0 8px',
+                  marginRight: '0',
+                  backgroundColor: selectedTaskType === '销售预测' ? '#e6f7ff' : 'transparent',
+                  borderColor: selectedTaskType === '销售预测' ? '#91d5ff' : '#d9d9d9'
+                }}
+              >
+                销售预测
+              </Tag.CheckableTag>
+              <Tag.CheckableTag 
+                checked={selectedTaskType === '库存管理'} 
+                onChange={() => setSelectedTaskType(selectedTaskType === '库存管理' ? null : '库存管理')}
+                style={{ 
+                  border: '1px solid #d9d9d9', 
+                  padding: '0 8px',
+                  marginRight: '0',
+                  backgroundColor: selectedTaskType === '库存管理' ? '#e6f7ff' : 'transparent',
+                  borderColor: selectedTaskType === '库存管理' ? '#91d5ff' : '#d9d9d9'
+                }}
+              >
+                库存管理
+              </Tag.CheckableTag>
+            </div>
           </Col>
         </Row>
 

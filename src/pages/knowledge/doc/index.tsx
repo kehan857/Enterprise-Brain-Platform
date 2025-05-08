@@ -5,6 +5,7 @@ import { PlusOutlined, UploadOutlined, FolderOutlined, FileOutlined, EditOutline
 import type { TableProps } from 'antd';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import UploadGuideModal from '@/components/UploadGuideModal';
 import './styles.less';
 
 interface Document {
@@ -123,6 +124,7 @@ const DocManagePage = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [form] = Form.useForm();
   const [filteredData, setFilteredData] = useState<Document[]>(documents);
+  const [uploadGuideVisible, setUploadGuideVisible] = useState(false);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
@@ -525,6 +527,29 @@ const DocManagePage = () => {
       )?.title)
     : documents;
 
+  // 显示上传指引模态框
+  const showUploadGuide = () => {
+    setUploadGuideVisible(true);
+  };
+
+  // 关闭上传指引模态框
+  const closeUploadGuide = () => {
+    setUploadGuideVisible(false);
+  };
+
+  // 处理模板下载
+  const handleDownloadTemplate = () => {
+    message.success('开始下载文档模板');
+    // 这里可以添加实际的模板下载逻辑
+  };
+
+  // 处理上传成功
+  const handleUploadSuccess = (fileList: any[]) => {
+    message.success(`成功上传 ${fileList.length} 个文档`);
+    // 这里可以添加上传后的数据刷新逻辑
+    setUploadGuideVisible(false);
+  };
+
   return (
     <div className="doc-manage-page">
       <Card
@@ -544,19 +569,12 @@ const DocManagePage = () => {
         style={{ flex: 1 }}
         extra={
           <Space>
-            <Upload
-              action="/api/upload"
-              showUploadList={false}
-              onChange={info => {
-                if (info.file.status === 'done') {
-                  message.success(`${info.file.name} 上传成功`);
-                } else if (info.file.status === 'error') {
-                  message.error(`${info.file.name} 上传失败`);
-                }
-              }}
+            <Button 
+              icon={<UploadOutlined />} 
+              onClick={showUploadGuide}
             >
-              <Button icon={<UploadOutlined />}>上传文档</Button>
-            </Upload>
+              上传文档
+            </Button>
             <Button 
               type="primary" 
               icon={<PlusOutlined />} 
@@ -674,6 +692,23 @@ const DocManagePage = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* 上传指引模态框 */}
+      <UploadGuideModal
+        open={uploadGuideVisible}
+        onClose={closeUploadGuide}
+        title="文档上传指引"
+        description="请按照以下步骤上传您的文档资料"
+        uploadTitle="上传文档文件"
+        uploadDescription="您可以上传PDF、Word、Excel等格式文档"
+        templateButtonText="下载文档模板"
+        templateUrl="/templates/document-template.xlsx"
+        onDownloadTemplate={handleDownloadTemplate}
+        onSuccess={handleUploadSuccess}
+        acceptTypes={['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt']}
+        maxSize={20}
+        uploadUrl="/api/knowledge/doc/upload"
+      />
     </div>
   );
 };

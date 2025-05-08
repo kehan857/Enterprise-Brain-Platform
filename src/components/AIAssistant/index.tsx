@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Drawer, Input, Button, Upload, Space, Avatar, List, Typography, Tag, Tooltip } from 'antd';
+import { Drawer, Input, Button, Upload, Space, Avatar, List, Typography, Tag } from 'antd';
 import type { UploadProps } from 'antd';
 import {
   SendOutlined,
@@ -7,8 +7,6 @@ import {
   RobotOutlined,
   UserOutlined,
   CloseOutlined,
-  QuestionCircleOutlined,
-  ThunderboltOutlined,
 } from '@ant-design/icons';
 
 interface Message {
@@ -22,25 +20,12 @@ interface AIAssistantProps {
   visible: boolean;
   onClose: () => void;
   industryType?: string; // 行业类型，用于加载对应的行业知识库
-  isGlobal?: boolean; // 是否为全局悬浮窗
 }
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
-const AIAssistant: React.FC<AIAssistantProps> = ({ visible, onClose, industryType = '制造业', isGlobal = false }) => {
-  // 全局悬浮窗样式
-  const drawerStyle = isGlobal ? {
-    position: 'fixed',
-    top: 0,
-    bottom: 0,
-    right: 0,
-    width: '400px',
-    height: '100vh',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-    transform: 'none',
-    transition: 'none'
-  } : {};
+const AIAssistant: React.FC<AIAssistantProps> = ({ visible, onClose, industryType = '' }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
@@ -116,7 +101,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ visible, onClose, industryTyp
       const response: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: `我是您的${industryType}智能助手，正在思考您的问题...
+        content: `我是您的${industryType ? industryType : ''}智能助手，正在思考您的问题...
 
 根据您的问题，我建议：
 1. ...
@@ -141,12 +126,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ visible, onClose, industryTyp
       title={
         <Space>
           <RobotOutlined style={{ color: '#1677ff' }} />
-          <span>{industryType}智能助手</span>
-          {isGlobal && (
-            <Tag color="blue" style={{ marginLeft: '8px' }}>
-              全局模式
-            </Tag>
-          )}
+          <span>{industryType ? `${industryType}智能助手` : '智能助手'}</span>
         </Space>
       }
       placement="right"
@@ -161,29 +141,24 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ visible, onClose, industryTyp
         overflow: 'hidden',
         position: 'relative'
       }}
-      style={drawerStyle}
-      mask={!isGlobal}
-      maskClosable={!isGlobal}
-      keyboard={!isGlobal}
+      mask={true}
+      maskClosable={true}
+      keyboard={true}
     >
       {/* 快捷功能区 */}
       <div style={{ 
         padding: '12px', 
         borderBottom: '1px solid #f0f0f0',
         backgroundColor: '#fafafa',
-        borderRadius: isGlobal ? '8px 8px 0 0' : '0',
+        borderRadius: '0',
         marginBottom: '8px'
       }}>
         <Space direction="vertical" style={{ width: '100%' }}>
           <Text type="secondary">快捷功能</Text>
           <Space wrap>
-            <Tooltip title="召唤专业Agent">
-              <Button icon={<ThunderboltOutlined />}>@Agent</Button>
-            </Tooltip>
             <Upload {...uploadProps}>
               <Button icon={<UploadOutlined />}>上传文件</Button>
             </Upload>
-            <Button icon={<QuestionCircleOutlined />}>帮助</Button>
           </Space>
         </Space>
       </div>

@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, Card } from 'antd';
-import { DashboardOutlined, RobotOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { DashboardOutlined } from '@ant-design/icons';
 import OperationalDashboard from './components/OperationalDashboard';
-import AgentMonitorDashboard from './components/AgentMonitorDashboard';
-import DataHealthDashboard from './components/DataHealthDashboard';
-
 
 const { TabPane } = Tabs;
 
@@ -42,29 +39,6 @@ const Dashboard: React.FC = () => {
           >
             <OperationalDashboard />
           </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <RobotOutlined />
-                智能体监控
-              </span>
-            }
-            key="2"
-          >
-            <AgentMonitorDashboard />
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <DatabaseOutlined />
-                数据健康度
-              </span>
-            }
-            key="3"
-          >
-            <DataHealthDashboard />
-          </TabPane>
-
         </Tabs>
       </Card>
     </div>

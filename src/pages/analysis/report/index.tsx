@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Card, List, Tag, Button, Space, Tabs } from 'antd';
-import { DownloadOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { Card, List, Tag, Button, Space, Tabs, Alert, message } from 'antd';
+import { EyeOutlined, DownloadOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
 import './index.less';
 
@@ -18,6 +19,7 @@ interface AnalysisReport {
 }
 
 const AnalysisReport: React.FC = () => {
+  const navigate = useNavigate();
   const allReports: AnalysisReport[] = [
     {
       id: '1',
@@ -262,6 +264,43 @@ const AnalysisReport: React.FC = () => {
     }
   };
 
+  // 跳转到报表中心
+  const goToReportCenter = () => {
+    navigate('/report?source=analysis');
+  };
+
+  // 处理报告下载
+  const handleDownloadReport = (report: AnalysisReport) => {
+    message.success(`开始下载报告：${report.title}`);
+    // 这里实现实际的下载逻辑，可以使用window.open等方式
+    // 模拟下载行为
+    setTimeout(() => {
+      message.success(`${report.title} 下载完成`);
+    }, 1500);
+  };
+
+  // 渲染列表项
+  const renderListItem = (item: AnalysisReport) => (
+    <List.Item
+      actions={[
+        <Button type="link" icon={<EyeOutlined />} onClick={goToReportCenter}>查看</Button>,
+        <Button type="link" icon={<DownloadOutlined />} onClick={() => handleDownloadReport(item)}>下载</Button>,
+      ]}
+    >
+      <List.Item.Meta
+        title={
+          <Space>
+            {item.title}
+            {item.status === 'new' && (
+              <Tag color="#f50">新</Tag>
+            )}
+          </Space>
+        }
+        description={`${item.domain} · ${item.createTime} · ${item.creator || '系统生成'}`}
+      />
+    </List.Item>
+  );
+
   // 生成Tab项
   const tabItems = [
     {
@@ -270,26 +309,7 @@ const AnalysisReport: React.FC = () => {
       children: (
         <List
           dataSource={filteredReports}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button type="link" icon={<DownloadOutlined />}>下载</Button>,
-                <Button type="link" icon={<ShareAltOutlined />}>分享</Button>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Space>
-                    {item.title}
-                    {item.status === 'new' && (
-                      <Tag color="#f50">新</Tag>
-                    )}
-                  </Space>
-                }
-                description={`${item.domain} · ${item.createTime} · ${item.creator || '系统生成'}`}
-              />
-            </List.Item>
-          )}
+          renderItem={renderListItem}
         />
       ),
     },
@@ -299,26 +319,7 @@ const AnalysisReport: React.FC = () => {
       children: (
         <List
           dataSource={filteredReports}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button type="link" icon={<DownloadOutlined />}>下载</Button>,
-                <Button type="link" icon={<ShareAltOutlined />}>分享</Button>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Space>
-                    {item.title}
-                    {item.status === 'new' && (
-                      <Tag color="#f50">新</Tag>
-                    )}
-                  </Space>
-                }
-                description={`${item.domain} · ${item.createTime} · ${item.creator || '系统生成'}`}
-              />
-            </List.Item>
-          )}
+          renderItem={renderListItem}
         />
       ),
     },
@@ -328,26 +329,7 @@ const AnalysisReport: React.FC = () => {
       children: (
         <List
           dataSource={filteredReports}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button type="link" icon={<DownloadOutlined />}>下载</Button>,
-                <Button type="link" icon={<ShareAltOutlined />}>分享</Button>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Space>
-                    {item.title}
-                    {item.status === 'new' && (
-                      <Tag color="#f50">新</Tag>
-                    )}
-                  </Space>
-                }
-                description={`${item.domain} · ${item.createTime} · ${item.creator || '系统生成'}`}
-              />
-            </List.Item>
-          )}
+          renderItem={renderListItem}
         />
       ),
     },
@@ -357,26 +339,7 @@ const AnalysisReport: React.FC = () => {
       children: (
         <List
           dataSource={filteredReports}
-          renderItem={(item) => (
-            <List.Item
-              actions={[
-                <Button type="link" icon={<DownloadOutlined />}>下载</Button>,
-                <Button type="link" icon={<ShareAltOutlined />}>分享</Button>,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Space>
-                    {item.title}
-                    {item.status === 'new' && (
-                      <Tag color="#f50">新</Tag>
-                    )}
-                  </Space>
-                }
-                description={`${item.domain} · ${item.createTime} · ${item.creator || '系统生成'}`}
-              />
-            </List.Item>
-          )}
+          renderItem={renderListItem}
         />
       ),
     },
@@ -385,6 +348,19 @@ const AnalysisReport: React.FC = () => {
   return (
     <div className="analysis-report-page">
       <Card>
+        <Alert 
+          message="分析报告"
+          description="所有由智能分析中心生成的分析报告都会显示在此列表中。详细报告内容请点击'查看'按钮前往报表中心查看。"
+          type="info"
+          showIcon
+          style={{ marginBottom: 16 }}
+          action={
+            <Button type="primary" onClick={goToReportCenter}>
+              前往报表中心查看完整报告
+            </Button>
+          }
+        />
+        
         <div className="header-actions">
           <div className="search-wrapper">
             <SearchComponent 
@@ -404,28 +380,6 @@ const AnalysisReport: React.FC = () => {
           items={tabItems}
           onChange={handleTabChange}
         />
-      </Card>
-
-      <Card title="报告详情" style={{ marginTop: 24 }}>
-        <h3>2024年1月生产效率分析报告</h3>
-        
-        <Card type="inner" title="报告摘要" style={{ marginBottom: 16 }}>
-          <p>{allReports[0].summary}</p>
-        </Card>
-
-        <Card type="inner" title="关键发现">
-          <ul>
-            {allReports[0].findings.map((finding, index) => (
-              <li key={index}>{finding}</li>
-            ))}
-          </ul>
-        </Card>
-
-        <Card type="inner" title="趋势图表" style={{ marginTop: 16 }}>
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            [图表展示区域]
-          </div>
-        </Card>
       </Card>
     </div>
   );

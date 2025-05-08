@@ -323,18 +323,7 @@ const AlertList: React.FC = () => {
       dataIndex: 'createTime',
       key: 'createTime',
       width: 150,
-    },
-    {
-      title: '操作',
-      key: 'action',
-      width: 150,
-      render: () => (
-        <Space size="middle">
-          <Button type="link" size="small">查看详情</Button>
-          <Button type="link" size="small">处理</Button>
-        </Space>
-      ),
-    },
+    }
   ];
 
   return (

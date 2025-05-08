@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Card, Typography, Tabs, Row, Col, Button, Tag, Modal, Form, Select, message, Spin } from 'antd';
+import { Card, Typography, Tabs, Row, Col, Button, Tag, Modal, Form, Select, message, Spin, DatePicker } from 'antd';
 import { PlayCircleOutlined, SettingOutlined, EyeOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 
@@ -84,10 +85,13 @@ const getStatusTag = (status: AgentItem['status']) => {
 };
 
 const AgentMarket: React.FC = () => {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('全部');
   const [periodModalVisible, setPeriodModalVisible] = useState(false);
+  const [reportModalVisible, setReportModalVisible] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState<AgentItem | null>(null);
   const [form] = Form.useForm();
+  const [reportForm] = Form.useForm();
 
   const handleEnableAgent = (agent: AgentItem) => {
     message.loading({ content: '正在检查数据接入状态...', key: 'enableAgent' });
@@ -98,16 +102,8 @@ const AgentMarket: React.FC = () => {
   };
 
   const handleGenerateReport = (agent: AgentItem) => {
-    message.loading({ content: '报告生成中...', key: 'generateReport' });
-    // 模拟报告生成过程
-    setTimeout(() => {
-      message.success({ content: '报告生成成功', key: 'generateReport' });
-    }, 2000);
-  };
-
-  const handleSetPeriod = (agent: AgentItem) => {
     setSelectedAgent(agent);
-    setPeriodModalVisible(true);
+    setReportModalVisible(true);
   };
 
   const handlePeriodModalOk = () => {
@@ -116,6 +112,28 @@ const AgentMarket: React.FC = () => {
       setPeriodModalVisible(false);
       form.resetFields();
     });
+  };
+
+  const handleReportModalOk = () => {
+    reportForm.validateFields().then(values => {
+      message.loading({ content: '报告生成中...', key: 'generateReport' });
+      // 模拟报告生成过程
+      setTimeout(() => {
+        message.success({ content: '报告生成成功', key: 'generateReport' });
+        setReportModalVisible(false);
+        reportForm.resetFields();
+      }, 2000);
+    });
+  };
+
+  const handleSetPeriod = (agent: AgentItem) => {
+    setSelectedAgent(agent);
+    setPeriodModalVisible(true);
+  };
+
+  const handleViewReport = (agent: AgentItem) => {
+    // 跳转到智能分析中心-分析报告模块，带上agent的id作为参数
+    navigate(`/analysis-report?agentId=${agent.id}&agentName=${encodeURIComponent(agent.name)}`);
   };
 
   const items: TabsProps['items'] = [
@@ -197,6 +215,7 @@ const AgentMarket: React.FC = () => {
                   <Button 
                     type="link" 
                     icon={<EyeOutlined />}
+                    onClick={() => handleViewReport(agent)}
                     disabled={!agent.lastReportTime}
                     style={{ fontSize: '12px', padding: '4px 8px', height: 'auto', whiteSpace: 'nowrap' }}
                   >
@@ -237,6 +256,46 @@ const AgentMarket: React.FC = () => {
               <Select.Option value="daily">每日</Select.Option>
               <Select.Option value="weekly">每周一</Select.Option>
               <Select.Option value="monthly">每月1号</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="statPeriod"
+            label="统计周期"
+            rules={[{ required: true, message: '请选择统计周期' }]}
+          >
+            <Select>
+              <Select.Option value="last_week">近一周</Select.Option>
+              <Select.Option value="last_month">近一个月</Select.Option>
+              <Select.Option value="last_quarter">近一季度</Select.Option>
+              <Select.Option value="last_year">近一年</Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="选择报告统计周期"
+        open={reportModalVisible}
+        onOk={handleReportModalOk}
+        onCancel={() => setReportModalVisible(false)}
+      >
+        <Form form={reportForm}>
+          <Form.Item
+            name="dateRange"
+            label="统计日期范围"
+            rules={[{ required: true, message: '请选择统计日期范围' }]}
+          >
+            <DatePicker.RangePicker style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item
+            name="granularity"
+            label="数据粒度"
+            rules={[{ required: true, message: '请选择数据粒度' }]}
+          >
+            <Select>
+              <Select.Option value="day">按天</Select.Option>
+              <Select.Option value="week">按周</Select.Option>
+              <Select.Option value="month">按月</Select.Option>
             </Select>
           </Form.Item>
         </Form>
