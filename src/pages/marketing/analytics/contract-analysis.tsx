@@ -159,12 +159,12 @@ const ContractAnalysis: React.FC = () => {
     const amountRange = maxAmount - minAmount;
     
     return (
-      <div style={{ height: '200px', padding: '20px', background: '#fafafa', borderRadius: '6px' }}>
+      <div style={{ height: '240px', padding: '20px', background: '#fafafa', borderRadius: '6px' }}>
         <div style={{ marginBottom: '16px', fontWeight: 'bold', color: '#262626' }}>
           合同金额趋势 (近6个月)
         </div>
-        <div style={{ position: 'relative', height: '120px', display: 'flex', justifyContent: 'center' }}>
-          <svg width={chartWidth} height={chartHeight} style={{ overflow: 'visible' }}>
+        <div style={{ position: 'relative', height: '160px', display: 'flex', justifyContent: 'center' }}>
+          <svg width={chartWidth} height={chartHeight + 40} style={{ overflow: 'visible' }}>
             {/* 绘制趋势线 */}
             <polyline
               points={contractTrendData.map((item, index) => {
@@ -192,7 +192,7 @@ const ContractAnalysis: React.FC = () => {
                   {/* 月份标签 */}
                   <text
                     x={x}
-                    y={chartHeight + 16}
+                    y={chartHeight + 20}
                     textAnchor="middle"
                     fontSize="12"
                     fill="#8c8c8c"
@@ -215,7 +215,7 @@ const ContractAnalysis: React.FC = () => {
             })}
           </svg>
         </div>
-        <div style={{ marginTop: '8px', fontSize: '12px', color: '#52c41a', textAlign: 'center' }}>
+        <div style={{ marginTop: '12px', fontSize: '12px', color: '#52c41a', textAlign: 'center' }}>
           月均增长率: 4.8% | 累计增长: 25.4%
         </div>
       </div>
