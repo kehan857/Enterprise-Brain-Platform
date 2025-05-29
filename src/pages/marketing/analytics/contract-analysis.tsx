@@ -146,62 +146,81 @@ const ContractAnalysis: React.FC = () => {
   const [selectedDelivery, setSelectedDelivery] = useState<string>('all');
 
   // 渲染合同金额趋势图
-  const renderContractTrendChart = () => (
-    <div style={{ height: '200px', padding: '20px', background: '#fafafa', borderRadius: '6px' }}>
-      <div style={{ marginBottom: '16px', fontWeight: 'bold', color: '#262626' }}>
-        合同金额趋势 (近6个月)
+  const renderContractTrendChart = () => {
+    const chartWidth = 500;
+    const chartHeight = 120;
+    const padding = 20;
+    const plotWidth = chartWidth - padding * 2;
+    const plotHeight = chartHeight - padding * 2;
+    
+    // 找到最大值用于缩放
+    const maxAmount = Math.max(...contractTrendData.map(item => item.amount));
+    const minAmount = Math.min(...contractTrendData.map(item => item.amount));
+    const amountRange = maxAmount - minAmount;
+    
+    return (
+      <div style={{ height: '200px', padding: '20px', background: '#fafafa', borderRadius: '6px' }}>
+        <div style={{ marginBottom: '16px', fontWeight: 'bold', color: '#262626' }}>
+          合同金额趋势 (近6个月)
+        </div>
+        <div style={{ position: 'relative', height: '120px', display: 'flex', justifyContent: 'center' }}>
+          <svg width={chartWidth} height={chartHeight} style={{ overflow: 'visible' }}>
+            {/* 绘制趋势线 */}
+            <polyline
+              points={contractTrendData.map((item, index) => {
+                const x = padding + (index / (contractTrendData.length - 1)) * plotWidth;
+                const y = padding + (1 - (item.amount - minAmount) / amountRange) * plotHeight;
+                return `${x},${y}`;
+              }).join(' ')}
+              fill="none"
+              stroke="#52c41a"
+              strokeWidth="3"
+            />
+            {/* 绘制数据点和标签 */}
+            {contractTrendData.map((item, index) => {
+              const x = padding + (index / (contractTrendData.length - 1)) * plotWidth;
+              const y = padding + (1 - (item.amount - minAmount) / amountRange) * plotHeight;
+              return (
+                <g key={index}>
+                  {/* 数据点 */}
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r="4"
+                    fill="#52c41a"
+                  />
+                  {/* 月份标签 */}
+                  <text
+                    x={x}
+                    y={chartHeight + 16}
+                    textAnchor="middle"
+                    fontSize="12"
+                    fill="#8c8c8c"
+                  >
+                    {item.month}
+                  </text>
+                  {/* 数值标签 */}
+                  <text
+                    x={x}
+                    y={y - 8}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill="#52c41a"
+                    fontWeight="bold"
+                  >
+                    {(item.amount / 10000).toFixed(1)}万
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+        <div style={{ marginTop: '8px', fontSize: '12px', color: '#52c41a', textAlign: 'center' }}>
+          月均增长率: 4.8% | 累计增长: 25.4%
+        </div>
       </div>
-      <div style={{ position: 'relative', height: '120px' }}>
-        <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
-          {/* 绘制趋势线 */}
-          <polyline
-            points={contractTrendData.map((item, index) => 
-              `${(index / (contractTrendData.length - 1)) * 100}%,${100 - (item.amount / 16000) * 80}%`
-            ).join(' ')}
-            fill="none"
-            stroke="#52c41a"
-            strokeWidth="3"
-            vectorEffect="non-scaling-stroke"
-          />
-          {/* 绘制数据点 */}
-          {contractTrendData.map((item, index) => (
-            <g key={index}>
-              <circle
-                cx={`${(index / (contractTrendData.length - 1)) * 100}%`}
-                cy={`${100 - (item.amount / 16000) * 80}%`}
-                r="4"
-                fill="#52c41a"
-              />
-              <text
-                x={`${(index / (contractTrendData.length - 1)) * 100}%`}
-                y="100%"
-                textAnchor="middle"
-                fontSize="12"
-                fill="#8c8c8c"
-                dy="16"
-              >
-                {item.month}
-              </text>
-              <text
-                x={`${(index / (contractTrendData.length - 1)) * 100}%`}
-                y={`${100 - (item.amount / 16000) * 80}%`}
-                textAnchor="middle"
-                fontSize="10"
-                fill="#52c41a"
-                dy="-8"
-                fontWeight="bold"
-              >
-                {(item.amount / 1000).toFixed(1)}k万
-              </text>
-            </g>
-          ))}
-        </svg>
-      </div>
-      <div style={{ marginTop: '8px', fontSize: '12px', color: '#52c41a', textAlign: 'center' }}>
-        月均增长率: 4.8% | 累计增长: 25.4%
-      </div>
-    </div>
-  );
+    );
+  };
 
   const columns: ColumnsType<ContractRecord> = [
     {
