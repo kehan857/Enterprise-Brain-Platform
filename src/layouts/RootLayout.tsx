@@ -78,6 +78,14 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    key: 'data-query-3',
+    icon: <LineChartOutlined />,
+    label: '数据查询3',
+    children: [
+      { key: 'marketing-analytics', label: '营销数据板块' },
+    ],
+  },
+  {
     key: 'indicator',
     icon: <PieChartOutlined />,
     label: '指标管理',
@@ -233,6 +241,7 @@ const RootLayout = () => {
         'customer-data': '/customer-data',
         'product-data': '/product-data',
         'sales-data': '/sales-data',
+        'marketing-analytics': '/marketing-analytics',
         'data-indicator': '/data-indicator',
         'data-model': '/data-model',
         'target-setting': '/target-setting',

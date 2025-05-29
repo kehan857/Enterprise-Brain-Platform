@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Card,
+import { 
+  Card, 
   Table,
-  Select,
+  Select, 
   Space,
   Button,
-  Input,
-  Typography,
+  Input, 
+  Typography, 
   Row,
   Col,
   Modal,
-  Tag,
+  Tag, 
   Divider,
   DatePicker,
   InputNumber,
   message,
-  Tooltip,
-  Badge,
+  Tooltip, 
+  Badge, 
   notification
 } from 'antd';
 import {
@@ -1032,9 +1032,9 @@ const DataQuery: React.FC = () => {
       <div className="data-query-page" style={{ padding: '0' }}>
         <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
           <Col>
-            <Title level={4} style={{ margin: 0 }}>数据查询</Title>
+              <Title level={4} style={{ margin: 0 }}>数据查询</Title>
             <Text type="secondary">查询和浏览各业务类型的数据记录，支持分类统计和智能分析</Text>
-          </Col>
+            </Col>
         </Row>
 
         {/* 全局筛选区 - 包含业务类型选择和搜索 */}
@@ -1112,7 +1112,7 @@ const DataQuery: React.FC = () => {
               <Row gutter={[16, 16]} align="middle">
                 {/* 时间周期筛选 - 所有业务类型共有 */}
                 <Col span={6}>
-                  <div>
+                <div>
                     <Text style={{ fontSize: '13px', color: '#666' }}>时间周期：</Text>
                     <RangePicker
                       value={dateRange}
@@ -1402,7 +1402,7 @@ const DataQuery: React.FC = () => {
                       style={{ marginRight: 8 }}
                     >
                       筛选
-                    </Button>
+                  </Button>
                     <Button 
                       type="default" 
                       icon={<ReloadOutlined />} 
@@ -1427,7 +1427,7 @@ const DataQuery: React.FC = () => {
                 <Title level={5} style={{ margin: 0 }}>
                   {mockDataModels.find(m => m.id === selectedModel)?.name}业务指标
                 </Title>
-              </div>
+                </div>
               <Row gutter={[16, 16]}>
                 {generateModelStatistics(selectedModel).map((stat, index) => (
                   <Col span={12} key={index}>
@@ -1460,7 +1460,7 @@ const DataQuery: React.FC = () => {
                           fontWeight: '500'
                         }}>
                           {getTrendIcon(stat.trend)}
-                        </div>
+              </div>
                       </div>
                       
                       <div style={{ 
@@ -1492,7 +1492,7 @@ const DataQuery: React.FC = () => {
                 ))}
               </Row>
             </Col>
-
+            
             {/* 右侧：智能分析洞察 */}
             <Col span={8}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
@@ -1739,4 +1739,4 @@ const DataQuery: React.FC = () => {
   );
 };
 
-export default DataQuery;
+export default DataQuery; 

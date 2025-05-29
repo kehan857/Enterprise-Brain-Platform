@@ -54,6 +54,7 @@ const MarketingReport = lazy(() => import('@/pages/report/marketing-report'));
 const CustomerData = lazy(() => import('@/pages/data/customer-data'));
 const ProductData = lazy(() => import('@/pages/data/product-data'));
 const SalesData = lazy(() => import('@/pages/data/sales-data'));
+const MarketingAnalytics = lazy(() => import('@/pages/marketing/analytics'));
 
 export const routes: RouteObject[] = [
   {
@@ -299,5 +300,9 @@ export const routes: RouteObject[] = [
   {
     path: 'sales-data',
     element: <SalesData />
+  },
+  {
+    path: 'marketing-analytics',
+    element: <MarketingAnalytics />
   }
 ];
