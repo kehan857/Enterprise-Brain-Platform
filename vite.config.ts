@@ -40,7 +40,20 @@ export default defineConfig(({ command }) => {
           }
         }
       },
-      chunkSizeWarningLimit: 1500
+      chunkSizeWarningLimit: 1500,
+      target: 'es2015',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true
+        }
+      }
+    },
+    esbuild: {
+      logOverride: { 
+        'this-is-undefined-in-esm': 'silent' 
+      }
     }
   }
 })

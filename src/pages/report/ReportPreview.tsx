@@ -20,33 +20,10 @@ const mockReportData = {
     dataQuality: 85
   },
   systemStatus: [
-    {
-      name: 'ERP系统',
-      status: 'connected',
-      score: 92,
-      suggestions: [
-        '建议进一步优化成本管理模块',
-        '加强与供应商系统的数据对接'
-      ]
-    },
-    {
-      name: 'MES系统',
-      status: 'connected',
-      score: 88,
-      suggestions: [
-        '建议优化生产计划排程算法',
-        '加强设备预测性维护功能'
-      ]
-    },
-    {
-      name: '数据中台',
-      status: 'connected',
-      score: 78,
-      suggestions: [
-        '完善数据质量监控机制',
-        '加强数据安全管理体系建设'
-      ]
-    }
+    { name: 'ERP系统', status: 'connected' as const, score: 85, suggestions: ['优化数据同步频率', '增加备份策略'] },
+    { name: 'CRM系统', status: 'connected' as const, score: 78, suggestions: ['完善客户数据录入规范'] },
+    { name: 'MES系统', status: 'interrupted' as const, score: 45, suggestions: ['检查网络连接', '重启服务'] },
+    { name: 'WMS系统', status: 'not_configured' as const, score: 0, suggestions: ['配置系统参数', '导入基础数据'] }
   ],
   dimensionAnalysis: [
     {
@@ -89,19 +66,19 @@ const mockReportData = {
   recommendations: [
     {
       category: '智能制造升级',
-      priority: 'high',
+      priority: 'high' as const,
       content: '建议在现有智能制造基础上，进一步推进5G+工业互联网建设，打造柔性智能产线，提升生产效率和产品质量。',
       expectedBenefit: '预计可提升生产效率25%，降低不良品率40%'
     },
     {
       category: '数据价值挖掘',
-      priority: 'high',
+      priority: 'high' as const,
       content: '加强数据分析平台建设，引入高级分析工具，深化数据挖掘应用，为经营决策提供数据支持。',
       expectedBenefit: '提升决策准确率30%，创造新的数据价值'
     },
     {
       category: 'AI创新应用',
-      priority: 'medium',
+      priority: 'medium' as const,
       content: '扩大AI技术应用范围，在产品质检、需求预测、智能客服等领域开展创新应用，打造AI驱动的智能工厂。',
       expectedBenefit: '预计可降低运营成本20%，提升客户满意度15%'
     }

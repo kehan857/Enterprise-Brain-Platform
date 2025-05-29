@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Button, Dropdown, Form, Row, Col, Space, Card } from 'antd';
 import { SearchOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
-import styles from './index.module.less';
 
 export interface SearchField {
   key: string;
@@ -57,7 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const advancedSearchContent = (
-    <Card className={styles.advancedSearchCard}>
+    <Card>
       <Form
         form={form}
         layout="vertical"
@@ -89,8 +88,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   );
 
   return (
-    <div className={styles.searchBar} style={style}>
-      <div className={styles.simpleSearch}>
+    <div className="searchBar" style={style}>
+      <div className="simpleSearch">
         <Input
           placeholder={placeholder}
           value={simpleValue}
@@ -98,7 +97,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onPressEnter={handleSimpleSearch}
           suffix={
             <SearchOutlined 
-              className={styles.searchIcon} 
+              className="searchIcon" 
               onClick={handleSimpleSearch}
             />
           }
@@ -106,7 +105,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         <Button
           type="text"
           onClick={() => setAdvancedOpen(!advancedOpen)}
-          className={styles.advancedButton}
+          className="advancedButton"
         >
           {advancedOpen ? <UpOutlined /> : <DownOutlined />}
         </Button>

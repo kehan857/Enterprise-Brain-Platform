@@ -236,12 +236,28 @@ const StandardIndicator: React.FC = () => {
 
   return (
     <div>
-      <style jsx global>{`
-        .indicator-table-row {
-          cursor: pointer;
+      <style>{`
+        .data-indicator .ant-table-thead > tr > th {
+          background: #f5f5f5;
+          font-weight: 600;
         }
-        .indicator-table-row:hover {
-          background-color: #f5f5f5;
+        .data-indicator .ant-table-tbody > tr:hover > td {
+          background: #e6f7ff;
+        }
+        .data-indicator .indicator-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .data-indicator .indicator-actions {
+          display: flex;
+          gap: 8px;
+        }
+        .data-indicator .search-form {
+          background: #fafafa;
+          padding: 16px;
+          border-radius: 6px;
+          margin-bottom: 16px;
         }
       `}</style>
       

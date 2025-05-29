@@ -269,37 +269,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ type = 'text', url, l
             },
             pdfVerticalScrollByDefault: true
           }}
-          onError={(error: any) => {
-            console.error('Document preview error:', error);
-            setShowTextPreview(true);
-            setInternalLoading(false);
-          }}
-          beforeLoad={() => {
-            if (!showTextPreview) {
-              setInternalLoading(true);
-              setInternalError(undefined);
-            }
-          }}
-          afterLoad={() => {
-            setInternalLoading(false);
-          }}
         />
-        {internalLoading && !showTextPreview && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(255, 255, 255, 0.8)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000
-          }}>
-            <Spin size="large" tip="文档加载中..." />
-          </div>
-        )}
       </div>
     </div>
   );
