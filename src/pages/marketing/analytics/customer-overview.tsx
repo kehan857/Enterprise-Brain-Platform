@@ -175,16 +175,6 @@ const CustomerOverview: React.FC = () => {
 
   const columns: ColumnsType<CustomerRecord> = [
     {
-      title: '业务员',
-      dataIndex: 'salesperson',
-      width: 80,
-      render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
-          {name}
-        </Button>
-      )
-    },
-    {
       title: '客户名称',
       dataIndex: 'customerName',
       width: 180,
@@ -194,6 +184,16 @@ const CustomerOverview: React.FC = () => {
           size="small" 
           onClick={() => navigate(`/customer-360/${record.key}`)}
         >
+          {name}
+        </Button>
+      )
+    },
+    {
+      title: '业务员',
+      dataIndex: 'salesperson',
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
           {name}
         </Button>
       )
@@ -486,57 +486,6 @@ const CustomerOverview: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
-      {/* 客户活跃度分析 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <LineChartOutlined style={{ color: '#fa8c16', marginRight: 8 }} />
-            客户活跃度分析
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          <Col xs={12} sm={6}>
-            <Statistic
-              title="活跃客户"
-              value={1245}
-              suffix="位"
-              valueStyle={{ fontSize: '18px', color: '#52c41a' }}
-            />
-            <Text type="secondary">近3个月有交易</Text>
-          </Col>
-          <Col xs={12} sm={6}>
-            <Statistic
-              title="沉睡客户"
-              value={382}
-              suffix="位"
-              valueStyle={{ fontSize: '18px', color: '#faad14' }}
-            />
-            <Text type="secondary">3-12个月无交易</Text>
-          </Col>
-          <Col xs={12} sm={6}>
-            <Statistic
-              title="流失客户"
-              value={156}
-              suffix="位"
-              valueStyle={{ fontSize: '18px', color: '#ff4d4f' }}
-            />
-            <Text type="secondary">超过12个月无交易</Text>
-          </Col>
-          <Col xs={12} sm={6}>
-            <Statistic
-              title="活跃率"
-              value={78.5}
-              suffix="%"
-              valueStyle={{ fontSize: '18px', color: '#1890ff' }}
-            />
-            <Text type="secondary">同比↑3.2%</Text>
-          </Col>
-        </Row>
-      </Card>
 
       {/* 客户列表明细 */}
       <Card 
