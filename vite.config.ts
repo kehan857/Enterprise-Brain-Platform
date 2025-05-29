@@ -4,7 +4,7 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  const base = command === 'serve' ? '/' : '/企业大脑服务平台/'
+  const base = command === 'serve' ? '/' : '/Enterprise-Brain-Platform/'
   
   return {
     base,
