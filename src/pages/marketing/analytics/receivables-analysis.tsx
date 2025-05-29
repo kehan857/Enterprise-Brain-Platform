@@ -819,57 +819,6 @@ const ReceivablesAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 应收账款洞察 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-            应收账款管理洞察
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ⚠ 应收账款风险上升
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  逾期应收账款占比28.1%，环比增长3.5%，需要加强信用管理和催收工作。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 周转率持续改善
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  应收账款周转率达2.7次/年，环比提升7.4%，资金周转效率有所改善。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#fff2f0', border: '1px solid #ffccc7' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#ff4d4f', fontWeight: 'bold', marginBottom: '4px' }}>
-                  🚨 关注重点客户
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  12位高风险客户需要重点关注，建议制定专项回收计划和风险控制措施。
-                </div>
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Card>
-
       {/* 逾期应收账款列表 */}
       <Card 
         title={
@@ -934,8 +883,6 @@ const ReceivablesAnalysis: React.FC = () => {
                 <Option value="90+">90天以上</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

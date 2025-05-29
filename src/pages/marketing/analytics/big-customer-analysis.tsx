@@ -512,57 +512,6 @@ const BigCustomerAnalysis: React.FC = () => {
         </Row>
       </Card>
 
-      {/* 大客户经营洞察 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-            大客户经营洞察
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 大客户价值持续提升
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  大客户合同金额占比达29.1%，同比增长18.5%，单客户平均贡献显著提升。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f0f9ff', border: '1px solid #91d5ff' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#1890ff', fontWeight: 'bold', marginBottom: '4px' }}>
-                  🎯 智能制造客户增长迅速
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  智能制造大客户增长率22.1%，是重点发展方向，建议加大产品研发投入。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ⚠ 关注高风险客户
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  4%的大客户存在高风险，需要制定专门的客户保留策略和应急预案。
-                </div>
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Card>
-
       {/* 大客户列表明细 */}
       <Card 
         title="大客户列表明细" 
@@ -611,11 +560,9 @@ const BigCustomerAnalysis: React.FC = () => {
                 <Option value="excellent">优秀(95+)</Option>
                 <Option value="good">良好(90-94)</Option>
                 <Option value="average">一般(80-89)</Option>
-                <Option value="poor">待提升(<80)</Option>
+                <Option value="poor">待提升(&lt;80)</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

@@ -421,57 +421,6 @@ const OldCustomerAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 老客户洞察 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-            老客户经营洞察
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 老客户贡献稳定增长
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  老客户贡献70.8%的营收，复购率68.2%，是业务稳定发展的基石。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ⚠ 关注客户流失风险
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  10%的老客户存在流失风险，需要启动客户关怀和挽留计划。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 产品交叉销售机会
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  智能设备客户对配套软件接受度高，建议推进产品组合销售。
-                </div>
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Card>
-
       {/* 老客户列表明细 */}
       <Card 
         title="老客户列表明细" 
@@ -523,8 +472,6 @@ const OldCustomerAnalysis: React.FC = () => {
                 <Option value="低活跃">低活跃</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

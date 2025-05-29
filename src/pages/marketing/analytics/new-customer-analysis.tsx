@@ -472,7 +472,7 @@ const NewCustomerAnalysis: React.FC = () => {
 
       {/* 新客户转化漏斗 */}
       <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24} sm={12}>
+        <Col xs={24}>
           <Card 
             title={
               <div className="flex-start">
@@ -487,54 +487,6 @@ const NewCustomerAnalysis: React.FC = () => {
               <FunnelPlotOutlined className="chart-placeholder-icon" />
               <Text type="secondary">转化漏斗图表 (图表组件待集成)</Text>
             </div>
-          </Card>
-        </Col>
-        
-        <Col xs={24} sm={12}>
-          <Card 
-            title={
-              <div className="flex-start">
-                <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-                转化效果洞察
-              </div>
-            }
-            className="analysis-card"
-            size="small"
-          >
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-                <div style={{ width: '100%' }}>
-                  <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                    ✓ 展会获客效果显著
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    展会渠道贡献了38.5%的新客户，转化率达到15.2%，建议加大展会投入。
-                  </div>
-                </div>
-              </div>
-              
-              <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
-                <div style={{ width: '100%' }}>
-                  <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                    ⚠ 关注网络推广转化
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    网络推广渠道客户数量多但转化率偏低，建议优化线上营销策略。
-                  </div>
-                </div>
-              </div>
-              
-              <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-                <div style={{ width: '100%' }}>
-                  <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                    ✓ 制造业客户潜力大
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
-                    制造业新客户平均合同金额较高，建议针对性开发产品方案。
-                  </div>
-                </div>
-              </div>
-            </Space>
           </Card>
         </Col>
       </Row>
@@ -575,8 +527,6 @@ const NewCustomerAnalysis: React.FC = () => {
                 <Option value="直销">直销</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

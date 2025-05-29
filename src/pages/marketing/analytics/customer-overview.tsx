@@ -546,6 +546,21 @@ const CustomerOverview: React.FC = () => {
         <div className="filter-section">
           <div className="filter-row">
             <div className="filter-item">
+              <span className="filter-label">客户类型:</span>
+              <Select
+                value={selectedIndustry}
+                onChange={setSelectedIndustry}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部类型</Option>
+                <Option value="制造业">制造业</Option>
+                <Option value="电子信息">电子信息</Option>
+                <Option value="智能制造">智能制造</Option>
+                <Option value="汽车制造">汽车制造</Option>
+              </Select>
+            </div>
+            
+            <div className="filter-item">
               <span className="filter-label">行业筛选:</span>
               <Select
                 value={selectedIndustry}
@@ -554,43 +569,26 @@ const CustomerOverview: React.FC = () => {
               >
                 <Option value="all">全部行业</Option>
                 <Option value="制造业">制造业</Option>
-                <Option value="智能制造">智能制造</Option>
                 <Option value="电子信息">电子信息</Option>
-                <Option value="新材料">新材料</Option>
+                <Option value="智能制造">智能制造</Option>
+                <Option value="汽车制造">汽车制造</Option>
               </Select>
             </div>
             
             <div className="filter-item">
-              <span className="filter-label">来源筛选:</span>
-              <Select
-                value={selectedSource}
-                onChange={setSelectedSource}
-                style={{ width: 150 }}
-              >
-                <Option value="all">全部来源</Option>
-                <Option value="展会">展会</Option>
-                <Option value="网络推广">网络推广</Option>
-                <Option value="老客户推荐">老客户推荐</Option>
-                <Option value="直销">直销</Option>
-              </Select>
-            </div>
-            
-            <div className="filter-item">
-              <span className="filter-label">区域筛选:</span>
+              <span className="filter-label">地区筛选:</span>
               <Select
                 value={selectedRegion}
                 onChange={setSelectedRegion}
                 style={{ width: 150 }}
               >
-                <Option value="all">全部区域</Option>
-                <Option value="华东区">华东区</Option>
-                <Option value="华北区">华北区</Option>
-                <Option value="华南区">华南区</Option>
-                <Option value="西南区">西南区</Option>
+                <Option value="all">全部地区</Option>
+                <Option value="北京">北京</Option>
+                <Option value="上海">上海</Option>
+                <Option value="深圳">深圳</Option>
+                <Option value="广州">广州</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

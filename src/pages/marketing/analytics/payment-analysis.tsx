@@ -673,57 +673,6 @@ const PaymentAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 回款洞察 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-            回款分析洞察
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 回款表现持续优化
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  发货回款率达90.1%，环比提升3.8%，智能制造事业部贡献最为突出。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ⚠ 关注逾期回款风险
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  逾期回款金额880万元，占比7.0%，需要加强客户信用管理和催收力度。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f0f9ff', border: '1px solid #91d5ff' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#1890ff', fontWeight: 'bold', marginBottom: '4px' }}>
-                  🎯 优化回款周期
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  业务员平均回款周期33天，建议完善合同付款条件，提升资金周转效率。
-                </div>
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Card>
-
       {/* 逾期回款合同列表 */}
       <Card 
         title={
@@ -768,8 +717,6 @@ const PaymentAnalysis: React.FC = () => {
                 <Option value="低">低风险</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

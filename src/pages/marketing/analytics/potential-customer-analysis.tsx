@@ -463,57 +463,6 @@ const PotentialCustomerAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 优化建议洞察 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-            优化建议洞察
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 加强商务谈判阶段跟进
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  商务谈判阶段客户数量最多但转化较慢，建议增加跟进频次和专业支持。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ⚠ 优化产品价格策略
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  价格因素是主要丢失原因，建议制定更灵活的定价策略和优惠政策。
-                </div>
-              </div>
-            </div>
-          </Col>
-          <Col xs={24} sm={8}>
-            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
-              <div style={{ width: '100%' }}>
-                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
-                  ✓ 重点关注高价值客户
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  50万以上报价客户转化价值高，建议配备专门团队进行重点跟进。
-                </div>
-              </div>
-            </div>
-          </Col>
-        </Row>
-      </Card>
-
       {/* 待转化客户列表明细 */}
       <Card 
         title="待转化客户列表明细" 
@@ -550,8 +499,6 @@ const PotentialCustomerAnalysis: React.FC = () => {
                 <Option value="100万以上">100万以上</Option>
               </Select>
             </div>
-            
-            <Button type="primary" className="btn-primary">导出Excel</Button>
           </div>
         </div>
 

@@ -158,6 +158,7 @@ const ContractAnalysis: React.FC = () => {
   const navigate = useNavigate();
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedBusinessUnit, setSelectedBusinessUnit] = useState<string>('all');
+  const [selectedDelivery, setSelectedDelivery] = useState<string>('all');
 
   // 渲染合同金额趋势图
   const renderContractTrendChart = () => (
@@ -613,7 +614,19 @@ const ContractAnalysis: React.FC = () => {
               </Select>
             </div>
             
-            <Button type="primary" className="btn-primary">导出Excel</Button>
+            <div className="filter-item">
+              <span className="filter-label">交货状态:</span>
+              <Select
+                value={selectedDelivery}
+                onChange={setSelectedDelivery}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部状态</Option>
+                <Option value="已交货">已交货</Option>
+                <Option value="部分交货">部分交货</Option>
+                <Option value="未交货">未交货</Option>
+              </Select>
+            </div>
           </div>
         </div>
 
