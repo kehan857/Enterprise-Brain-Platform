@@ -20,8 +20,7 @@ import {
   BarChartOutlined,
   PieChartOutlined,
   TrophyOutlined,
-  UserOutlined,
-  FundOutlined
+  UserOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -100,20 +99,6 @@ const contractData: ContractRecord[] = [
   }
 ];
 
-// 客户订货额排行榜数据
-const topCustomers = [
-  { rank: 1, customerName: '深圳创新科技集团', amount: 1250, percent: 8.0, growth: 15.2 },
-  { rank: 2, customerName: '北京科技有限公司', amount: 980, percent: 6.3, growth: 8.5 },
-  { rank: 3, customerName: '上海智能制造公司', amount: 750, percent: 4.8, growth: 12.1 },
-  { rank: 4, customerName: '广州汽车零部件公司', amount: 680, percent: 4.3, growth: 6.8 },
-  { rank: 5, customerName: '天津重工集团', amount: 580, percent: 3.7, growth: 9.2 },
-  { rank: 6, customerName: '苏州精密制造', amount: 520, percent: 3.3, growth: 18.5 },
-  { rank: 7, customerName: '武汉光电科技', amount: 480, percent: 3.1, growth: 22.3 },
-  { rank: 8, customerName: '成都航空设备', amount: 420, percent: 2.7, growth: 11.8 },
-  { rank: 9, customerName: '西安电子信息', amount: 380, percent: 2.4, growth: 5.6 },
-  { rank: 10, customerName: '青岛海洋工程', amount: 350, percent: 2.2, growth: 14.7 }
-];
-
 // 事业部订货额数据
 const businessUnitData = [
   { name: '华东事业部', amount: 5680, percent: 36.2, target: 5500, completion: 103.3, color: '#1890ff' },
@@ -171,7 +156,7 @@ const ContractAnalysis: React.FC = () => {
           {/* 绘制趋势线 */}
           <polyline
             points={contractTrendData.map((item, index) => 
-              `${(index / (contractTrendData.length - 1)) * 100},${100 - (item.amount / 16000) * 80}`
+              `${(index / (contractTrendData.length - 1)) * 100}%,${100 - (item.amount / 16000) * 80}%`
             ).join(' ')}
             fill="none"
             stroke="#52c41a"
@@ -524,58 +509,6 @@ const ContractAnalysis: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
-      {/* 客户订货额排行榜 TOP10 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <FundOutlined style={{ color: '#722ed1', marginRight: 8 }} />
-            客户订货额排行榜 TOP10
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          {topCustomers.map((customer, index) => (
-            <Col xs={24} sm={12} key={index} className="mb-8">
-              <div className="data-item" style={{
-                background: index < 3 ? '#f6ffed' : '#fafafa',
-                border: index < 3 ? '1px solid #b7eb8f' : '1px solid #f0f0f0'
-              }}>
-                <div className="data-item-left">
-                  <div style={{
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: index < 3 ? '#52c41a' : '#8c8c8c',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    marginRight: '8px'
-                  }}>
-                    {customer.rank}
-                  </div>
-                  <Button type="link" size="small" onClick={() => console.log(`查看${customer.customerName}的详情`)}>
-                    {customer.customerName}
-                  </Button>
-                </div>
-                <div className="data-item-right">
-                  <div className="data-item-value">
-                    ¥{customer.amount.toLocaleString()}万
-                  </div>
-                  <div className="data-item-desc">
-                    占比{customer.percent}% | 同比↑{customer.growth}%
-                  </div>
-                </div>
-              </div>
-            </Col>
-          ))}
-        </Row>
-      </Card>
 
       {/* 合同列表明细 */}
       <Card 
