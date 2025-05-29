@@ -638,7 +638,7 @@ const PaymentAnalysis: React.FC = () => {
                 客户回款排行 TOP5
               </div>
             }
-            className="analysis-card"
+            className="analysis-card flex-fill"
             size="small"
           >
             <Table
@@ -659,7 +659,7 @@ const PaymentAnalysis: React.FC = () => {
                 业务员回款排行 TOP5
               </div>
             }
-            className="analysis-card"
+            className="analysis-card flex-fill"
             size="small"
           >
             <Table
@@ -682,11 +682,6 @@ const PaymentAnalysis: React.FC = () => {
           </div>
         }
         className="analysis-card"
-        extra={
-          <Button type="primary" danger size="small">
-            启动催收行动
-          </Button>
-        }
       >
         <div className="filter-section">
           <div className="filter-row">
