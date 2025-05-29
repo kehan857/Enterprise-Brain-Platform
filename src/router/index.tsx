@@ -61,6 +61,8 @@ const NewCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/new-c
 const OldCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/old-customer-analysis'));
 const BigCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/big-customer-analysis'));
 const PotentialCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/potential-customer-analysis'));
+const PaymentAnalysis = lazy(() => import('@/pages/marketing/analytics/payment-analysis'));
+const ReceivablesAnalysis = lazy(() => import('@/pages/marketing/analytics/receivables-analysis'));
 
 // 第三阶段：三级页面
 const Customer360 = lazy(() => import('@/pages/customer/customer-360'));
@@ -339,6 +341,14 @@ export const routes: RouteObject[] = [
   {
     path: 'potential-customer-analysis',
     element: <PotentialCustomerAnalysis />
+  },
+  {
+    path: 'payment-analysis',
+    element: <PaymentAnalysis />
+  },
+  {
+    path: 'receivables-analysis',
+    element: <ReceivablesAnalysis />
   },
   // 第三阶段：三级页面路由
   {
