@@ -255,7 +255,7 @@ const CustomerOverview: React.FC = () => {
     }
   ];
 
-  // 渲染分布图表卡片
+  // 渲染分布分析卡片
   const renderDistributionCard = (
     title: string, 
     data: typeof industryData, 
@@ -263,41 +263,27 @@ const CustomerOverview: React.FC = () => {
   ) => (
     <Card 
       title={
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="flex-start">
           {icon}
-          <span style={{ marginLeft: 8 }}>{title}</span>
+          {title}
         </div>
       }
+      className="analysis-card"
       size="small"
     >
-      <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+      <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
         {data.map((item, index) => (
-          <div key={index} style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '8px',
-            padding: '4px 8px',
-            backgroundColor: index < 3 ? '#f6ffed' : '#fafafa',
-            borderRadius: '4px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{
-                width: '8px',
-                height: '8px',
-                backgroundColor: item.color,
-                borderRadius: '50%',
-                marginRight: '8px'
-              }} />
-              <span style={{ fontSize: '12px' }}>{item.name}</span>
+          <div key={index} className="data-item">
+            <div className="data-item-left">
+              <div 
+                className="data-item-indicator"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className="data-item-label">{item.name}</span>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
-                {item.value.toLocaleString()}
-              </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                {item.percent}%
-              </div>
+            <div className="data-item-right">
+              <div className="data-item-value">¥{item.value.toLocaleString()}万</div>
+              <div className="data-item-desc">占比: {item.percent}%</div>
             </div>
           </div>
         ))}
@@ -306,14 +292,15 @@ const CustomerOverview: React.FC = () => {
   );
 
   return (
-    <div style={{ padding: '0' }}>
+    <div className="page-container">
       {/* 面包屑导航 */}
-      <Breadcrumb style={{ marginBottom: 16 }}>
+      <Breadcrumb className="page-breadcrumb">
         <Breadcrumb.Item>
           <Button 
             icon={<ArrowLeftOutlined />} 
             type="link" 
             onClick={() => navigate('/marketing-analytics')}
+            className="btn-link"
           >
             返回
           </Button>
@@ -323,66 +310,77 @@ const CustomerOverview: React.FC = () => {
       </Breadcrumb>
 
       {/* 页面标题 */}
-      <Title level={4} style={{ marginBottom: 24 }}>
-        <TeamOutlined style={{ marginRight: 8, color: '#1890ff' }} />
-        客户总体分析看板
-      </Title>
+      <div className="page-header">
+        <div>
+          <Title level={4} className="page-title">
+            <TeamOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+            客户总体分析看板
+          </Title>
+        </div>
+      </div>
 
       {/* 核心指标回顾区 */}
-      <Card style={{ marginBottom: 24 }}>
+      <Card className="analysis-card card-mb-24">
         <Row gutter={24} align="middle">
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8}>
             <Statistic
               title="总客户数"
               value={15627}
               suffix="位"
-              valueStyle={{ fontSize: '32px', color: '#1890ff' }}
+              valueStyle={{ fontSize: '32px', color: '#52c41a' }}
             />
-            <div style={{ marginTop: '8px' }}>
+            <div className="mt-8">
               <Text type="secondary">目标: 15,000位</Text>
               <Tag color="green" style={{ marginLeft: 8 }}>104.18%</Tag>
               <Tag color="green">同比↑5.2%</Tag>
             </div>
           </Col>
-          <Col span={16}>
-            <div style={{ 
-              height: '80px', 
-              backgroundColor: '#f6ffed',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px dashed #52c41a'
-            }}>
-              <LineChartOutlined style={{ fontSize: '24px', color: '#52c41a', marginRight: '12px' }} />
-              <Text type="secondary">12个月客户数量趋势图 (图表组件待集成)</Text>
+          <Col xs={24} sm={12} md={16}>
+            <div className="chart-placeholder flex-center">
+              <LineChartOutlined className="chart-placeholder-icon" />
+              <Text type="secondary">客户数量/类型切换趋势图 (图表组件待集成)</Text>
             </div>
           </Col>
         </Row>
       </Card>
 
-      {/* 关联分析区域 - 6个模块 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={8}>
-          {renderDistributionCard('行业分布图', industryData, <BarChartOutlined style={{ color: '#1890ff' }} />)}
+      {/* 关联分析区域 */}
+      <Row gutter={[16, 16]} className="card-mb-24">
+        <Col xs={24} sm={12} lg={8}>
+          {renderDistributionCard(
+            '行业分布分析',
+            industryData,
+            <BarChartOutlined style={{ color: '#1890ff', marginRight: 8 }} />
+          )}
         </Col>
-        <Col span={8}>
-          {renderDistributionCard('来源分布图', sourceData, <PieChartOutlined style={{ color: '#52c41a' }} />)}
+        
+        <Col xs={24} sm={12} lg={8}>
+          {renderDistributionCard(
+            '来源分布分析',
+            sourceData,
+            <LineChartOutlined style={{ color: '#52c41a', marginRight: 8 }} />
+          )}
         </Col>
-        <Col span={8}>
-          {renderDistributionCard('区域分布图', regionData, <EnvironmentOutlined style={{ color: '#722ed1' }} />)}
+        
+        <Col xs={24} sm={12} lg={8}>
+          {renderDistributionCard(
+            '区域分布分析',
+            regionData,
+            <EnvironmentOutlined style={{ color: '#722ed1', marginRight: 8 }} />
+          )}
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={8}>
+      <Row gutter={[16, 16]} className="card-mb-24">
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <PieChartOutlined style={{ color: '#faad14', marginRight: 8 }} />
                 客户类型占比
               </div>
             }
+            className="analysis-card"
             size="small"
           >
             <Row gutter={16}>
@@ -393,7 +391,7 @@ const CustomerOverview: React.FC = () => {
                   suffix="位"
                   valueStyle={{ fontSize: '18px', color: '#1890ff' }}
                 />
-                <Text type="secondary">占比: 29.2%</Text>
+                <Text type="secondary">29.2% | 转化率12.5%</Text>
               </Col>
               <Col span={12}>
                 <Statistic
@@ -402,125 +400,158 @@ const CustomerOverview: React.FC = () => {
                   suffix="位"
                   valueStyle={{ fontSize: '18px', color: '#52c41a' }}
                 />
-                <Text type="secondary">占比: 79.0%</Text>
+                <Text type="secondary">70.8% | 复购率68.2%</Text>
               </Col>
             </Row>
           </Card>
         </Col>
-        <Col span={8}>
+        
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <TrophyOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
                 客户规模分析
               </div>
             }
-            size="small"
-          >
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>大型企业</span>
-                <span><strong>89位</strong> (5.7%)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>中型企业</span>
-                <span><strong>1,245位</strong> (79.7%)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>小型企业</span>
-                <span><strong>2,293位</strong> (14.6%)</span>
-              </div>
-            </Space>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card 
-            title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <LineChartOutlined style={{ color: '#722ed1', marginRight: 8 }} />
-                客户活跃度
-              </div>
-            }
+            className="analysis-card"
             size="small"
           >
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic
-                  title="活跃客户"
-                  value={12580}
+                  title="大型企业"
+                  value={89}
                   suffix="位"
-                  valueStyle={{ fontSize: '18px', color: '#52c41a' }}
+                  valueStyle={{ fontSize: '18px', color: '#f50' }}
                 />
-                <Text type="secondary">近3月有交易</Text>
+                <Text type="secondary">5.7% | 高价值</Text>
               </Col>
               <Col span={12}>
                 <Statistic
-                  title="沉睡客户"
-                  value={3047}
+                  title="中小企业"
+                  value={1538}
                   suffix="位"
-                  valueStyle={{ fontSize: '18px', color: '#faad14' }}
+                  valueStyle={{ fontSize: '18px', color: '#722ed1' }}
                 />
-                <Text type="secondary">超3月无交易</Text>
+                <Text type="secondary">94.3% | 增长潜力</Text>
               </Col>
             </Row>
           </Card>
         </Col>
       </Row>
 
-      {/* 筛选控件 */}
-      <Card title="客户列表明细" style={{ marginBottom: 24 }}>
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <Col span={6}>
-            <Select
-              value={selectedIndustry}
-              onChange={setSelectedIndustry}
-              style={{ width: '100%' }}
-              placeholder="选择行业"
-            >
-              <Option value="all">全部行业</Option>
-              <Option value="制造业">制造业</Option>
-              <Option value="智能制造">智能制造</Option>
-              <Option value="电子信息">电子信息</Option>
-              <Option value="新材料">新材料</Option>
-              <Option value="汽车制造">汽车制造</Option>
-            </Select>
+      {/* 客户活跃度分析 */}
+      <Card 
+        title={
+          <div className="flex-start">
+            <LineChartOutlined style={{ color: '#fa8c16', marginRight: 8 }} />
+            客户活跃度分析
+          </div>
+        }
+        className="analysis-card card-mb-24"
+        size="small"
+      >
+        <Row gutter={16}>
+          <Col xs={12} sm={6}>
+            <Statistic
+              title="活跃客户"
+              value={1245}
+              suffix="位"
+              valueStyle={{ fontSize: '18px', color: '#52c41a' }}
+            />
+            <Text type="secondary">近3个月有交易</Text>
           </Col>
-          <Col span={6}>
-            <Select
-              value={selectedSource}
-              onChange={setSelectedSource}
-              style={{ width: '100%' }}
-              placeholder="选择来源"
-            >
-              <Option value="all">全部来源</Option>
-              <Option value="展会">展会</Option>
-              <Option value="网络推广">网络推广</Option>
-              <Option value="老客户推荐">老客户推荐</Option>
-              <Option value="直销">直销</Option>
-            </Select>
+          <Col xs={12} sm={6}>
+            <Statistic
+              title="沉睡客户"
+              value={382}
+              suffix="位"
+              valueStyle={{ fontSize: '18px', color: '#faad14' }}
+            />
+            <Text type="secondary">3-12个月无交易</Text>
           </Col>
-          <Col span={6}>
-            <Select
-              value={selectedRegion}
-              onChange={setSelectedRegion}
-              style={{ width: '100%' }}
-              placeholder="选择区域"
-            >
-              <Option value="all">全部区域</Option>
-              <Option value="华东区">华东区</Option>
-              <Option value="华北区">华北区</Option>
-              <Option value="华南区">华南区</Option>
-              <Option value="西南区">西南区</Option>
-            </Select>
+          <Col xs={12} sm={6}>
+            <Statistic
+              title="流失客户"
+              value={156}
+              suffix="位"
+              valueStyle={{ fontSize: '18px', color: '#ff4d4f' }}
+            />
+            <Text type="secondary">超过12个月无交易</Text>
           </Col>
-          <Col span={6}>
-            <Button type="primary">导出Excel</Button>
+          <Col xs={12} sm={6}>
+            <Statistic
+              title="活跃率"
+              value={78.5}
+              suffix="%"
+              valueStyle={{ fontSize: '18px', color: '#1890ff' }}
+            />
+            <Text type="secondary">同比↑3.2%</Text>
           </Col>
         </Row>
+      </Card>
+
+      {/* 客户列表明细 */}
+      <Card 
+        title="客户列表明细" 
+        className="analysis-card"
+      >
+        <div className="filter-section">
+          <div className="filter-row">
+            <div className="filter-item">
+              <span className="filter-label">行业筛选:</span>
+              <Select
+                value={selectedIndustry}
+                onChange={setSelectedIndustry}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部行业</Option>
+                <Option value="制造业">制造业</Option>
+                <Option value="智能制造">智能制造</Option>
+                <Option value="电子信息">电子信息</Option>
+                <Option value="新材料">新材料</Option>
+              </Select>
+            </div>
+            
+            <div className="filter-item">
+              <span className="filter-label">来源筛选:</span>
+              <Select
+                value={selectedSource}
+                onChange={setSelectedSource}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部来源</Option>
+                <Option value="展会">展会</Option>
+                <Option value="网络推广">网络推广</Option>
+                <Option value="老客户推荐">老客户推荐</Option>
+                <Option value="直销">直销</Option>
+              </Select>
+            </div>
+            
+            <div className="filter-item">
+              <span className="filter-label">区域筛选:</span>
+              <Select
+                value={selectedRegion}
+                onChange={setSelectedRegion}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部区域</Option>
+                <Option value="华东区">华东区</Option>
+                <Option value="华北区">华北区</Option>
+                <Option value="华南区">华南区</Option>
+                <Option value="西南区">西南区</Option>
+              </Select>
+            </div>
+            
+            <Button type="primary" className="btn-primary">导出Excel</Button>
+          </div>
+        </div>
 
         <Table
           columns={columns}
           dataSource={customerData}
+          className="custom-table"
           scroll={{ x: 1400 }}
           pagination={{
             total: 15627,

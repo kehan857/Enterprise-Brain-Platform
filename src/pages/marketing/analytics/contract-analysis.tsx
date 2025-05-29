@@ -222,14 +222,15 @@ const ContractAnalysis: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '0' }}>
+    <div className="page-container">
       {/* 面包屑导航 */}
-      <Breadcrumb style={{ marginBottom: 16 }}>
+      <Breadcrumb className="page-breadcrumb">
         <Breadcrumb.Item>
           <Button 
             icon={<ArrowLeftOutlined />} 
             type="link" 
             onClick={() => navigate('/marketing-analytics')}
+            className="btn-link"
           >
             返回
           </Button>
@@ -239,38 +240,34 @@ const ContractAnalysis: React.FC = () => {
       </Breadcrumb>
 
       {/* 页面标题 */}
-      <Title level={4} style={{ marginBottom: 24 }}>
-        <DollarOutlined style={{ marginRight: 8, color: '#52c41a' }} />
-        合同金额分析看板
-      </Title>
+      <div className="page-header">
+        <div>
+          <Title level={4} className="page-title">
+            <DollarOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+            合同金额分析看板
+          </Title>
+        </div>
+      </div>
 
       {/* 核心指标回顾区 */}
-      <Card style={{ marginBottom: 24 }}>
+      <Card className="analysis-card card-mb-24">
         <Row gutter={24} align="middle">
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8}>
             <Statistic
               title="总合同金额"
               value={15678}
               suffix="万元"
               valueStyle={{ fontSize: '32px', color: '#52c41a' }}
             />
-            <div style={{ marginTop: '8px' }}>
+            <div className="mt-8">
               <Text type="secondary">目标: 15,000万元</Text>
               <Tag color="green" style={{ marginLeft: 8 }}>104.52%</Tag>
               <Tag color="green">同比↑8.1%</Tag>
             </div>
           </Col>
-          <Col span={16}>
-            <div style={{ 
-              height: '80px', 
-              backgroundColor: '#f6ffed',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px dashed #52c41a'
-            }}>
-              <LineChartOutlined style={{ fontSize: '24px', color: '#52c41a', marginRight: '12px' }} />
+          <Col xs={24} sm={12} md={16}>
+            <div className="chart-placeholder flex-center">
+              <LineChartOutlined className="chart-placeholder-icon" />
               <Text type="secondary">金额/数量切换趋势图 (图表组件待集成)</Text>
             </div>
           </Col>
@@ -278,75 +275,63 @@ const ContractAnalysis: React.FC = () => {
       </Card>
 
       {/* 关联分析区域 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={12}>
+      <Row gutter={[16, 16]} className="card-mb-24">
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <LineChartOutlined style={{ color: '#1890ff', marginRight: 8 }} />
                 事业部订货额趋势
               </div>
             }
+            className="analysis-card"
             size="small"
           >
-            <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: '240px', overflowY: 'auto' }} className="custom-scrollbar">
               {businessUnitData.map((unit, index) => (
-                <div key={index} style={{ 
-                  marginBottom: '16px',
-                  padding: '12px',
-                  backgroundColor: '#fafafa',
-                  borderRadius: '6px',
-                  border: `2px solid ${unit.color}20`
+                <div key={index} className="data-item" style={{ 
+                  border: `2px solid ${unit.color}20`,
+                  background: `${unit.color}05`
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div className="data-item-left">
+                    <div 
+                      className="data-item-indicator"
+                      style={{ backgroundColor: unit.color }}
+                    />
                     <span style={{ fontWeight: 'bold' }}>{unit.name}</span>
-                    <span style={{ color: unit.color, fontWeight: 'bold' }}>
+                  </div>
+                  <div className="data-item-right">
+                    <div style={{ color: unit.color, fontWeight: 'bold' }}>
                       ¥{unit.amount.toLocaleString()}万
-                    </span>
+                    </div>
+                    <div className="data-item-desc">
+                      占比: {unit.percent}% | 完成率: {unit.completion}%
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12px', color: '#666' }}>
-                      占比: {unit.percent}%
-                    </span>
-                    <span style={{ fontSize: '12px', color: unit.completion >= 100 ? '#52c41a' : '#faad14' }}>
-                      目标完成率: {unit.completion}%
-                    </span>
-                  </div>
-                  <Progress 
-                    percent={Math.min(unit.completion, 120)} 
-                    size="small" 
-                    strokeColor={unit.completion >= 100 ? '#52c41a' : '#faad14'}
-                    format={() => `${unit.completion}%`}
-                  />
                 </div>
               ))}
             </div>
           </Card>
         </Col>
         
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <TrophyOutlined style={{ color: '#52c41a', marginRight: 8 }} />
                 业务员排行TOP10
               </div>
             }
+            className="analysis-card"
             size="small"
           >
-            <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: '240px', overflowY: 'auto' }} className="custom-scrollbar">
               {topSalespeople.slice(0, 5).map((person, index) => (
-                <div key={index} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  padding: '8px 12px',
-                  backgroundColor: index < 3 ? '#f6ffed' : '#fafafa',
-                  borderRadius: '4px',
+                <div key={index} className="data-item" style={{
+                  background: index < 3 ? '#f6ffed' : '#fafafa',
                   border: index < 3 ? '1px solid #b7eb8f' : '1px solid #f0f0f0'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div className="data-item-left">
                     <div style={{
                       width: '24px',
                       height: '24px',
@@ -366,11 +351,11 @@ const ContractAnalysis: React.FC = () => {
                       {person.name}
                     </Button>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                  <div className="data-item-right">
+                    <div className="data-item-value">
                       ¥{person.amount.toLocaleString()}万
                     </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>
+                    <div className="data-item-desc">
                       {person.orders}单 | 转化率{person.conversion}%
                     </div>
                   </div>
@@ -381,44 +366,35 @@ const ContractAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={12}>
+      <Row gutter={[16, 16]} className="card-mb-24">
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <BarChartOutlined style={{ color: '#722ed1', marginRight: 8 }} />
                 产品线合同额分布
               </div>
             }
+            className="analysis-card"
             size="small"
           >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
               {productLineData.map((product, index) => (
-                <div key={index} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  marginBottom: '12px',
-                  padding: '8px 12px',
-                  backgroundColor: '#fafafa',
-                  borderRadius: '4px',
+                <div key={index} className="data-item" style={{ 
                   border: `2px solid ${product.color}20`
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '12px',
-                      height: '12px',
-                      backgroundColor: product.color,
-                      borderRadius: '2px',
-                      marginRight: '8px'
-                    }} />
-                    <span style={{ fontSize: '14px' }}>{product.name}</span>
+                  <div className="data-item-left">
+                    <div 
+                      className="data-item-indicator"
+                      style={{ backgroundColor: product.color }}
+                    />
+                    <span className="data-item-label">{product.name}</span>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: product.color }}>
+                  <div className="data-item-right">
+                    <div className="data-item-value" style={{ color: product.color }}>
                       ¥{product.amount.toLocaleString()}万
                     </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>
+                    <div className="data-item-desc">
                       占比: {product.percent}%
                     </div>
                   </div>
@@ -428,14 +404,15 @@ const ContractAnalysis: React.FC = () => {
           </Card>
         </Col>
         
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <PieChartOutlined style={{ color: '#faad14', marginRight: 8 }} />
                 合同状态占比
               </div>
             }
+            className="analysis-card"
             size="small"
           >
             <Row gutter={16}>
@@ -458,7 +435,7 @@ const ContractAnalysis: React.FC = () => {
                 <Text type="secondary">33.4% | 98单</Text>
               </Col>
             </Row>
-            <Row gutter={16} style={{ marginTop: '16px' }}>
+            <Row gutter={16} className="mt-16">
               <Col span={12}>
                 <Statistic
                   title="待发货"
@@ -482,30 +459,25 @@ const ContractAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 客户订货额排行榜 TOP20 */}
+      {/* 客户订货额排行榜 TOP10 */}
       <Card 
         title={
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="flex-start">
             <FundOutlined style={{ color: '#722ed1', marginRight: 8 }} />
             客户订货额排行榜 TOP10
           </div>
         }
+        className="analysis-card card-mb-24"
         size="small"
-        style={{ marginBottom: 24 }}
       >
         <Row gutter={16}>
           {topCustomers.map((customer, index) => (
-            <Col span={12} key={index} style={{ marginBottom: '8px' }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '8px 12px',
-                backgroundColor: index < 3 ? '#f6ffed' : '#fafafa',
-                borderRadius: '4px',
+            <Col xs={24} sm={12} key={index} className="mb-8">
+              <div className="data-item" style={{
+                background: index < 3 ? '#f6ffed' : '#fafafa',
                 border: index < 3 ? '1px solid #b7eb8f' : '1px solid #f0f0f0'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="data-item-left">
                   <div style={{
                     width: '20px',
                     height: '20px',
@@ -525,11 +497,11 @@ const ContractAnalysis: React.FC = () => {
                     {customer.customerName}
                   </Button>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                <div className="data-item-right">
+                  <div className="data-item-value">
                     ¥{customer.amount.toLocaleString()}万
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
+                  <div className="data-item-desc">
                     占比{customer.percent}% | 同比↑{customer.growth}%
                   </div>
                 </div>
@@ -540,44 +512,50 @@ const ContractAnalysis: React.FC = () => {
       </Card>
 
       {/* 合同列表明细 */}
-      <Card title="合同列表明细" style={{ marginBottom: 24 }}>
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <Col span={6}>
-            <Select
-              value={selectedStatus}
-              onChange={setSelectedStatus}
-              style={{ width: '100%' }}
-              placeholder="选择状态"
-            >
-              <Option value="all">全部状态</Option>
-              <Option value="执行中">执行中</Option>
-              <Option value="已完成">已完成</Option>
-              <Option value="待发货">待发货</Option>
-              <Option value="已发货">已发货</Option>
-            </Select>
-          </Col>
-          <Col span={6}>
-            <Select
-              value={selectedBusinessUnit}
-              onChange={setSelectedBusinessUnit}
-              style={{ width: '100%' }}
-              placeholder="选择事业部"
-            >
-              <Option value="all">全部事业部</Option>
-              <Option value="华东事业部">华东事业部</Option>
-              <Option value="华北事业部">华北事业部</Option>
-              <Option value="华南事业部">华南事业部</Option>
-              <Option value="西南事业部">西南事业部</Option>
-            </Select>
-          </Col>
-          <Col span={6}>
-            <Button type="primary">导出Excel</Button>
-          </Col>
-        </Row>
+      <Card 
+        title="合同列表明细" 
+        className="analysis-card"
+      >
+        <div className="filter-section">
+          <div className="filter-row">
+            <div className="filter-item">
+              <span className="filter-label">状态筛选:</span>
+              <Select
+                value={selectedStatus}
+                onChange={setSelectedStatus}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部状态</Option>
+                <Option value="执行中">执行中</Option>
+                <Option value="已完成">已完成</Option>
+                <Option value="待发货">待发货</Option>
+                <Option value="已发货">已发货</Option>
+              </Select>
+            </div>
+            
+            <div className="filter-item">
+              <span className="filter-label">事业部筛选:</span>
+              <Select
+                value={selectedBusinessUnit}
+                onChange={setSelectedBusinessUnit}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部事业部</Option>
+                <Option value="华东事业部">华东事业部</Option>
+                <Option value="华北事业部">华北事业部</Option>
+                <Option value="华南事业部">华南事业部</Option>
+                <Option value="西南事业部">西南事业部</Option>
+              </Select>
+            </div>
+            
+            <Button type="primary" className="btn-primary">导出Excel</Button>
+          </div>
+        </div>
 
         <Table
           columns={columns}
           dataSource={contractData}
+          className="custom-table"
           scroll={{ x: 1200 }}
           pagination={{
             total: 292,

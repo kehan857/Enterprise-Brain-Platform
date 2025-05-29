@@ -185,301 +185,239 @@ const MarketingAnalytics: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '0' }}>
+    <div className="page-container">
       {/* 页面标题和筛选 */}
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-        <Col>
-          <Title level={4} style={{ margin: 0 }}>营销数据板块</Title>
-          <Text type="secondary">基于营销数据优化方案的深度分析平台</Text>
-        </Col>
-        <Col>
-          <Space>
-            <Select 
-              value={selectedPeriod} 
-              onChange={setSelectedPeriod} 
-              style={{ width: 120 }}
-            >
-              <Option value="current_week">本周</Option>
-              <Option value="current_month">本月</Option>
-              <Option value="current_quarter">本季度</Option>
-              <Option value="current_year">本年</Option>
-              <Option value="custom">自定义</Option>
-            </Select>
-            {selectedPeriod === 'custom' && (
-              <RangePicker
-                value={timeRange}
-                onChange={(dates) => setTimeRange(dates)}
-                style={{ width: 240 }}
-              />
-            )}
-            <Button icon={<LineChartOutlined />}>刷新数据</Button>
-          </Space>
-        </Col>
-      </Row>
+      <div className="page-header">
+        <div>
+          <Title level={4} className="page-title">营销数据板块</Title>
+          <div className="page-subtitle">基于营销数据优化方案的深度分析平台</div>
+        </div>
+        <div className="page-actions">
+          <Select 
+            value={selectedPeriod} 
+            onChange={setSelectedPeriod} 
+            style={{ width: 120 }}
+          >
+            <Option value="current_month">本月</Option>
+            <Option value="last_month">上月</Option>
+            <Option value="current_quarter">本季度</Option>
+            <Option value="last_quarter">上季度</Option>
+          </Select>
+          <RangePicker 
+            value={timeRange}
+            onChange={setTimeRange}
+            style={{ width: 240 }}
+          />
+          <Button type="primary" icon={<LineChartOutlined />} className="btn-primary">
+            刷新数据
+          </Button>
+        </div>
+      </div>
 
-      {/* 第一阶段：核心指标重塑 */}
+      {/* 核心营销指标 */}
       <Card 
         title={
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <TrophyOutlined style={{ marginRight: 8, color: '#1890ff' }} />
+          <div className="flex-start">
+            <TrophyOutlined style={{ color: '#1890ff', marginRight: 8 }} />
             核心营销指标
           </div>
         }
-        style={{ marginBottom: 24 }}
+        className="analysis-card card-mb-24"
       >
         <Row gutter={[16, 16]}>
           {coreMetrics.map((metric) => (
-            <Col span={6} key={metric.key}>
-              <div style={{
-                padding: '20px',
-                backgroundColor: '#fafafa',
-                borderRadius: '8px',
-                border: `2px solid ${metric.color}20`,
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                height: '160px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
-              }}
-              onClick={() => {
-                const routeMap: Record<string, string> = {
-                  'total-customers': '/customer-overview',
-                  'total-contract-amount': '/contract-analysis',
-                  'total-payment': '/payment-analysis', // 暂时跳转到合同分析
-                  'total-receivables': '/receivables-analysis' // 暂时跳转到合同分析
-                };
-                const route = routeMap[metric.key] || '/customer-overview';
-                navigate(route);
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+            <Col key={metric.key} xs={24} sm={12} md={6}>
+              <Card 
+                size="small" 
+                className="metric-card"
+                style={{ borderColor: `${metric.color}20` }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ fontSize: '24px', color: metric.color }}>
-                    {metric.icon}
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>
-                    {metric.title}
-                  </div>
-                </div>
-                
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    fontSize: '28px',
-                    fontWeight: 'bold',
-                    color: metric.color,
-                    marginBottom: '4px'
-                  }}>
-                    {metric.value.toLocaleString()}
-                    <span style={{ fontSize: '14px', marginLeft: '4px' }}>{metric.unit}</span>
-                  </div>
-                  
+                <Statistic
+                  title={metric.title}
+                  value={metric.value}
+                  suffix={metric.unit}
+                  valueStyle={{ fontSize: '24px', color: metric.color }}
+                  prefix={React.cloneElement(metric.icon, { style: { color: metric.color } })}
+                />
+                <div className="mt-8">
                   {metric.target && (
-                    <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                      目标: {metric.target.toLocaleString()}{metric.unit}
+                    <>
+                      <Text type="secondary" style={{ fontSize: '12px' }}>
+                        目标: {metric.target.toLocaleString()}{metric.unit}
+                      </Text>
                       {renderCompletionRate(metric.completion)}
-                    </div>
+                    </>
                   )}
+                  <div className="flex-between mt-8">
+                    <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                      同比: {renderTrendIcon(metric.yearOnYear)} {Math.abs(metric.yearOnYear)}%
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                      环比: {renderTrendIcon(metric.monthOnMonth)} {Math.abs(metric.monthOnMonth)}%
+                    </span>
+                  </div>
                 </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                  <span>
-                    同比 {renderTrendIcon(metric.yearOnYear)} {Math.abs(metric.yearOnYear)}%
-                  </span>
-                  <span>
-                    环比 {renderTrendIcon(metric.monthOnMonth)} {Math.abs(metric.monthOnMonth)}%
-                  </span>
-                </div>
-              </div>
+              </Card>
             </Col>
           ))}
         </Row>
       </Card>
 
-      {/* 第一阶段：客户分类统计模块重构 */}
+      {/* 客户分类统计 */}
       <Card 
         title={
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <TeamOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+          <div className="flex-start">
+            <TeamOutlined style={{ color: '#52c41a', marginRight: 8 }} />
             客户分类统计
           </div>
         }
-        style={{ marginBottom: 24 }}
+        className="analysis-card card-mb-24"
       >
         <Row gutter={[16, 16]}>
           {customerCategories.map((category) => (
-            <Col span={12} key={category.key}>
-              <div style={{
-                padding: '24px',
-                backgroundColor: '#fafafa',
-                borderRadius: '8px',
-                border: `2px solid ${category.color}20`,
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                height: '200px'
-              }}
-              onClick={() => {
-                const routeMap: Record<string, string> = {
-                  'new-customers': '/new-customer-analysis',
-                  'old-customers': '/customer-overview',
-                  'big-customers': '/customer-overview',
-                  'potential-customers': '/potential-customer-analysis'
-                };
-                const route = routeMap[category.key] || '/customer-overview';
-                navigate(route);
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+            <Col key={category.key} xs={24} sm={12} md={12} lg={6}>
+              <Card 
+                size="small" 
+                className="metric-card"
+                style={{ 
+                  borderColor: `${category.color}20`,
+                  background: `${category.color}05`,
+                  cursor: 'pointer'
+                }}
+                onClick={() => {
+                  const routeMap = {
+                    'new-customers': '/new-customer-analysis',
+                    'old-customers': '/customer-overview',
+                    'big-customers': '/customer-overview',
+                    'potential-customers': '/potential-customer-analysis'
+                  };
+                  navigate(routeMap[category.key]);
+                }}
+                hoverable
               >
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-                  <div style={{ fontSize: '24px', color: category.color, marginRight: '12px' }}>
-                    {category.icon}
+                <div className="flex-between mb-16">
+                  <div className="flex-start">
+                    {React.cloneElement(category.icon, { 
+                      style: { color: category.color, fontSize: '20px' } 
+                    })}
+                    <span style={{ marginLeft: '8px', fontWeight: '600' }}>
+                      {category.title}
+                    </span>
                   </div>
+                </div>
+
+                <div className="flex-between mb-12">
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{category.title}</div>
-                    <div style={{ fontSize: '12px', color: '#999' }}>{category.description}</div>
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>客户数量</div>
+                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
+                      {category.count.toLocaleString()}位
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>合同金额</div>
+                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
+                      {category.amount.toLocaleString()}万元
+                    </div>
                   </div>
                 </div>
 
-                <Row gutter={16} style={{ marginBottom: '12px' }}>
-                  <Col span={12}>
-                    <Statistic
-                      title="客户数量"
-                      value={category.count}
-                      suffix="位"
-                      valueStyle={{ fontSize: '20px', color: category.color }}
-                    />
-                  </Col>
-                  <Col span={12}>
-                    <Statistic
-                      title="合同金额"
-                      value={category.amount}
-                      suffix="万元"
-                      valueStyle={{ fontSize: '20px', color: category.color }}
-                    />
-                  </Col>
-                </Row>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: '12px' }}>
-                    {category.rateLabel}: <span style={{ color: category.color, fontWeight: 'bold' }}>{category.rate}%</span>
-                  </div>
-                  <div style={{ fontSize: '12px' }}>
-                    同比 {renderTrendIcon(category.yearOnYear)} {Math.abs(category.yearOnYear)}%
-                  </div>
+                <div className="flex-between mb-12">
+                  <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                    {category.rateLabel}: {category.rate}%
+                  </span>
+                  <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                    同比: {renderTrendIcon(category.yearOnYear)} {Math.abs(category.yearOnYear)}%
+                  </span>
                 </div>
 
-                <div style={{ marginTop: '8px' }}>
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                <div className="text-center" style={{ fontSize: '11px', color: '#8c8c8c' }}>
+                  {category.description}
+                </div>
+
+                <div className="mt-8">
+                  <Text type="secondary" style={{ fontSize: '11px' }}>
                     目标完成率: {category.completion}%
                   </Text>
-                  {renderCompletionRate(category.completion)}
+                  <Progress 
+                    percent={Math.min(category.completion, 120)} 
+                    size="small" 
+                    strokeColor={category.color}
+                    format={() => `${category.completion}%`}
+                    className="custom-progress"
+                  />
                 </div>
-              </div>
+              </Card>
             </Col>
           ))}
         </Row>
       </Card>
 
-      {/* 智能分析洞察提示 */}
+      {/* 智能分析洞察 */}
       <Card 
-        title="智能分析洞察"
-        extra={<Button type="primary">生成洞察</Button>}
-        style={{ marginBottom: 24 }}
+        title={
+          <div className="flex-start">
+            <LineChartOutlined style={{ color: '#722ed1', marginRight: 8 }} />
+            智能分析洞察
+          </div>
+        }
+        className="analysis-card card-mb-24"
+        extra={
+          <Button type="primary" size="small" className="btn-primary">
+            生成洞察
+          </Button>
+        }
       >
-        <Row gutter={[16, 16]}>
-          <Col span={8}>
-            <div style={{ 
-              padding: '16px', 
-              backgroundColor: '#f6ffed', 
-              border: '1px solid #b7eb8f',
-              borderRadius: '6px'
-            }}>
-              <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '8px' }}>
-                ✓ 新客户增长强劲
-              </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                新客户数量同比增长15.2%，转化率达到12.5%，建议加大营销投入。
-              </div>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ 
-              padding: '16px', 
-              backgroundColor: '#fff7e6', 
-              border: '1px solid #ffd591',
-              borderRadius: '6px'
-            }}>
-              <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '8px' }}>
-                ⚠ 关注回款情况
-              </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                应收账款余额较高，建议加强回款管理，优化现金流。
-              </div>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ 
-              padding: '16px', 
-              backgroundColor: '#f6ffed', 
-              border: '1px solid #b7eb8f',
-              borderRadius: '6px'
-            }}>
-              <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '8px' }}>
-                ✓ 大客户价值突出
-              </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                大客户贡献29.1%的合同金额，建议深化大客户关系维护。
-              </div>
-            </div>
-          </Col>
-        </Row>
+        <div className="chart-placeholder chart-placeholder-sm flex-center">
+          <LineChartOutlined className="chart-placeholder-icon" />
+          <Text type="secondary">智能洞察功能开发中，敬请期待...</Text>
+        </div>
       </Card>
 
-      {/* 下一步功能预告 */}
-      <Card title="功能规划" style={{ background: '#fafafa' }}>
-        <Row gutter={[16, 16]}>
-          <Col span={8}>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <LineChartOutlined style={{ fontSize: '32px', color: '#1890ff', marginBottom: '12px' }} />
-              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>客户总体分析看板</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                行业分布、来源分析、区域分布等多维度客户洞察
-              </div>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <DollarOutlined style={{ fontSize: '32px', color: '#52c41a', marginBottom: '12px' }} />
-              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>合同金额分析看板</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                事业部对比、业务员排行、合同状态分析
-              </div>
-            </div>
-          </Col>
-          <Col span={8}>
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <TeamOutlined style={{ fontSize: '32px', color: '#722ed1', marginBottom: '12px' }} />
-              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>客户360度视图</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                单客户全景分析，合同、回款、跟进记录等
-              </div>
-            </div>
-          </Col>
-        </Row>
+      {/* 功能规划预告 */}
+      <Card 
+        title="下钻分析功能"
+        className="analysis-card"
+        size="small"
+      >
+        <Text type="secondary" style={{ fontSize: '13px' }}>
+          点击上方各个指标卡片，可进入对应的详细分析页面，包括：
+        </Text>
+        <div style={{ marginTop: '12px' }}>
+          <Space wrap>
+            <Button 
+              type="link" 
+              size="small" 
+              onClick={() => navigate('/customer-overview')}
+              className="btn-link"
+            >
+              客户总体分析看板
+            </Button>
+            <Button 
+              type="link" 
+              size="small" 
+              onClick={() => navigate('/contract-analysis')}
+              className="btn-link"
+            >
+              合同金额分析看板
+            </Button>
+            <Button 
+              type="link" 
+              size="small" 
+              onClick={() => navigate('/new-customer-analysis')}
+              className="btn-link"
+            >
+              新客户分析看板
+            </Button>
+            <Button 
+              type="link" 
+              size="small" 
+              onClick={() => navigate('/potential-customer-analysis')}
+              className="btn-link"
+            >
+              待转化客户分析看板
+            </Button>
+          </Space>
+        </div>
       </Card>
     </div>
   );
