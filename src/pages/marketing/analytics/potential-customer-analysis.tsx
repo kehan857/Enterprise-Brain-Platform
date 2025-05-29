@@ -22,7 +22,9 @@ import {
   FunnelPlotOutlined,
   ClockCircleOutlined,
   WarningOutlined,
-  TrophyOutlined
+  TrophyOutlined,
+  DollarOutlined,
+  BulbOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -154,6 +156,7 @@ const PotentialCustomerAnalysis: React.FC = () => {
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
   const [selectedStage, setSelectedStage] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string>('all');
 
   const columns: ColumnsType<PotentialCustomerRecord> = [
     {
@@ -239,14 +242,15 @@ const PotentialCustomerAnalysis: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '0' }}>
+    <div className="page-container">
       {/* 面包屑导航 */}
-      <Breadcrumb style={{ marginBottom: 16 }}>
+      <Breadcrumb className="page-breadcrumb">
         <Breadcrumb.Item>
           <Button 
             icon={<ArrowLeftOutlined />} 
             type="link" 
             onClick={() => navigate('/marketing-analytics')}
+            className="btn-link"
           >
             返回
           </Button>
@@ -256,174 +260,138 @@ const PotentialCustomerAnalysis: React.FC = () => {
       </Breadcrumb>
 
       {/* 页面标题 */}
-      <Title level={4} style={{ marginBottom: 24 }}>
-        <CustomerServiceOutlined style={{ marginRight: 8, color: '#faad14' }} />
-        待转化客户分析看板
-      </Title>
+      <div className="page-header">
+        <div>
+          <Title level={4} className="page-title">
+            <CustomerServiceOutlined style={{ marginRight: 8, color: '#faad14' }} />
+            待转化客户分析看板
+          </Title>
+        </div>
+      </div>
 
-      {/* 核心指标 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={8}>
-          <Card>
-            <Statistic
-              title="待转化客户"
-              value={234}
-              suffix="位"
-              valueStyle={{ fontSize: '32px', color: '#faad14' }}
-            />
-            <div style={{ marginTop: '8px' }}>
-              <Tag color="green">同比↑22.1%</Tag>
-            </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <Statistic
-              title="预计金额"
-              value={1876}
-              suffix="万元"
-              valueStyle={{ fontSize: '32px', color: '#52c41a' }}
-            />
-            <div style={{ marginTop: '8px' }}>
-              <Tag color="green">预计转化率: 15.8%</Tag>
-            </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <Statistic
-              title="平均跟进周期"
-              value={42}
-              suffix="天"
-              valueStyle={{ fontSize: '32px', color: '#1890ff' }}
-            />
-            <div style={{ marginTop: '8px' }}>
-              <Tag color="orange">比目标多7天</Tag>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* 销售阶段漏斗 */}
-      <Card 
-        title={
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <FunnelPlotOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-            销售阶段漏斗分析
-          </div>
-        }
-        style={{ marginBottom: 24 }}
-      >
-        <Row gutter={16}>
-          {salesFunnelData.map((stage, index) => (
-            <Col span={6} key={index}>
-              <div style={{
-                padding: '16px',
-                backgroundColor: '#fafafa',
-                borderRadius: '8px',
-                border: `2px solid ${stage.color}`,
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  {stage.stage}
-                </div>
-                <div style={{ fontSize: '24px', color: stage.color, fontWeight: 'bold', marginBottom: '4px' }}>
-                  {stage.count}
-                </div>
-                <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
-                  预计金额: ¥{stage.amount.toLocaleString()}万
-                </div>
-                <Progress 
-                  percent={stage.conversion} 
-                  size="small" 
-                  strokeColor={stage.color}
-                  format={() => `${stage.conversion}%`}
-                />
+      {/* 核心指标回顾区 */}
+      <Card className="analysis-card card-mb-24">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={8}>
+            <Card size="small" className="metric-card">
+              <Statistic
+                title="待转化客户数"
+                value={234}
+                suffix="位"
+                valueStyle={{ fontSize: '24px', color: '#faad14' }}
+                prefix={<CustomerServiceOutlined />}
+              />
+              <div className="mt-8">
+                <Text type="secondary">目标: 200位</Text>
+                <Tag color="green" style={{ marginLeft: 8 }}>117%</Tag>
+                <Tag color="green">同比↑22.1%</Tag>
               </div>
-            </Col>
-          ))}
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card size="small" className="metric-card">
+              <Statistic
+                title="预计合同金额"
+                value={1876}
+                suffix="万元"
+                valueStyle={{ fontSize: '24px', color: '#13c2c2' }}
+                prefix={<DollarOutlined />}
+              />
+              <div className="mt-8">
+                <Text type="secondary">目标: 1800万元</Text>
+                <Tag color="green" style={{ marginLeft: 8 }}>104.2%</Tag>
+                <Tag color="green">同比↑18.5%</Tag>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Card size="small" className="metric-card">
+              <Statistic
+                title="预计转化率"
+                value={15.8}
+                suffix="%"
+                valueStyle={{ fontSize: '24px', color: '#722ed1' }}
+                prefix={<TrophyOutlined />}
+              />
+              <div className="mt-8">
+                <Text type="secondary">目标: 15%</Text>
+                <Tag color="green" style={{ marginLeft: 8 }}>105.3%</Tag>
+                <Tag color="green">同比↑1.8%</Tag>
+              </div>
+            </Card>
+          </Col>
         </Row>
       </Card>
 
-      {/* 分析图表 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={12}>
+      {/* 关联分析区域 */}
+      <Row gutter={[16, 16]} className="card-mb-24">
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
+                <FunnelPlotOutlined style={{ color: '#1890ff', marginRight: 8 }} />
+                销售阶段漏斗分析
+              </div>
+            }
+            className="analysis-card"
+            size="small"
+          >
+            <div style={{ maxHeight: '240px', overflowY: 'auto' }} className="custom-scrollbar">
+              {salesFunnelData.map((stage, index) => (
+                <div key={index} className="data-item" style={{ 
+                  border: `2px solid ${stage.color}20`,
+                  background: `${stage.color}05`
+                }}>
+                  <div className="data-item-left">
+                    <div 
+                      className="data-item-indicator"
+                      style={{ backgroundColor: stage.color }}
+                    />
+                    <span style={{ fontWeight: 'bold' }}>{stage.stage}</span>
+                  </div>
+                  <div className="data-item-right">
+                    <div style={{ color: stage.color, fontWeight: 'bold' }}>
+                      {stage.count}位
+                    </div>
+                    <div className="data-item-desc">
+                      占比: {stage.conversion}% | ¥{stage.amount.toLocaleString()}万
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </Col>
+        
+        <Col xs={24} sm={12}>
+          <Card 
+            title={
+              <div className="flex-start">
                 <PieChartOutlined style={{ color: '#52c41a', marginRight: 8 }} />
                 报价金额区间占比
               </div>
             }
+            className="analysis-card"
             size="small"
           >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
               {priceRangeData.map((range, index) => (
-                <div key={index} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  padding: '8px 12px',
-                  backgroundColor: '#fafafa',
-                  borderRadius: '4px',
+                <div key={index} className="data-item" style={{ 
                   border: `2px solid ${range.color}20`
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '8px',
-                      height: '8px',
-                      backgroundColor: range.color,
-                      borderRadius: '50%',
-                      marginRight: '8px'
-                    }} />
-                    <span style={{ fontSize: '12px' }}>{range.range}</span>
+                  <div className="data-item-left">
+                    <div 
+                      className="data-item-indicator"
+                      style={{ backgroundColor: range.color }}
+                    />
+                    <span className="data-item-label">{range.range}</span>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
-                      {range.count}位
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>
-                      {range.percent}% | ¥{range.amount}万
+                  <div className="data-item-right">
+                    <div className="data-item-value">{range.count}位</div>
+                    <div className="data-item-desc">
+                      {range.percent}% | ¥{range.amount.toLocaleString()}万
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
-        
-        <Col span={12}>
-          <Card 
-            title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <ClockCircleOutlined style={{ color: '#722ed1', marginRight: 8 }} />
-                阶段分布时长分析
-              </div>
-            }
-            size="small"
-          >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-              {stageDurationData.map((stage, index) => (
-                <div key={index} style={{ 
-                  marginBottom: '16px',
-                  padding: '12px',
-                  backgroundColor: '#fafafa',
-                  borderRadius: '6px',
-                  border: `2px solid ${stage.color}20`
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: 'bold' }}>{stage.stage}</span>
-                    <span style={{ color: stage.color, fontSize: '12px' }}>
-                      平均{stage.avgDays}天 / 最长{stage.maxDays}天
-                    </span>
-                  </div>
-                  <Progress 
-                    percent={(stage.avgDays / stage.maxDays) * 100} 
-                    size="small" 
-                    strokeColor={stage.color}
-                    format={() => `${stage.avgDays}天`}
-                  />
                 </div>
               ))}
             </div>
@@ -431,45 +399,31 @@ const PotentialCustomerAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={12}>
+      <Row gutter={[16, 16]} className="card-mb-24">
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <BarChartOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-                行业分布
+              <div className="flex-start">
+                <ClockCircleOutlined style={{ color: '#722ed1', marginRight: 8 }} />
+                阶段分布时长分析
               </div>
             }
+            className="analysis-card"
             size="small"
           >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-              {industryData.map((industry, index) => (
-                <div key={index} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  padding: '4px 8px',
-                  backgroundColor: index < 3 ? '#f6ffed' : '#fafafa',
-                  borderRadius: '4px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '8px',
-                      height: '8px',
-                      backgroundColor: industry.color,
-                      borderRadius: '50%',
-                      marginRight: '8px'
-                    }} />
-                    <span style={{ fontSize: '12px' }}>{industry.name}</span>
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
+              {stageDurationData.map((duration, index) => (
+                <div key={index} className="data-item">
+                  <div className="data-item-left">
+                    <div 
+                      className="data-item-indicator"
+                      style={{ backgroundColor: duration.color }}
+                    />
+                    <span className="data-item-label">{duration.stage}</span>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
-                      {industry.count}位
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>
-                      {industry.percent}% | ¥{industry.amount}万
-                    </div>
+                  <div className="data-item-right">
+                    <div className="data-item-value">{duration.avgDays}天</div>
+                    <div className="data-item-desc">平均停留时长</div>
                   </div>
                 </div>
               ))}
@@ -477,45 +431,30 @@ const PotentialCustomerAnalysis: React.FC = () => {
           </Card>
         </Col>
         
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Card 
             title={
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="flex-start">
                 <WarningOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
                 丢失原因分析
               </div>
             }
+            className="analysis-card"
             size="small"
           >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
               {lossReasonData.map((reason, index) => (
-                <div key={index} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  marginBottom: '8px',
-                  padding: '8px 12px',
-                  backgroundColor: '#fafafa',
-                  borderRadius: '4px',
-                  border: `1px solid ${reason.color}40`
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                      width: '8px',
-                      height: '8px',
-                      backgroundColor: reason.color,
-                      borderRadius: '50%',
-                      marginRight: '8px'
-                    }} />
-                    <span style={{ fontSize: '12px' }}>{reason.reason}</span>
+                <div key={index} className="data-item">
+                  <div className="data-item-left">
+                    <div 
+                      className="data-item-indicator"
+                      style={{ backgroundColor: reason.color }}
+                    />
+                    <span className="data-item-label">{reason.reason}</span>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: reason.color }}>
-                      {reason.count}次
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>
-                      {reason.percent}%
-                    </div>
+                  <div className="data-item-right">
+                    <div className="data-item-value">{reason.count}位</div>
+                    <div className="data-item-desc">占比: {reason.percent}%</div>
                   </div>
                 </div>
               ))}
@@ -525,94 +464,101 @@ const PotentialCustomerAnalysis: React.FC = () => {
       </Row>
 
       {/* 优化建议洞察 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={8}>
-          <Card>
-            <div style={{ textAlign: 'center' }}>
-              <TrophyOutlined style={{ fontSize: '32px', color: '#52c41a', marginBottom: '12px' }} />
-              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>重点关注大单</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                100万以上订单42个，占比17.9%，建议重点跟进
+      <Card 
+        title={
+          <div className="flex-start">
+            <BulbOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
+            优化建议洞察
+          </div>
+        }
+        className="analysis-card card-mb-24"
+        size="small"
+      >
+        <Row gutter={16}>
+          <Col xs={24} sm={8}>
+            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
+              <div style={{ width: '100%' }}>
+                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
+                  ✓ 加强商务谈判阶段跟进
+                </div>
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  商务谈判阶段客户数量最多但转化较慢，建议增加跟进频次和专业支持。
+                </div>
               </div>
             </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <div style={{ textAlign: 'center' }}>
-              <ClockCircleOutlined style={{ fontSize: '32px', color: '#faad14', marginBottom: '12px' }} />
-              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>缩短跟进周期</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                平均跟进42天，建议优化流程缩短至35天
+          </Col>
+          <Col xs={24} sm={8}>
+            <div className="data-item" style={{ background: '#fff7e6', border: '1px solid #ffd591' }}>
+              <div style={{ width: '100%' }}>
+                <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
+                  ⚠ 优化产品价格策略
+                </div>
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  价格因素是主要丢失原因，建议制定更灵活的定价策略和优惠政策。
+                </div>
               </div>
             </div>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card>
-            <div style={{ textAlign: 'center' }}>
-              <WarningOutlined style={{ fontSize: '32px', color: '#ff4d4f', marginBottom: '12px' }} />
-              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>价格策略调整</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
-                35.8%客户因价格过高流失，建议优化报价策略
+          </Col>
+          <Col xs={24} sm={8}>
+            <div className="data-item" style={{ background: '#f6ffed', border: '1px solid #b7eb8f' }}>
+              <div style={{ width: '100%' }}>
+                <div style={{ color: '#52c41a', fontWeight: 'bold', marginBottom: '4px' }}>
+                  ✓ 重点关注高价值客户
+                </div>
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  50万以上报价客户转化价值高，建议配备专门团队进行重点跟进。
+                </div>
               </div>
             </div>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* 待转化客户列表 */}
-      <Card title="待转化客户列表" style={{ marginBottom: 24 }}>
-        <Row gutter={16} style={{ marginBottom: 16 }}>
-          <Col span={6}>
-            <Select
-              value={selectedIndustry}
-              onChange={setSelectedIndustry}
-              style={{ width: '100%' }}
-              placeholder="选择行业"
-            >
-              <Option value="all">全部行业</Option>
-              <Option value="制造业">制造业</Option>
-              <Option value="智能制造">智能制造</Option>
-              <Option value="电子信息">电子信息</Option>
-              <Option value="新材料">新材料</Option>
-            </Select>
-          </Col>
-          <Col span={6}>
-            <Select
-              value={selectedStage}
-              onChange={setSelectedStage}
-              style={{ width: '100%' }}
-              placeholder="选择阶段"
-            >
-              <Option value="all">全部阶段</Option>
-              <Option value="有效询盘">有效询盘</Option>
-              <Option value="方案沟通">方案沟通</Option>
-              <Option value="商务谈判">商务谈判</Option>
-              <Option value="合同签订">合同签订</Option>
-            </Select>
-          </Col>
-          <Col span={6}>
-            <Select
-              value={selectedStatus}
-              onChange={setSelectedStatus}
-              style={{ width: '100%' }}
-              placeholder="跟进状态"
-            >
-              <Option value="all">全部状态</Option>
-              <Option value="积极跟进">积极跟进</Option>
-              <Option value="正常跟进">正常跟进</Option>
-              <Option value="待跟进">待跟进</Option>
-            </Select>
-          </Col>
-          <Col span={6}>
-            <Button type="primary">导出Excel</Button>
           </Col>
         </Row>
+      </Card>
+
+      {/* 待转化客户列表明细 */}
+      <Card 
+        title="待转化客户列表明细" 
+        className="analysis-card"
+      >
+        <div className="filter-section">
+          <div className="filter-row">
+            <div className="filter-item">
+              <span className="filter-label">阶段筛选:</span>
+              <Select
+                value={selectedStage}
+                onChange={setSelectedStage}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部阶段</Option>
+                <Option value="有效询盘">有效询盘</Option>
+                <Option value="方案沟通">方案沟通</Option>
+                <Option value="商务谈判">商务谈判</Option>
+                <Option value="合同评审">合同评审</Option>
+              </Select>
+            </div>
+            
+            <div className="filter-item">
+              <span className="filter-label">金额筛选:</span>
+              <Select
+                value={selectedPriceRange}
+                onChange={setSelectedPriceRange}
+                style={{ width: 150 }}
+              >
+                <Option value="all">全部金额</Option>
+                <Option value="10万以下">10万以下</Option>
+                <Option value="10-50万">10-50万</Option>
+                <Option value="50-100万">50-100万</Option>
+                <Option value="100万以上">100万以上</Option>
+              </Select>
+            </div>
+            
+            <Button type="primary" className="btn-primary">导出Excel</Button>
+          </div>
+        </div>
 
         <Table
           columns={columns}
           dataSource={potentialCustomerData}
+          className="custom-table"
           scroll={{ x: 1400 }}
           pagination={{
             total: 234,
