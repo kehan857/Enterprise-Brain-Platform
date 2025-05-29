@@ -338,10 +338,10 @@ const MarketingAnalytics: React.FC = () => {
       >
         <Row gutter={[16, 16]}>
           {coreMetrics.map((metric) => (
-            <Col key={metric.key} xs={24} sm={12} md={6}>
+            <Col key={metric.key} xs={24} sm={12} md={6} className="flex-fill">
               <Card 
                 size="small" 
-                className="metric-card"
+                className="metric-card flex-fill"
                 style={{ 
                   borderColor: `${metric.color}20`,
                   cursor: 'pointer'

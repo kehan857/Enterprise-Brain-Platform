@@ -456,6 +456,10 @@
   flex-direction: column;
 }
 
+.flex-fill.ant-col {
+  display: flex;
+}
+
 .text-center {
   text-align: center;
 }
