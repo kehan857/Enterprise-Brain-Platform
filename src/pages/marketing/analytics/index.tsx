@@ -336,7 +336,7 @@ const MarketingAnalytics: React.FC = () => {
         }
         className="analysis-card card-mb-24"
       >
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ display: 'flex', alignItems: 'stretch' }}>
           {coreMetrics.map((metric) => (
             <Col key={metric.key} xs={24} sm={12} md={6} className="flex-fill">
               <Card 
@@ -344,7 +344,8 @@ const MarketingAnalytics: React.FC = () => {
                 className="metric-card flex-fill"
                 style={{ 
                   borderColor: `${metric.color}20`,
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  height: '100%'
                 }}
                 onClick={() => handleMetricClick(metric.key)}
                 hoverable
