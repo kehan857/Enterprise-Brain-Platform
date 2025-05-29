@@ -60,6 +60,11 @@ const ContractAnalysis = lazy(() => import('@/pages/marketing/analytics/contract
 const NewCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/new-customer-analysis'));
 const PotentialCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/potential-customer-analysis'));
 
+// 第三阶段：三级页面
+const Customer360 = lazy(() => import('@/pages/customer/customer-360'));
+const ContractDetail = lazy(() => import('@/pages/contract/contract-detail'));
+const SalespersonDetail = lazy(() => import('@/pages/salesperson/salesperson-detail'));
+
 export const routes: RouteObject[] = [
   {
     index: true,
@@ -324,5 +329,18 @@ export const routes: RouteObject[] = [
   {
     path: 'potential-customer-analysis',
     element: <PotentialCustomerAnalysis />
+  },
+  // 第三阶段：三级页面路由
+  {
+    path: 'customer-360/:customerId',
+    element: <Customer360 />
+  },
+  {
+    path: 'contract-detail/:contractId',
+    element: <ContractDetail />
+  },
+  {
+    path: 'salesperson-detail/:salespersonId',
+    element: <SalespersonDetail />
   }
 ];

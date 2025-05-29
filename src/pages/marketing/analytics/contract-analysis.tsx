@@ -362,7 +362,7 @@ const ContractAnalysis: React.FC = () => {
                     }}>
                       {person.rank}
                     </div>
-                    <Button type="link" size="small" onClick={() => console.log(`查看${person.name}的详情`)}>
+                    <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${person.rank}`)}>
                       {person.name}
                     </Button>
                   </div>
