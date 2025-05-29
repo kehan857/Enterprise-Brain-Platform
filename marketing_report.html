@@ -1,0 +1,3678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企业营销管理分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .report-time {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .kpi-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .kpi-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .kpi-trend {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .trend-up {
+            color: #27ae60;
+        }
+
+        .trend-down {
+            color: #e74c3c;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        }
+
+        .progress-success { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+        .progress-warning { background: linear-gradient(90deg, #f39c12, #e67e22); }
+        .progress-info { background: linear-gradient(90deg, #3498db, #2980b9); }
+
+        .funnel-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .funnel-stage {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .funnel-stage:nth-child(2) {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+        }
+
+        .funnel-stage:nth-child(3) {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .funnel-stage:nth-child(4) {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98);
+        }
+
+        .funnel-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .funnel-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .funnel-rate {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .rank-1 { background: #e74c3c; }
+        .rank-2 { background: #f39c12; }
+        .rank-3 { background: #27ae60; }
+        .rank-other { background: #95a5a6; }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active { background: #d5f4e6; color: #27ae60; }
+        .status-pending { background: #fef9e7; color: #f39c12; }
+        .status-risk { background: #fadbd8; color: #e74c3c; }
+
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .alert-section {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-left: 4px solid #e53e3e;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .alert-title {
+            color: #c53030;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-content {
+            color: #742a2a;
+            line-height: 1.6;
+        }
+
+        .insight-section {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            border-left: 4px solid #38a169;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .insight-title {
+            color: #2f855a;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-content {
+            color: #276749;
+            line-height: 1.6;
+        }
+
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .customer-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .level-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .level-vip { background: #e74c3c; }
+        .level-important { background: #f39c12; }
+        .level-normal { background: #3498db; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .summary-header h2 {
+                font-size: 1.6rem;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                padding: 20px;
+            }
+
+            .summary-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .summary-card-header h3 {
+                font-size: 1.2rem;
+            }
+
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .funnel-container {
+                flex-direction: column;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* 移动端框架间距调整 */
+            .comprehensive-framework {
+                margin-bottom: 30px; /* 减少移动端底部间距 */
+            }
+
+            .framework-header {
+                margin-bottom: 25px; /* 减少移动端标题间距 */
+                padding: 25px; /* 减少移动端内边距 */
+            }
+
+            .framework-tabs {
+                padding: 20px; /* 减少移动端内边距 */
+            }
+
+            .framework-tab-buttons {
+                padding: 8px; /* 减少移动端按钮区域内边距 */
+                margin-bottom: 25px; /* 减少移动端标签间距 */
+                gap: 5px; /* 减少移动端按钮间距 */
+            }
+
+            .framework-tab-btn {
+                padding: 12px 16px; /* 减少移动端按钮内边距 */
+                min-width: 120px; /* 减少移动端最小宽度 */
+                gap: 8px; /* 减少移动端图标间距 */
+            }
+
+            .module-grid {
+                grid-template-columns: 1fr; /* 移动端单列布局 */
+                gap: 20px; /* 减少移动端网格间距 */
+                padding: 5px 0; /* 减少移动端上下内边距 */
+            }
+
+            .module-card {
+                padding: 20px; /* 减少移动端卡片内边距 */
+                margin-bottom: 5px; /* 减少移动端卡片外边距 */
+            }
+
+            .module-header {
+                margin-bottom: 20px; /* 减少移动端标题区域间距 */
+                padding-bottom: 15px; /* 减少移动端标题区域内边距 */
+            }
+
+            .module-header h3 {
+                font-size: 1.2rem; /* 减少移动端标题字体 */
+                margin-bottom: 8px; /* 减少移动端标题底部间距 */
+                gap: 10px; /* 减少移动端图标间距 */
+            }
+
+            /* 移动端各模块内部间距调整 */
+            .product-performance .product-item,
+            .employee-performance .employee-item,
+            .customer-analysis .customer-item {
+                padding: 20px; /* 减少移动端项目内边距 */
+                margin-bottom: 15px; /* 减少移动端项目间距 */
+            }
+
+            .product-info,
+            .employee-info,
+            .customer-info {
+                margin-bottom: 15px; /* 减少移动端信息区间距 */
+            }
+
+            .product-metrics,
+            .employee-metrics,
+            .customer-metrics {
+                gap: 12px; /* 减少移动端指标间距 */
+                margin-bottom: 15px; /* 减少移动端指标区域间距 */
+            }
+
+            .metric-item {
+                padding: 10px 12px; /* 减少移动端指标项内边距 */
+            }
+
+            .product-revenue,
+            .performance-score,
+            .customer-value {
+                padding: 12px; /* 减少移动端显示区域内边距 */
+                margin-bottom: 12px; /* 减少移动端区域间距 */
+            }
+
+            .inventory-summary {
+                grid-template-columns: repeat(2, 1fr); /* 移动端两列布局 */
+                gap: 15px; /* 减少移动端摘要间距 */
+                padding: 20px; /* 减少移动端摘要内边距 */
+                margin-bottom: 20px; /* 减少移动端摘要底部间距 */
+            }
+
+            .inventory-item {
+                padding: 12px 15px; /* 减少移动端库存项内边距 */
+                margin-bottom: 10px; /* 减少移动端库存项间距 */
+            }
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #bdc3c7, transparent);
+            margin: 40px 0;
+        }
+
+        /* 执行摘要样式 */
+        .executive-summary {
+            margin-bottom: 40px;
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .summary-header h2 {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .summary-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .summary-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .summary-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .summary-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .summary-card-header h3 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 统一分析框架样式 */
+        .unified-analysis-framework {
+            margin-bottom: 40px;
+        }
+
+        .framework-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .framework-header h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .framework-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .unified-framework-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .unified-framework-tabs {
+            margin-top: 20px;
+        }
+
+        .unified-tab-buttons {
+            display: flex;
+            background: linear-gradient(135deg, #f1f3f4, #e8eaed);
+            border-radius: 15px;
+            padding: 8px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            gap: 5px;
+        }
+
+        .unified-tab-btn {
+            flex: 1;
+            padding: 18px 25px;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 160px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .unified-tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            border-radius: 12px;
+        }
+
+        .unified-tab-btn span,
+        .unified-tab-btn i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .unified-tab-btn.active {
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .unified-tab-btn.active::before {
+            opacity: 1;
+        }
+
+        .unified-tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.8);
+            color: #495057;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .unified-tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .unified-tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .conclusion-summary {
+            padding: 20px 0;
+        }
+
+        .detail-query-section {
+            padding: 20px 0;
+        }
+
+        .analysis-section {
+            padding: 20px 0;
+        }
+
+        /* 核心发现样式 */
+        .finding-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .finding-item.positive {
+            background: linear-gradient(135deg, #d5f4e6, #c6f6d5);
+            color: #2f855a;
+        }
+
+        .finding-item.positive i {
+            color: #38a169;
+        }
+
+        .finding-item.warning {
+            background: linear-gradient(135deg, #fef9e7, #fbd38d);
+            color: #d69e2e;
+        }
+
+        .finding-item.warning i {
+            color: #ed8936;
+        }
+
+        .finding-item.critical {
+            background: linear-gradient(135deg, #fed7d7, #feb2b2);
+            color: #c53030;
+        }
+
+        .finding-item.critical i {
+            color: #e53e3e;
+        }
+
+        /* 紧急行动项样式 */
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 12px;
+            border-left: 4px solid #e2e8f0;
+        }
+
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-align: center;
+            min-width: 30px;
+        }
+
+        .priority-badge.high {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .priority-badge.medium {
+            background: #ed8936;
+            color: white;
+        }
+
+        .action-text {
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 战略建议样式 */
+        .strategy-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            border-radius: 12px;
+        }
+
+        .strategy-number {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #3182ce, #2c5282);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .strategy-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #2a4365;
+        }
+
+        /* 关键指标预警样式 */
+        .metric-alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 12px;
+            border-left: 4px solid #e2e8f0;
+        }
+
+        .alert-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .alert-indicator.good {
+            background: #38a169;
+        }
+
+        .alert-indicator.warning {
+            background: #ed8936;
+        }
+
+        .alert-indicator.danger {
+            background: #e53e3e;
+        }
+
+        .alert-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        /* 明细查询样式 */
+        .query-controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .query-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .query-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .query-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .query-select, .query-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .query-select:focus, .query-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .amount-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .amount-range input {
+            flex: 1;
+        }
+
+        .amount-range span {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .search-btn, .export-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f6391);
+            transform: translateY(-2px);
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #229954, #1e7e34);
+            transform: translateY(-2px);
+        }
+
+        .query-results {
+            margin-top: 20px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .results-info {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .results-pagination {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-btn {
+            padding: 8px 15px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .page-btn:disabled {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* 原因分析样式 */
+        .analysis-tabs {
+            margin-top: 20px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #f1f3f4;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #495057;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .analysis-item {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .analysis-item h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reason-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .reason-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #e9ecef;
+        }
+
+        .reason-item.critical {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-left-color: #e53e3e;
+        }
+
+        .reason-item.warning {
+            background: linear-gradient(135deg, #fef9e7, #fbd38d);
+            border-left-color: #ed8936;
+        }
+
+        .reason-item.normal {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            border-left-color: #38a169;
+        }
+
+        .reason-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .reason-item.critical .reason-indicator {
+            background: #e53e3e;
+        }
+
+        .reason-item.warning .reason-indicator {
+            background: #ed8936;
+        }
+
+        .reason-item.normal .reason-indicator {
+            background: #38a169;
+        }
+
+        .reason-content {
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .reason-impact {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6c757d;
+            white-space: nowrap;
+        }
+
+        .suggestion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            border-radius: 10px;
+        }
+
+        .suggestion-item i {
+            color: #3182ce;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 2px;
+        }
+
+        .performance-chart {
+            height: 250px;
+            margin: 15px 0;
+        }
+
+        .team-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .risk-matrix {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .risk-category {
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .risk-category.high-risk {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+            border-left-color: #e53e3e;
+        }
+
+        .risk-category.medium-risk {
+            background: linear-gradient(135deg, #fef9e7, #fbd38d);
+            border-left-color: #ed8936;
+        }
+
+        .risk-category h5 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .risk-category ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .risk-category li {
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        .mitigation-plan {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .plan-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .plan-item.urgent {
+            background: linear-gradient(135deg, #fff5f5, #fed7d7);
+        }
+
+        .plan-item.important {
+            background: linear-gradient(135deg, #fef9e7, #fbd38d);
+        }
+
+        .plan-item.normal {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+        }
+
+        .priority-label {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .plan-item.urgent .priority-label {
+            background: #e53e3e;
+        }
+
+        .plan-item.important .priority-label {
+            background: #ed8936;
+        }
+
+        .plan-item.normal .priority-label {
+            background: #38a169;
+        }
+
+        .market-trends {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .trend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .trend-positive {
+            color: #27ae60;
+        }
+
+        .trend-negative {
+            color: #e74c3c;
+        }
+
+        .trend-stable {
+            color: #f39c12;
+        }
+
+        .opportunity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .opportunity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            border-radius: 10px;
+        }
+
+        .opportunity-score {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .opportunity-content {
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* 综合业务框架样式 */
+        .comprehensive-framework {
+            margin-bottom: 50px; /* 增加底部间距 */
+        }
+
+        .framework-header {
+            text-align: center;
+            margin-bottom: 35px; /* 增加标题与内容的间距 */
+            padding: 35px; /* 增加内边距 */
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .framework-header h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 12px; /* 增加标题与副标题间距 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .framework-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        /* 框架标签页样式 */
+        .framework-tabs {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px; /* 增加内边距 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .framework-tab-buttons {
+            display: flex;
+            background: linear-gradient(135deg, #f1f3f4, #e8eaed);
+            border-radius: 15px;
+            padding: 10px; /* 增加按钮区域内边距 */
+            margin-bottom: 35px; /* 增加标签与内容间距 */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            gap: 8px; /* 增加按钮间距 */
+        }
+
+        .framework-tab-btn {
+            flex: 1;
+            padding: 18px 22px; /* 增加按钮内边距 */
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* 增加图标与文字间距 */
+            min-width: 150px; /* 增加最小宽度 */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .framework-tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            border-radius: 12px;
+        }
+
+        .framework-tab-btn span,
+        .framework-tab-btn i {
+            position: relative;
+            z-index: 2;
+        }
+
+        .framework-tab-btn.active {
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .framework-tab-btn.active::before {
+            opacity: 1;
+        }
+
+        .framework-tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.8);
+            color: #495057;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .framework-tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .framework-tab-content.active {
+            display: block;
+        }
+
+        /* 模块网格和卡片样式 */
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); /* 增加最小宽度 */
+            gap: 30px; /* 增加网格间距 */
+            padding: 10px 0; /* 添加上下内边距 */
+        }
+
+        .module-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px; /* 增加卡片内边距 */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            margin-bottom: 10px; /* 添加底部外边距 */
+        }
+
+        .module-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .module-header {
+            margin-bottom: 25px; /* 增加标题区域底部间距 */
+            padding-bottom: 18px; /* 增加标题区域内边距 */
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .module-header h3 {
+            color: #2c3e50;
+            font-size: 1.3rem; /* 稍微增加字体大小 */
+            font-weight: 600;
+            margin-bottom: 10px; /* 增加标题底部间距 */
+            display: flex;
+            align-items: center;
+            gap: 12px; /* 增加图标与文字间距 */
+        }
+
+        .module-header h3 i {
+            color: #3498db;
+            font-size: 1.2rem;
+        }
+
+        /* 数据来源标识样式 */
+        .data-source {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 5px;
+            font-style: italic;
+            border-left: 3px solid #28a745;
+            padding-left: 8px;
+        }
+
+        /* 产品分析样式 */
+        .product-performance .product-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px; /* 增加内边距 */
+            margin-bottom: 20px; /* 增加项目间距 */
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .product-performance .product-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .product-info {
+            margin-bottom: 18px; /* 增加信息区间距 */
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px; /* 增加名称底部间距 */
+        }
+
+        .product-category {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px; /* 增加类别底部间距 */
+        }
+
+        .product-code {
+            font-size: 0.8rem;
+            color: #28a745;
+            font-family: 'Monaco', monospace;
+        }
+
+        .product-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px; /* 增加指标间距 */
+            margin-bottom: 20px; /* 增加指标区域底部间距 */
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px; /* 增加指标项内边距 */
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .metric-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .product-revenue {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #28a745;
+            text-align: center;
+            padding: 15px; /* 增加收入显示区域内边距 */
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px; /* 增加收入区域底部间距 */
+        }
+
+        .product-status {
+            text-align: center;
+            padding: 8px 12px; /* 增加状态标签内边距 */
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .product-status.on-shelf {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        /* 库存分析样式 */
+        .inventory-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px; /* 增加摘要项间距 */
+            margin-bottom: 25px; /* 增加摘要区域底部间距 */
+            padding: 25px; /* 增加摘要区域内边距 */
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 8px; /* 增加标签底部间距 */
+        }
+
+        .summary-value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 18px; /* 增加库存项目内边距 */
+            margin-bottom: 12px; /* 增加项目间距 */
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .inventory-item.warning {
+            border-left-color: #ffc107;
+        }
+
+        .inventory-item.critical {
+            border-left-color: #dc3545;
+        }
+
+        .inventory-product {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .inventory-stock {
+            font-weight: 500;
+            padding: 6px 12px; /* 增加库存数量显示内边距 */
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .inventory-stock.normal {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .inventory-stock.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .inventory-stock.critical {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .inventory-warehouse {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .inventory-level {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .inventory-quantity {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        /* 员工分析样式 */
+        .dept-performance {
+            margin-bottom: 20px;
+        }
+
+        .dept-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .dept-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dept-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .dept-id {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        .dept-metrics {
+            display: flex;
+            gap: 15px;
+        }
+
+        .dept-metrics .metric {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+
+        /* 角色分布样式 */
+        .role-distribution, .employee-status {
+            margin-bottom: 20px;
+        }
+
+        .role-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .role-name {
+            width: 80px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .role-bar {
+            flex: 1;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .role-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            transition: width 0.3s ease;
+        }
+
+        .role-count {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .status-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: white;
+            border: 2px solid #e9ecef;
+        }
+
+        .status-item.active {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.05);
+        }
+
+        .status-item.inactive {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .status-item.new {
+            border-color: #007bff;
+            background: rgba(0, 123, 255, 0.05);
+        }
+
+        .status-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .status-label {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .status-detail {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        /* 客户分析样式 */
+        .classification-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .class-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+        }
+
+        .class-item.vip {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+        }
+
+        .class-item.important {
+            background: linear-gradient(135deg, #ffc107, #f39c12);
+        }
+
+        .class-item.general {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .class-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .class-count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .class-revenue {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .class-detail {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .lifecycle-stage {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .stage-header {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .stage-count {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        .stage-source {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+
+        .stage-trend {
+            font-size: 0.8rem;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        /* 地理分布样式 */
+        .geo-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .geo-name {
+            width: 70px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .geo-bar {
+            flex: 1;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .geo-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #6610f2);
+            transition: width 0.3s ease;
+        }
+
+        .geo-count {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        /* 跟进分析样式 */
+        .follow-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .follow-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .follow-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .follow-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .follow-value.alert {
+            color: #dc3545;
+        }
+
+        /* 合同分析样式 */
+        .contract-status-overview, .contract-financial {
+            margin-bottom: 25px;
+        }
+
+        .status-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .status-overview .status-item {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .status-overview .status-item.executing {
+            border-left-color: #28a745;
+        }
+
+        .status-overview .status-item.completed {
+            border-left-color: #007bff;
+        }
+
+        .status-overview .status-item.pending {
+            border-left-color: #ffc107;
+        }
+
+        .status-percentage {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .status-amount {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .financial-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .financial-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+
+        .financial-value {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+
+        /* 交付预警样式 */
+        .delivery-alerts, .payment-alerts {
+            margin-bottom: 20px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-item.urgent {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .alert-item.warning {
+            border-left-color: #ffc107;
+            background: rgba(255, 193, 7, 0.05);
+        }
+
+        .alert-icon {
+            color: #ffc107;
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .alert-item.urgent .alert-icon {
+            color: #dc3545;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .alert-detail {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 3px;
+        }
+
+        .alert-progress {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .payment-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .payment-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .payment-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+
+        .payment-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .payment-value.alert {
+            color: #dc3545;
+        }
+
+        /* 销售机会分析样式 */
+        .opportunity-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .opp-stage {
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+            text-align: center;
+        }
+
+        .stage-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .stage-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .stage-amount {
+            font-size: 0.9rem;
+            color: #28a745;
+            margin-bottom: 5px;
+        }
+
+        .stage-rate {
+            font-size: 0.9rem;
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        /* 报价分析样式 */
+        .quotation-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .quote-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .quote-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .quote-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* 工作流分析样式 */
+        .flow-chain {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        .flow-node {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            min-width: 120px;
+            border: 2px solid #e9ecef;
+        }
+
+        .node-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .node-count {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .node-source {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .conversion-rate {
+            font-size: 0.8rem;
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .flow-arrow {
+            font-size: 1.5rem;
+            color: #007bff;
+            margin: 0 10px;
+        }
+
+        /* 协同指标样式 */
+        .collab-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .collab-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #6610f2;
+        }
+
+        .collab-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .collab-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        /* 员工分析样式 */
+        .employee-performance .employee-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px; /* 增加员工项目内边距 */
+            margin-bottom: 20px; /* 增加项目间距 */
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .employee-performance .employee-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .employee-info {
+            margin-bottom: 18px; /* 增加员工信息区间距 */
+        }
+
+        .employee-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px; /* 增加姓名底部间距 */
+        }
+
+        .employee-role {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px; /* 增加角色底部间距 */
+        }
+
+        .employee-department {
+            font-size: 0.85rem;
+            color: #3498db;
+        }
+
+        .employee-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px; /* 增加指标间距 */
+            margin-bottom: 20px; /* 增加指标区域底部间距 */
+        }
+
+        .performance-score {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #e67e22;
+            text-align: center;
+            padding: 15px; /* 增加绩效分数显示内边距 */
+            background: rgba(230, 126, 34, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px; /* 增加绩效分数区域底部间距 */
+        }
+
+        .employee-status {
+            text-align: center;
+            padding: 8px 12px; /* 增加状态标签内边距 */
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .employee-status.active {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .employee-status.inactive {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        /* 客户分析样式 */
+        .customer-analysis .customer-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px; /* 增加客户项目内边距 */
+            margin-bottom: 20px; /* 增加项目间距 */
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .customer-analysis .customer-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .customer-info {
+            margin-bottom: 18px; /* 增加客户信息区间距 */
+        }
+
+        .customer-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px; /* 增加客户名称底部间距 */
+        }
+
+        .customer-type {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px; /* 增加客户类型底部间距 */
+        }
+
+        .customer-region {
+            font-size: 0.85rem;
+            color: #8e44ad;
+        }
+
+        .customer-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px; /* 增加指标间距 */
+            margin-bottom: 20px; /* 增加指标区域底部间距 */
+        }
+
+        .customer-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #8e44ad;
+            text-align: center;
+            padding: 15px; /* 增加客户价值显示内边距 */
+            background: rgba(142, 68, 173, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px; /* 增加客户价值区域底部间距 */
+        }
+
+        .customer-level {
+            text-align: center;
+            padding: 8px 12px; /* 增加客户等级标签内边距 */
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .customer-level.vip {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .customer-level.important {
+            background: rgba(243, 156, 18, 0.1);
+            color: #f39c12;
+        }
+
+        .customer-level.normal {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 报告头部 -->
+        <div class="header">
+            <h1>
+                <i class="fas fa-chart-line"></i>
+                企业营销管理分析
+            </h1>
+            <p class="subtitle">基于销帮帮(XBB)系统数据的综合营销分析与决策支持</p>
+            <div class="report-time">
+                <i class="fas fa-calendar-alt"></i>
+                <span>报告周期：2025年1月1日 - 2025年1月31日</span>
+                <span style="margin-left: 20px;">
+                    <i class="fas fa-clock"></i>
+                    生成时间：2025年1月31日 09:30
+                </span>
+            </div>
+        </div>
+
+        <!-- 统一分析框架 -->
+        <div class="unified-analysis-framework">
+            <div class="framework-header">
+                <h2><i class="fas fa-analytics"></i> 智能分析中心</h2>
+                <p>结论洞察 · 明细查询 · 原因分析 一体化分析平台</p>
+            </div>
+            
+            <div class="unified-framework-container">
+                <div class="unified-framework-tabs">
+                    <div class="unified-tab-buttons">
+                        <button class="unified-tab-btn active" data-unified-tab="conclusion">
+                            <i class="fas fa-lightbulb"></i> 
+                            <span>执行摘要与结论</span>
+                        </button>
+                        <button class="unified-tab-btn" data-unified-tab="detail-query">
+                            <i class="fas fa-search"></i> 
+                            <span>明细查询</span>
+                        </button>
+                        <button class="unified-tab-btn" data-unified-tab="analysis">
+                            <i class="fas fa-microscope"></i> 
+                            <span>深度原因分析</span>
+                        </button>
+                    </div>
+
+                    <!-- 执行摘要与结论标签页 -->
+                    <div class="unified-tab-content active" id="conclusion-unified">
+                        <div class="conclusion-summary">
+                            <div class="summary-grid">
+                                <!-- 核心发现 -->
+                                <div class="summary-card findings-card">
+                                    <div class="summary-card-header">
+                                        <div class="summary-icon" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <h3>核心发现</h3>
+                                    </div>
+                                    <div class="summary-content">
+                                        <div class="finding-item positive">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>销售转化率7.1%超行业平均水平42%</span>
+                                        </div>
+                                        <div class="finding-item positive">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>月度目标完成81.9%，预计提前完成</span>
+                                        </div>
+                                        <div class="finding-item warning">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <span>3家重点客户存在流失风险</span>
+                                        </div>
+                                        <div class="finding-item critical">
+                                            <i class="fas fa-times-circle"></i>
+                                            <span>656万应收账款需重点关注</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 紧急行动项 -->
+                                <div class="summary-card action-card">
+                                    <div class="summary-card-header">
+                                        <div class="summary-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <h3>紧急行动项</h3>
+                                    </div>
+                                    <div class="summary-content">
+                                        <div class="action-item high-priority">
+                                            <div class="priority-badge high">高</div>
+                                            <div class="action-text">
+                                                <strong>华润集团</strong> - 30天未跟进，立即安排张经理上门拜访
+                                            </div>
+                                        </div>
+                                        <div class="action-item medium-priority">
+                                            <div class="priority-badge medium">中</div>
+                                            <div class="action-text">
+                                                <strong>万科地产</strong> - 合同即将到期，启动续约谈判
+                                            </div>
+                                        </div>
+                                        <div class="action-item medium-priority">
+                                            <div class="priority-badge medium">中</div>
+                                            <div class="action-text">
+                                                <strong>回款计划</strong> - 制定656万未收款分阶段回收方案
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 战略建议 -->
+                                <div class="summary-card strategy-card">
+                                    <div class="summary-card-header">
+                                        <div class="summary-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                                            <i class="fas fa-chess"></i>
+                                        </div>
+                                        <h3>战略建议</h3>
+                                    </div>
+                                    <div class="summary-content">
+                                        <div class="strategy-item">
+                                            <div class="strategy-number">1</div>
+                                            <div class="strategy-text">
+                                                <strong>优化销售漏斗</strong><br>
+                                                提升线索到机会26%转化率，重点加强需求挖掘
+                                            </div>
+                                        </div>
+                                        <div class="strategy-item">
+                                            <div class="strategy-number">2</div>
+                                            <div class="strategy-text">
+                                                <strong>客户分级管理</strong><br>
+                                                建立VIP客户专属服务体系，提升客户价值
+                                            </div>
+                                        </div>
+                                        <div class="strategy-item">
+                                            <div class="strategy-number">3</div>
+                                            <div class="strategy-text">
+                                                <strong>团队能力建设</strong><br>
+                                                针对业绩差距大的销售人员进行专项培训
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 关键指标预警 -->
+                                <div class="summary-card metrics-card">
+                                    <div class="summary-card-header">
+                                        <div class="summary-icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                        </div>
+                                        <h3>关键指标预警</h3>
+                                    </div>
+                                    <div class="summary-content">
+                                        <div class="metric-alert warning">
+                                            <div class="alert-indicator warning"></div>
+                                            <div class="alert-text">
+                                                <strong>回款率</strong><br>
+                                                <span class="metric-value">65.3%</span> 需要关注
+                                            </div>
+                                        </div>
+                                        <div class="metric-alert danger">
+                                            <div class="alert-indicator danger"></div>
+                                            <div class="alert-text">
+                                                <strong>客户风险</strong><br>
+                                                <span class="metric-value">3家</span> 高风险客户
+                                            </div>
+                                        </div>
+                                        <div class="metric-alert warning">
+                                            <div class="alert-indicator warning"></div>
+                                            <div class="alert-text">
+                                                <strong>新客户获取</strong><br>
+                                                <span class="metric-value">67/80</span> 低于目标
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 明细查询标签页 -->
+                    <div class="unified-tab-content" id="detail-query-unified">
+                        <div class="detail-query-section">
+                            <!-- 查询条件区域 -->
+                            <div class="query-controls">
+                                <div class="query-row">
+                                    <div class="query-item">
+                                        <label>查询类型</label>
+                                        <select id="queryType" class="query-select">
+                                            <option value="customer">客户明细</option>
+                                            <option value="opportunity">销售机会</option>
+                                            <option value="contract">合同明细</option>
+                                            <option value="payment">回款明细</option>
+                                            <option value="communication">跟进记录</option>
+                                        </select>
+                                    </div>
+                                    <div class="query-item">
+                                        <label>时间范围</label>
+                                        <select id="timeRange" class="query-select">
+                                            <option value="current_month">本月</option>
+                                            <option value="last_month">上月</option>
+                                            <option value="current_quarter">本季度</option>
+                                            <option value="current_year">本年度</option>
+                                            <option value="custom">自定义</option>
+                                        </select>
+                                    </div>
+                                    <div class="query-item">
+                                        <label>负责人员</label>
+                                        <select id="salesPerson" class="query-select">
+                                            <option value="">全部</option>
+                                            <option value="张经理">张经理</option>
+                                            <option value="李主管">李主管</option>
+                                            <option value="王总监">王总监</option>
+                                            <option value="赵专员">赵专员</option>
+                                            <option value="陈助理">陈助理</option>
+                                        </select>
+                                    </div>
+                                    <div class="query-item">
+                                        <label>状态筛选</label>
+                                        <select id="statusFilter" class="query-select">
+                                            <option value="">全部状态</option>
+                                            <option value="active">活跃</option>
+                                            <option value="pending">待跟进</option>
+                                            <option value="completed">已完成</option>
+                                            <option value="risk">风险</option>
+                                        </select>
+                                    </div>
+                                    <div class="query-item">
+                                        <button id="searchBtn" class="search-btn">
+                                            <i class="fas fa-search"></i> 查询
+                                        </button>
+                                        <button id="exportBtn" class="export-btn">
+                                            <i class="fas fa-download"></i> 导出
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="query-row">
+                                    <div class="query-item">
+                                        <label>关键词搜索</label>
+                                        <input type="text" id="keyword" class="query-input" placeholder="输入客户名称、合同编号等关键词">
+                                    </div>
+                                    <div class="query-item">
+                                        <label>金额范围</label>
+                                        <div class="amount-range">
+                                            <input type="number" id="minAmount" class="query-input" placeholder="最小金额">
+                                            <span>至</span>
+                                            <input type="number" id="maxAmount" class="query-input" placeholder="最大金额">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 查询结果区域 -->
+                            <div class="query-results">
+                                <div class="results-header">
+                                    <div class="results-info">
+                                        <span id="resultsCount">共找到 0 条记录</span>
+                                    </div>
+                                    <div class="results-pagination">
+                                        <button class="page-btn" id="prevPage">上一页</button>
+                                        <span id="pageInfo">第 1 页 / 共 1 页</span>
+                                        <button class="page-btn" id="nextPage">下一页</button>
+                                    </div>
+                                </div>
+                                
+                                <div id="queryResultsTable" class="table-container">
+                                    <!-- 动态生成的查询结果表格 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 深度原因分析标签页 -->
+                    <div class="unified-tab-content" id="analysis-unified">
+                        <div class="analysis-section">
+                            <div class="analysis-tabs">
+                                <div class="tab-buttons">
+                                    <button class="tab-btn active" data-tab="conversion">转化率分析</button>
+                                    <button class="tab-btn" data-tab="performance">业绩分析</button>
+                                    <button class="tab-btn" data-tab="risk">风险分析</button>
+                                    <button class="tab-btn" data-tab="market">市场分析</button>
+                                </div>
+
+                                <!-- 转化率分析 -->
+                                <div class="tab-content active" id="conversion-tab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-chart-line"></i> 线索转化率低的原因</h4>
+                                            <div class="reason-list">
+                                                <div class="reason-item critical">
+                                                    <div class="reason-indicator"></div>
+                                                    <div class="reason-content">
+                                                        <strong>线索质量问题</strong><br>
+                                                        <span>34%的线索为无效信息，缺乏有效的线索筛选机制</span>
+                                                    </div>
+                                                    <div class="reason-impact">影响度: 高</div>
+                                                </div>
+                                                <div class="reason-item warning">
+                                                    <div class="reason-indicator"></div>
+                                                    <div class="reason-content">
+                                                        <strong>跟进时效性差</strong><br>
+                                                        <span>平均首次跟进时间为48小时，超过行业标准24小时</span>
+                                                    </div>
+                                                    <div class="reason-impact">影响度: 中</div>
+                                                </div>
+                                                <div class="reason-item normal">
+                                                    <div class="reason-indicator"></div>
+                                                    <div class="reason-content">
+                                                        <strong>销售技能差异</strong><br>
+                                                        <span>新员工转化率比资深员工低42%，需要技能培训</span>
+                                                    </div>
+                                                    <div class="reason-impact">影响度: 中</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-target"></i> 改善建议</h4>
+                                            <div class="suggestion-list">
+                                                <div class="suggestion-item">
+                                                    <i class="fas fa-1"></i>
+                                                    <div>
+                                                        <strong>建立线索评分体系</strong><br>
+                                                        根据客户规模、需求匹配度等维度进行评分筛选
+                                                    </div>
+                                                </div>
+                                                <div class="suggestion-item">
+                                                    <i class="fas fa-2"></i>
+                                                    <div>
+                                                        <strong>优化跟进流程</strong><br>
+                                                        设置自动提醒，确保24小时内完成首次跟进
+                                                    </div>
+                                                </div>
+                                                <div class="suggestion-item">
+                                                    <i class="fas fa-3"></i>
+                                                    <div>
+                                                        <strong>加强培训体系</strong><br>
+                                                        针对新员工制定专项培训计划，提升销售技能
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 业绩分析 -->
+                                <div class="tab-content" id="performance-tab">
+                                    <div class="analysis-grid">
+
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-trophy"></i> 业绩差异分析</h4>
+                                            <div style="padding: 20px; background: #f8f9fa; border-radius: 10px; line-height: 1.8;">
+                                                <p style="margin-bottom: 15px; font-weight: 600; color: #2c3e50;">团队业绩表现概况：</p>
+                                                <p style="margin-bottom: 10px;">• 张经理业绩领先，456.8万元，超出平均水平58%，转化率20.2%</p>
+                                                <p style="margin-bottom: 10px;">• 李主管表现稳定，398.2万元，客户关系维护能力强，转化率19.7%</p>
+                                                <p style="margin-bottom: 10px;">• 王总监处于平均水平，367.5万元，转化率20.6%，有上升潜力</p>
+                                                <p style="margin-bottom: 15px;">• 赵专员和陈助理需要加强培训，业绩有提升空间</p>
+                                                <p style="padding-top: 15px; border-top: 1px solid #dee2e6; font-weight: 600; color: #2c3e50;">关键发现：</p>
+                                                <p style="margin-bottom: 0;">最大业绩差距211.5万元，团队能力层次分化明显，40%成员低于平均水平。建议针对性培训和指导。</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-users"></i> 团队效能分析</h4>
+                                            <div class="team-metrics">
+                                                <div class="metric-row">
+                                                    <span>平均客户跟进周期</span>
+                                                    <span class="metric-value">15.3天</span>
+                                                    <span class="metric-trend trend-up">+2.1天</span>
+                                                </div>
+                                                <div class="metric-row">
+                                                    <span>平均成单周期</span>
+                                                    <span class="metric-value">45.7天</span>
+                                                    <span class="metric-trend trend-down">-3.2天</span>
+                                                </div>
+                                                <div class="metric-row">
+                                                    <span>客户满意度</span>
+                                                    <span class="metric-value">87.5%</span>
+                                                    <span class="metric-trend trend-up">+1.8%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 风险分析 -->
+                                <div class="tab-content" id="risk-tab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-exclamation-triangle"></i> 潜在风险识别</h4>
+                                            <div class="risk-matrix">
+                                                <div class="risk-category high-risk">
+                                                    <h5>高风险项目</h5>
+                                                    <ul>
+                                                        <li>华润集团 - 30天未跟进，合同金额280万</li>
+                                                        <li>应收账款超期 - 126万未按期回款</li>
+                                                        <li>产品库存积压 - 工业设备库存过多</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="risk-category medium-risk">
+                                                    <h5>中等风险项目</h5>
+                                                    <ul>
+                                                        <li>万科地产 - 合同即将到期需续约</li>
+                                                        <li>新客户获取不足 - 低于目标16.25%</li>
+                                                        <li>销售团队流失率上升</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-shield-alt"></i> 风险缓解措施</h4>
+                                            <div class="mitigation-plan">
+                                                <div class="plan-item urgent">
+                                                    <span class="priority-label">紧急</span>
+                                                    <div>立即安排高风险客户专人对接，72小时内完成回访</div>
+                                                </div>
+                                                <div class="plan-item important">
+                                                    <span class="priority-label">重要</span>
+                                                    <div>制定应收账款分阶段回收计划，设置专门催收小组</div>
+                                                </div>
+                                                <div class="plan-item normal">
+                                                    <span class="priority-label">常规</span>
+                                                    <div>优化库存管理，调整产品推广策略</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 市场分析 -->
+                                <div class="tab-content" id="market-tab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-chart-area"></i> 市场趋势分析</h4>
+                                            <div class="market-trends">
+                                                <div class="trend-item">
+                                                    <i class="fas fa-arrow-up trend-positive"></i>
+                                                    <div>
+                                                        <strong>工业自动化需求增长</strong><br>
+                                                        预计Q2需求增长25%，建议加大产品推广
+                                                    </div>
+                                                </div>
+                                                <div class="trend-item">
+                                                    <i class="fas fa-arrow-down trend-negative"></i>
+                                                    <div>
+                                                        <strong>传统制造业订单下滑</strong><br>
+                                                        受经济影响，订单量下降15%
+                                                    </div>
+                                                </div>
+                                                <div class="trend-item">
+                                                    <i class="fas fa-arrow-right trend-stable"></i>
+                                                    <div>
+                                                        <strong>服务型业务稳定增长</strong><br>
+                                                        技术服务需求保持稳定，客户黏性强
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="analysis-item">
+                                            <h4><i class="fas fa-bullseye"></i> 市场机会</h4>
+                                            <div class="opportunity-list">
+                                                <div class="opportunity-item">
+                                                    <div class="opportunity-score">85</div>
+                                                    <div class="opportunity-content">
+                                                        <strong>新能源行业客户</strong><br>
+                                                        <span>市场热度高，竞争相对较少，建议重点开发</span>
+                                                    </div>
+                                                </div>
+                                                <div class="opportunity-item">
+                                                    <div class="opportunity-score">72</div>
+                                                    <div class="opportunity-content">
+                                                        <strong>智能制造升级需求</strong><br>
+                                                        <span>传统制造业数字化转型，存在大量升级需求</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 核心KPI仪表板 -->
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        营销核心指标
+                    </div>
+                </div>
+                <div class="kpi-grid">
+                    <div class="kpi-item">
+                        <div class="kpi-value">1,247</div>
+                        <div class="kpi-label">销售线索</div>
+                        <div class="kpi-trend trend-up">
+                            <i class="fas fa-arrow-up"></i> +15.2%
+                        </div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">324</div>
+                        <div class="kpi-label">销售机会</div>
+                        <div class="kpi-trend trend-up">
+                            <i class="fas fa-arrow-up"></i> +8.7%
+                        </div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value">89</div>
+                        <div class="kpi-label">成交合同</div>
+                        <div class="kpi-trend trend-up">
+                            <i class="fas fa-arrow-up"></i> +12.5%
+                        </div>
+                    </div>
+                    <div class="kpi-item">
+                        <div class="kpi-value" style="font-size: 1.6rem;">2,456万</div>
+                        <div class="kpi-label">合同金额</div>
+                        <div class="kpi-trend trend-up">
+                            <i class="fas fa-arrow-up"></i> +18.3%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div class="card-icon" style="background: linear-gradient(135deg, #27ae60, #229954);">
+                            <i class="fas fa-target"></i>
+                        </div>
+                        目标达成情况
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>月度销售目标</span>
+                        <span>2,456万 / 3,000万 (81.9%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-success" style="width: 81.9%"></div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>新客户获取目标</span>
+                        <span>67 / 80 (83.8%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-warning" style="width: 83.8%"></div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>客户跟进目标</span>
+                        <span>1,247 / 1,200 (103.9%)</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-info" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 销售漏斗分析 -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    销售漏斗转化分析
+                </div>
+            </div>
+            <div class="funnel-container">
+                <div class="funnel-stage">
+                    <div class="funnel-value">1,247</div>
+                    <div class="funnel-label">销售线索</div>
+                    <div class="funnel-rate">基数 100%</div>
+                </div>
+                <div class="funnel-stage">
+                    <div class="funnel-value">324</div>
+                    <div class="funnel-label">销售机会</div>
+                    <div class="funnel-rate">转化率 26.0%</div>
+                </div>
+                <div class="funnel-stage">
+                    <div class="funnel-value">156</div>
+                    <div class="funnel-label">报价阶段</div>
+                    <div class="funnel-rate">转化率 48.1%</div>
+                </div>
+                <div class="funnel-stage">
+                    <div class="funnel-value">89</div>
+                    <div class="funnel-label">成交合同</div>
+                    <div class="funnel-rate">转化率 57.1%</div>
+                </div>
+            </div>
+            <div class="insight-section">
+                <div class="insight-title">
+                    <i class="fas fa-lightbulb"></i>
+                    转化分析洞察
+                </div>
+                <div class="insight-content">
+                    • 整体线索到成交转化率为7.1%，高于行业平均水平5.2%<br>
+                    • 机会到报价转化率48.1%需要提升，建议加强客户需求挖掘<br>
+                    • 报价到成交转化率57.1%表现优秀，说明报价策略有效
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+
+        <!-- 综合业务分析框架 -->
+        <div class="comprehensive-framework">
+            <div class="framework-header">
+                <h2><i class="fas fa-th-large"></i> 综合业务分析框架</h2>
+                <p>产品 · 员工 · 客户 · 合同 · 班组/云站点 五维度业务洞察</p>
+            </div>
+            
+            <div class="framework-tabs">
+                <div class="framework-tab-buttons">
+                    <button class="framework-tab-btn active" data-framework-tab="product">
+                        <i class="fas fa-box"></i> 产品分析
+                    </button>
+                    <button class="framework-tab-btn" data-framework-tab="employee">
+                        <i class="fas fa-users"></i> 员工分析
+                    </button>
+                    <button class="framework-tab-btn" data-framework-tab="customer">
+                        <i class="fas fa-user-tie"></i> 客户分析
+                    </button>
+                    <button class="framework-tab-btn" data-framework-tab="contract">
+                        <i class="fas fa-file-contract"></i> 合同分析
+                    </button>
+                    <button class="framework-tab-btn" data-framework-tab="team">
+                        <i class="fas fa-sitemap"></i> 班组/云站点
+                    </button>
+                </div>
+
+                <!-- 产品分析标签页 -->
+                <div class="framework-tab-content active" id="product-framework">
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-header">
+                                <h3><i class="fas fa-chart-pie"></i> 产品销售表现</h3>
+                            </div>
+                            <div class="inventory-status">
+                                <div class="inventory-summary">
+                                    <div class="summary-item">
+                                        <span class="summary-label">产品总数</span>
+                                        <span class="summary-value">245种</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">库存充足</span>
+                                        <span class="summary-value">189种 (77%)</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">库存预警</span>
+                                        <span class="summary-value">42种 (17%)</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">缺货预警</span>
+                                        <span class="summary-value">14种 (6%)</span>
+                                    </div>
+                                </div>
+                                <div class="inventory-item normal">
+                                    <div class="inventory-product">工业设备主机</div>
+                                    <div class="inventory-warehouse"></div>
+                                    <div class="inventory-level">库存充足</div>
+                                    <div class="inventory-quantity">128台</div>
+                                </div>
+                                <div class="inventory-item warning">
+                                    <div class="inventory-product">控制器模块</div>
+                                    <div class="inventory-warehouse"></div>
+                                    <div class="inventory-level">库存偏低</div>
+                                    <div class="inventory-quantity">45台</div>
+                                </div>
+                                <div class="inventory-item critical">
+                                    <div class="inventory-product">传感器组件</div>
+                                    <div class="inventory-warehouse"></div>
+                                    <div class="inventory-level">库存不足</div>
+                                    <div class="inventory-quantity">12台</div>
+                                </div>
+                                <div class="inventory-item normal">
+                                    <div class="inventory-product">软件授权许可</div>
+                                    <div class="inventory-warehouse">数字资产库</div>
+                                    <div class="inventory-level">授权充足</div>
+                                    <div class="inventory-quantity">∞ (无限制)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 员工分析标签页 -->
+                <div class="framework-tab-content" id="employee-framework">
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-header">
+                                <h3><i class="fas fa-chart-bar"></i> 员工绩效分析</h3>
+                            </div>
+                            <div class="employee-analysis">
+                                <div class="role-distribution">
+                                    <h4>角色分布统计</h4>
+                                    <div class="role-item">
+                                        <span class="role-name">销售经理</span>
+                                        <div class="role-bar">
+                                            <div class="role-progress" style="width: 25%"></div>
+                                        </div>
+                                        <span class="role-count">15人 (25%)</span>
+                                    </div>
+                                    <div class="role-item">
+                                        <span class="role-name">销售专员</span>
+                                        <div class="role-bar">
+                                            <div class="role-progress" style="width: 35%"></div>
+                                        </div>
+                                        <span class="role-count">21人 (35%)</span>
+                                    </div>
+                                    <div class="role-item">
+                                        <span class="role-name">技术支持</span>
+                                        <div class="role-bar">
+                                            <div class="role-progress" style="width: 20%"></div>
+                                        </div>
+                                        <span class="role-count">12人 (20%)</span>
+                                    </div>
+                                    <div class="role-item">
+                                        <span class="role-name">客服人员</span>
+                                        <div class="role-bar">
+                                            <div class="role-progress" style="width: 20%"></div>
+                                        </div>
+                                        <span class="role-count">12人 (20%)</span>
+                                    </div>
+                                </div>
+                                <div class="employee-status">
+                                    <h4>员工状态分析</h4>
+                                    <div class="status-grid">
+                                        <div class="status-item active">
+                                            <div class="status-count">58</div>
+                                            <div class="status-label">在职员工</div>
+                                            <div class="status-detail"></div>
+                                        </div>
+                                        <div class="status-item inactive">
+                                            <div class="status-count">2</div>
+                                            <div class="status-label">休假员工</div>
+                                            <div class="status-detail"></div>
+                                        </div>
+                                        <div class="status-item new">
+                                            <div class="status-count">4</div>
+                                            <div class="status-label">新入职</div>
+                                            <div class="status-detail">本月新增</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 客户分析标签页 -->
+                <div class="framework-tab-content" id="customer-framework">
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-header">
+                                <h3><i class="fas fa-layer-group"></i> 客户分层分析</h3>
+                            </div>
+                            <div class="customer-distribution">
+                                <div class="geo-distribution">
+                                    <h4>地理分布</h4>
+                                    <div class="geo-item">
+                                        <span class="geo-name">广东省</span>
+                                        <div class="geo-bar">
+                                            <div class="geo-progress" style="width: 35%"></div>
+                                        </div>
+                                        <span class="geo-count">89客户 (35%)</span>
+                                    </div>
+                                    <div class="geo-item">
+                                        <span class="geo-name">江苏省</span>
+                                        <div class="geo-bar">
+                                            <div class="geo-progress" style="width: 25%"></div>
+                                        </div>
+                                        <span class="geo-count">62客户 (25%)</span>
+                                    </div>
+                                    <div class="geo-item">
+                                        <span class="geo-name">上海市</span>
+                                        <div class="geo-bar">
+                                            <div class="geo-progress" style="width: 20%"></div>
+                                        </div>
+                                        <span class="geo-count">48客户 (20%)</span>
+                                    </div>
+                                    <div class="geo-item">
+                                        <span class="geo-name">其他地区</span>
+                                        <div class="geo-bar">
+                                            <div class="geo-progress" style="width: 20%"></div>
+                                        </div>
+                                        <span class="geo-count">51客户 (20%)</span>
+                                    </div>
+                                </div>
+                                <div class="follow-up-analysis">
+                                    <h4>跟进记录分析</h4>
+                                    <div class="follow-metrics">
+                                        <div class="follow-item">
+                                            <span class="follow-label">本月跟进次数</span>
+                                            <span class="follow-value">1,245次</span>
+                                        </div>
+                                        <div class="follow-item">
+                                            <span class="follow-label">平均跟进周期</span>
+                                            <span class="follow-value">7.2天</span>
+                                        </div>
+                                        <div class="follow-item">
+                                            <span class="follow-label">跟进方式分布</span>
+                                            <span class="follow-value">电话65% | 拜访25% | 邮件10%</span>
+                                        </div>
+                                        <div class="follow-item">
+                                            <span class="follow-label">超期未跟进</span>
+                                            <span class="follow-value alert">23客户 需关注</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 合同分析标签页 -->
+                <div class="framework-tab-content" id="contract-framework">
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-header">
+                                <h3><i class="fas fa-tasks"></i> 合同执行分析</h3>
+                            </div>
+                            <div class="contract-alerts">
+                                <div class="delivery-alerts">
+                                    <h4>交付预警</h4>
+                                    <div class="alert-item urgent">
+                                        <div class="alert-icon">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <div class="alert-content">
+                                            <div class="alert-title">万科地产自动化项目</div>
+                                            <div class="alert-detail">合同金额: 450万 | 7天后到期</div>
+                                            <div class="alert-progress">交付进度: 85% | 需加快推进</div>
+                                        </div>
+                                    </div>
+                                    <div class="alert-item warning">
+                                        <div class="alert-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="alert-content">
+                                            <div class="alert-title">中信证券系统升级</div>
+                                            <div class="alert-detail">合同金额: 380万 | 15天后到期</div>
+                                            <div class="alert-progress">交付进度: 78% | 进展正常</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="payment-alerts">
+                                    <h4>回款预警</h4>
+                                    <div class="payment-overview">
+                                        <div class="payment-item">
+                                            <span class="payment-label">应收总额</span>
+                                            <span class="payment-value">1,234万 (num_1)</span>
+                                        </div>
+                                        <div class="payment-item">
+                                            <span class="payment-label">已收金额</span>
+                                            <span class="payment-value">867万 (num_2)</span>
+                                        </div>
+                                        <div class="payment-item">
+                                            <span class="payment-label">未收金额</span>
+                                            <span class="payment-value alert">367万 (num_3)</span>
+                                        </div>
+                                        <div class="payment-item">
+                                            <span class="payment-label">回款率</span>
+                                            <span class="payment-value">70.3%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 班组/云站点标签页 -->
+                <div class="framework-tab-content" id="team-framework">
+                    <div class="module-grid">
+                        <div class="module-card">
+                            <div class="module-header">
+                                <h3><i class="fas fa-project-diagram"></i> 销售机会分析</h3>
+                            </div>
+                            <div class="workflow-analysis">
+                                <div class="business-flow">
+                                    <h4>销售流程转化分析</h4>
+                                    <div class="flow-chain">
+                                        <div class="flow-node">
+                                            <div class="node-title">销售线索</div>
+                                            <div class="node-count">245个</div>
+                                            <div class="node-source"></div>
+                                        </div>
+                                        <div class="flow-arrow">→</div>
+                                        <div class="flow-node">
+                                            <div class="node-title">销售机会</div>
+                                            <div class="node-count">97个</div>
+                                            <div class="node-source">ods_xbb_opportunity</div>
+                                            <div class="conversion-rate">转化率: 39.6%</div>
+                                        </div>
+                                        <div class="flow-arrow">→</div>
+                                        <div class="flow-node">
+                                            <div class="node-title">报价单</div>
+                                            <div class="node-count">67份</div>
+                                            <div class="node-source">ods_xbb_quotation</div>
+                                            <div class="conversion-rate">转化率: 69.1%</div>
+                                        </div>
+                                        <div class="flow-arrow">→</div>
+                                        <div class="flow-node">
+                                            <div class="node-title">签约合同</div>
+                                            <div class="node-count">46个</div>
+                                            <div class="node-source">ods_xbb_contract</div>
+                                            <div class="conversion-rate">转化率: 68.7%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="collaboration-metrics">
+                                    <h4>协同工作指标</h4>
+                                    <div class="collab-grid">
+                                        <div class="collab-item">
+                                            <span class="collab-label">跨部门项目</span>
+                                            <span class="collab-value">23个</span>
+                                        </div>
+                                        <div class="collab-item">
+                                            <span class="collab-label">协同人员覆盖</span>
+                                            <span class="collab-value">45人次</span>
+                                        </div>
+                                        <div class="collab-item">
+                                            <span class="collab-label">平均协同效率</span>
+                                            <span class="collab-value">85.2%</span>
+                                        </div>
+                                        <div class="collab-item">
+                                            <span class="collab-label">流程完成时间</span>
+                                            <span class="collab-value">平均28天</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加交互效果
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // 明细查询功能
+        function initDetailQuery() {
+            // 模拟数据
+            const mockData = {
+                customer: [
+                    { id: 1, name: '华润集团', contact: '张总', phone: '13800138001', status: '高风险', amount: 280, lastContact: '30天前' },
+                    { id: 2, name: '万科地产', contact: '李经理', phone: '13800138002', status: '需关注', amount: 450, lastContact: '15天前' },
+                    { id: 3, name: '中信证券', contact: '王总监', phone: '13800138003', status: '正常', amount: 380, lastContact: '3天前' },
+                    { id: 4, name: '招商银行', contact: '赵主管', phone: '13800138004', status: '正常', amount: 180, lastContact: '7天前' },
+                    { id: 5, name: '平安保险', contact: '陈经理', phone: '13800138005', status: '活跃', amount: 220, lastContact: '1天前' }
+                ],
+                opportunity: [
+                    { id: 1, title: '华润智能制造项目', customer: '华润集团', stage: '需求分析', probability: 60, amount: 280, owner: '张经理' },
+                    { id: 2, title: '万科数字化改造', customer: '万科地产', stage: '方案制定', probability: 80, amount: 450, owner: '李主管' },
+                    { id: 3, title: '中信系统升级', customer: '中信证券', stage: '商务谈判', probability: 90, amount: 380, owner: '王总监' }
+                ],
+                contract: [
+                    { id: 1, name: '华润设备采购合同', customer: '华润集团', amount: 280, status: '执行中', signDate: '2024-12-01', endDate: '2025-06-01' },
+                    { id: 2, name: '万科服务合同', customer: '万科地产', amount: 450, status: '即将到期', signDate: '2024-06-01', endDate: '2025-02-07' },
+                    { id: 3, name: '中信软件授权合同', customer: '中信证券', amount: 380, status: '执行中', signDate: '2024-10-01', endDate: '2025-02-15' }
+                ],
+                payment: [
+                    { id: 1, contract: '华润设备采购合同', amount: 280, received: 150, pending: 130, dueDate: '2025-03-01', status: '部分回款' },
+                    { id: 2, contract: '万科服务合同', amount: 450, received: 450, pending: 0, dueDate: '2025-01-15', status: '已完成' },
+                    { id: 3, contract: '中信软件授权合同', amount: 380, received: 200, pending: 180, dueDate: '2025-02-28', status: '待回款' }
+                ],
+                communication: [
+                    { id: 1, customer: '华润集团', type: '电话沟通', content: '讨论设备安装进度', date: '2025-01-01', owner: '张经理' },
+                    { id: 2, customer: '万科地产', type: '现场拜访', content: '合同续约洽谈', date: '2025-01-16', owner: '李主管' },
+                    { id: 3, customer: '中信证券', type: '邮件沟通', content: '系统使用培训安排', date: '2025-01-28', owner: '王总监' }
+                ]
+            };
+
+            let currentPage = 1;
+            const pageSize = 10;
+            let currentData = [];
+
+            // 查询按钮事件
+            const searchBtn = document.getElementById('searchBtn');
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    performSearch();
+                });
+            }
+
+            // 导出按钮事件
+            const exportBtn = document.getElementById('exportBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function() {
+                    exportData();
+                });
+            }
+
+            function performSearch() {
+                const queryType = document.getElementById('queryType').value;
+                const salesPerson = document.getElementById('salesPerson').value;
+                const statusFilter = document.getElementById('statusFilter').value;
+                const keyword = document.getElementById('keyword').value;
+                const minAmount = document.getElementById('minAmount').value;
+                const maxAmount = document.getElementById('maxAmount').value;
+
+                // 获取对应类型的数据
+                currentData = [...mockData[queryType]];
+
+                // 应用筛选条件
+                if (salesPerson) {
+                    currentData = currentData.filter(item => 
+                        item.owner === salesPerson || item.contact === salesPerson
+                    );
+                }
+
+                if (statusFilter) {
+                    currentData = currentData.filter(item => 
+                        item.status === statusFilter
+                    );
+                }
+
+                if (keyword) {
+                    currentData = currentData.filter(item => 
+                        JSON.stringify(item).toLowerCase().includes(keyword.toLowerCase())
+                    );
+                }
+
+                if (minAmount) {
+                    currentData = currentData.filter(item => 
+                        item.amount >= parseInt(minAmount)
+                    );
+                }
+
+                if (maxAmount) {
+                    currentData = currentData.filter(item => 
+                        item.amount <= parseInt(maxAmount)
+                    );
+                }
+
+                currentPage = 1;
+                renderTable();
+            }
+
+            function renderTable() {
+                const container = document.getElementById('queryResultsTable');
+                const queryType = document.getElementById('queryType').value;
+                
+                if (!container) return;
+
+                if (currentData.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6c757d;">暂无数据</div>';
+                    updatePagination();
+                    return;
+                }
+
+                const startIndex = (currentPage - 1) * pageSize;
+                const endIndex = Math.min(startIndex + pageSize, currentData.length);
+                const pageData = currentData.slice(startIndex, endIndex);
+
+                let tableHTML = '<table class="data-table"><thead><tr>';
+                
+                // 根据查询类型生成表头
+                switch(queryType) {
+                    case 'customer':
+                        tableHTML += '<th>客户名称</th><th>联系人</th><th>电话</th><th>状态</th><th>合同金额(万)</th><th>最后跟进</th>';
+                        break;
+                    case 'opportunity':
+                        tableHTML += '<th>项目名称</th><th>客户</th><th>阶段</th><th>成功率</th><th>预计金额(万)</th><th>负责人</th>';
+                        break;
+                    case 'contract':
+                        tableHTML += '<th>合同名称</th><th>客户</th><th>金额(万)</th><th>状态</th><th>签署日期</th><th>到期日期</th>';
+                        break;
+                    case 'payment':
+                        tableHTML += '<th>合同</th><th>总金额(万)</th><th>已回款(万)</th><th>待回款(万)</th><th>到期日期</th><th>状态</th>';
+                        break;
+                    case 'communication':
+                        tableHTML += '<th>客户</th><th>沟通方式</th><th>内容</th><th>日期</th><th>负责人</th>';
+                        break;
+                }
+                
+                tableHTML += '</tr></thead><tbody>';
+
+                // 生成表格数据
+                pageData.forEach(item => {
+                    tableHTML += '<tr>';
+                    switch(queryType) {
+                        case 'customer':
+                            tableHTML += `
+                                <td>${item.name}</td>
+                                <td>${item.contact}</td>
+                                <td>${item.phone}</td>
+                                <td><span class="status-badge status-${getStatusClass(item.status)}">${item.status}</span></td>
+                                <td>${item.amount}</td>
+                                <td>${item.lastContact}</td>
+                            `;
+                            break;
+                        case 'opportunity':
+                            tableHTML += `
+                                <td>${item.title}</td>
+                                <td>${item.customer}</td>
+                                <td>${item.stage}</td>
+                                <td>${item.probability}%</td>
+                                <td>${item.amount}</td>
+                                <td>${item.owner}</td>
+                            `;
+                            break;
+                        case 'contract':
+                            tableHTML += `
+                                <td>${item.name}</td>
+                                <td>${item.customer}</td>
+                                <td>${item.amount}</td>
+                                <td><span class="status-badge status-${getStatusClass(item.status)}">${item.status}</span></td>
+                                <td>${item.signDate}</td>
+                                <td>${item.endDate}</td>
+                            `;
+                            break;
+                        case 'payment':
+                            tableHTML += `
+                                <td>${item.contract}</td>
+                                <td>${item.amount}</td>
+                                <td>${item.received}</td>
+                                <td>${item.pending}</td>
+                                <td>${item.dueDate}</td>
+                                <td><span class="status-badge status-${getStatusClass(item.status)}">${item.status}</span></td>
+                            `;
+                            break;
+                        case 'communication':
+                            tableHTML += `
+                                <td>${item.customer}</td>
+                                <td>${item.type}</td>
+                                <td>${item.content}</td>
+                                <td>${item.date}</td>
+                                <td>${item.owner}</td>
+                            `;
+                            break;
+                    }
+                    tableHTML += '</tr>';
+                });
+
+                tableHTML += '</tbody></table>';
+                container.innerHTML = tableHTML;
+                updatePagination();
+            }
+
+            function getStatusClass(status) {
+                const statusMap = {
+                    '正常': 'active',
+                    '活跃': 'active',
+                    '已完成': 'active',
+                    '需关注': 'pending',
+                    '待回款': 'pending',
+                    '部分回款': 'pending',
+                    '即将到期': 'pending',
+                    '高风险': 'risk',
+                    '执行中': 'active'
+                };
+                return statusMap[status] || 'pending';
+            }
+
+            function updatePagination() {
+                const resultsCountEl = document.getElementById('resultsCount');
+                const pageInfoEl = document.getElementById('pageInfo');
+                
+                if (resultsCountEl) {
+                    resultsCountEl.textContent = `共找到 ${currentData.length} 条记录`;
+                }
+                
+                if (pageInfoEl) {
+                    const totalPages = Math.ceil(currentData.length / pageSize);
+                    pageInfoEl.textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+                }
+            }
+
+            function exportData() {
+                const queryType = document.getElementById('queryType').value;
+                const fileName = `${getQueryTypeName(queryType)}_${new Date().toISOString().split('T')[0]}.csv`;
+                alert(`正在导出 ${fileName}...\n共 ${currentData.length} 条记录`);
+            }
+
+            function getQueryTypeName(type) {
+                const names = {
+                    'customer': '客户明细',
+                    'opportunity': '销售机会',
+                    'contract': '合同明细', 
+                    'payment': '回款明细',
+                    'communication': '跟进记录'
+                };
+                return names[type] || type;
+            }
+
+            // 初始化时执行一次查询
+            setTimeout(() => {
+                performSearch();
+            }, 100);
+        }
+
+        // 原因分析标签页切换
+        function initAnalysisTabs() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    // 移除所有活跃状态
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 添加活跃状态
+                    this.classList.add('active');
+                    const targetContent = document.getElementById(targetTab + '-tab');
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // 统一分析框架标签页切换
+        function initUnifiedFrameworkTabs() {
+            const unifiedTabButtons = document.querySelectorAll('.unified-tab-btn');
+            const unifiedTabContents = document.querySelectorAll('.unified-tab-content');
+
+            unifiedTabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.dataset.unifiedTab;
+                    
+                    // 检查是否为明细查询按钮，如果是则跳转到React应用
+                    if (targetTab === 'detail-query') {
+                        // 跳转到数据查询2-营销数据页面
+                        const reactAppUrl = 'http://localhost:3013/marketing-report';
+                        window.open(reactAppUrl, '_blank');
+                        return;
+                    }
+                    
+                    // 移除所有活跃状态
+                    unifiedTabButtons.forEach(btn => btn.classList.remove('active'));
+                    unifiedTabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 添加活跃状态
+                    this.classList.add('active');
+                    const targetContent = document.getElementById(targetTab + '-unified');
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // 初始化所有功能
+        setTimeout(() => {
+            initUnifiedFrameworkTabs();
+            initDetailQuery();
+            initAnalysisTabs();
+            initFrameworkTabs();
+            createPerformanceAnalysisChart();
+            createEmployeePerformanceChart();
+        }, 500);
+    </script>
+</body>
+</html> 

@@ -6,7 +6,7 @@ interface DataAgentItem {
   id: string;
   name: string;
   description: string;
-  domain: string;
+  category: string;
   status: 'running' | 'stopped' | 'completed';
   lastRunTime?: string;
 }
@@ -24,35 +24,114 @@ const DataAgent: React.FC = () => {
     return <Tag color={color}>{text}</Tag>;
   };
 
+  const getCategoryTag = (category: string) => {
+    const categoryColors: Record<string, string> = {
+      '经营': 'gold',
+      '营销': 'geekblue',
+      '生产': 'green',
+      '质控': 'purple',
+      '研发': 'cyan',
+      '财务': 'blue',
+      '人事': 'orange',
+      '其他': 'default'
+    };
+    return <Tag color={categoryColors[category] || 'default'}>{category}</Tag>;
+  };
+
+  const categories = ['全部', '经营', '营销', '生产', '质控', '研发', '财务', '人事', '其他'];
+  const [activeCategory, setActiveCategory] = React.useState('全部');
+
+  const agentData: DataAgentItem[] = [
+    {
+      id: '1',
+      name: '生产效率分析Agent',
+      description: '分析生产线效率、产能利用率等关键指标',
+      category: '生产',
+      status: 'stopped',
+    },
+    {
+      id: '2',
+      name: '质量趋势分析Agent',
+      description: '分析产品质量趋势、不良率等指标',
+      category: '质控',
+      status: 'completed',
+      lastRunTime: '2024-01-20 10:30:00',
+    },
+    {
+      id: '3',
+      name: '供应链风险分析Agent',
+      description: '分析供应商交付、库存等风险指标',
+      category: '生产',
+      status: 'running',
+    },
+    {
+      id: '4',
+      name: '销售业绩分析Agent',
+      description: '分析销售数据、客户转化率等营销指标',
+      category: '营销',
+      status: 'completed',
+      lastRunTime: '2024-01-19 16:45:00',
+    },
+    {
+      id: '5',
+      name: '财务指标分析Agent',
+      description: '分析财务报表、现金流等财务健康指标',
+      category: '财务',
+      status: 'stopped',
+    },
+    {
+      id: '6',
+      name: '研发项目分析Agent',
+      description: '分析研发项目进度、资源利用情况',
+      category: '研发',
+      status: 'running',
+    },
+    {
+      id: '7',
+      name: '人才流动分析Agent',
+      description: '分析员工流动率、岗位满意度等人事数据',
+      category: '人事',
+      status: 'completed',
+      lastRunTime: '2024-01-18 09:15:00',
+    },
+    {
+      id: '8',
+      name: '经营风险分析Agent',
+      description: '分析企业经营指标、市场份额等战略数据',
+      category: '经营',
+      status: 'running',
+    },
+    {
+      id: '9',
+      name: '数据质量分析Agent',
+      description: '分析系统数据质量、异常值等指标',
+      category: '其他',
+      status: 'stopped',
+    },
+  ];
+
+  const filteredAgents = activeCategory === '全部' 
+    ? agentData 
+    : agentData.filter(agent => agent.category === activeCategory);
+
   return (
     <div>
-      <Card title="数据Agent列表" style={{ marginBottom: 24 }}>
+      <Card title="数据Agent列表" style={{ marginBottom: 24 }} extra={
+        <Space>
+          {categories.map(category => (
+            <Button 
+              key={category}
+              type={activeCategory === category ? 'primary' : 'default'}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+            </Button>
+          ))}
+        </Space>
+      }>
         <List
           grid={{ gutter: 16, column: 3 }}
-          dataSource={[
-            {
-              id: '1',
-              name: '生产效率分析Agent',
-              description: '分析生产线效率、产能利用率等关键指标',
-              domain: '生产',
-              status: 'stopped',
-            },
-            {
-              id: '2',
-              name: '质量分析Agent',
-              description: '分析产品质量趋势、不良率等指标',
-              domain: '质量',
-              status: 'completed',
-              lastRunTime: '2024-01-20 10:30:00',
-            },
-            {
-              id: '3',
-              name: '供应链风险分析Agent',
-              description: '分析供应商交付、库存等风险指标',
-              domain: '供应链',
-              status: 'running',
-            },
-          ]}
+          dataSource={filteredAgents}
           renderItem={(item) => (
             <List.Item>
               <Card
@@ -76,7 +155,7 @@ const DataAgent: React.FC = () => {
                 ]}
               >
                 <p>{item.description}</p>
-                <p>业务领域：{item.domain}</p>
+                <p>业务类别：{getCategoryTag(item.category)}</p>
                 {item.lastRunTime && <p>上次运行：{item.lastRunTime}</p>}
               </Card>
             </List.Item>

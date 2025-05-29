@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Steps, Typography, Tag, Space } from 'antd';
+import { Card, Typography, Tag, Space, Table } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
@@ -7,16 +7,9 @@ const { Text } = Typography;
 interface Task {
   id: string;
   title: string;
-  type: string;
-  currentStep: number;
-  totalSteps: number;
-  steps: {
-    title: string;
-    description: string;
-    status: 'wait' | 'process' | 'finish' | 'error';
-  }[];
-  lastUpdateTime: string;
   status: 'pending' | 'processing' | 'completed' | 'error';
+  submitTime: string;
+  startTime: string;
 }
 
 interface TaskProgressProps {
@@ -48,6 +41,50 @@ const TaskProgress: React.FC<TaskProgressProps> = ({ tasks = [] }) => {
     }
   };
 
+  const getStatusText = (status: Task['status']) => {
+    switch (status) {
+      case 'completed':
+        return '已完成';
+      case 'processing':
+        return '进行中';
+      case 'pending':
+        return '待开始';
+      case 'error':
+        return '异常';
+      default:
+        return '';
+    }
+  };
+
+  const columns = [
+    {
+      title: '任务名称',
+      dataIndex: 'title',
+      key: 'title',
+      render: (text: string) => <Text strong>{text}</Text>,
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: Task['status']) => (
+        <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
+          {getStatusText(status)}
+        </Tag>
+      ),
+    },
+    {
+      title: '提交时间',
+      dataIndex: 'submitTime',
+      key: 'submitTime',
+    },
+    {
+      title: '开始时间',
+      dataIndex: 'startTime',
+      key: 'startTime',
+    },
+  ];
+
   return (
     <Card
       title={
@@ -58,30 +95,13 @@ const TaskProgress: React.FC<TaskProgressProps> = ({ tasks = [] }) => {
       }
       className="task-progress-section"
     >
-      {tasks.map((task) => (
-        <div key={task.id} style={{ marginBottom: '24px' }}>
-          <div style={{ marginBottom: '12px' }}>
-            <Space>
-              <Text strong>{task.title}</Text>
-              <Tag color={getStatusColor(task.status)} icon={getStatusIcon(task.status)}>
-                {task.status === 'completed' ? '已完成' :
-                 task.status === 'processing' ? '进行中' :
-                 task.status === 'pending' ? '待开始' : '异常'}
-              </Tag>
-              <Text type="secondary" style={{ fontSize: '12px' }}>
-                最后更新: {task.lastUpdateTime}
-              </Text>
-            </Space>
-          </div>
-          <Steps
-            current={task.currentStep}
-            percent={Math.round((task.currentStep / task.totalSteps) * 100)}
-            items={task.steps}
-            size="small"
-            style={{ marginLeft: '8px' }}
-          />
-        </div>
-      ))}
+      <Table
+        dataSource={tasks.slice(0, 3)}
+        columns={columns}
+        pagination={false}
+        size="small"
+        rowKey="id"
+      />
     </Card>
   );
 };

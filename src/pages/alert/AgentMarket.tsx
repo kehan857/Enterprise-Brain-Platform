@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Typography, Tabs, Row, Col, Button, Tag, Modal, Form, Select, message, Divider, Radio } from 'antd';
-import { PlayCircleOutlined, SettingOutlined, BellOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
+import { PlayCircleOutlined, SettingOutlined, BellOutlined, UserOutlined, TeamOutlined, StopOutlined } from '@ant-design/icons';
 import type { TabsProps } from 'antd';
 
 const { Title, Paragraph } = Typography;
@@ -38,7 +38,7 @@ const mockAgents: AgentItem[] = [
     id: '1',
     name: '设备故障预警 Agent',
     description: '监控设备运行参数，预测潜在故障风险，提前发出预警。',
-    category: '设备状态',
+    category: '生产',
     applicableScenarios: '适用于需要预测性维护的生产设备',
     requiredData: '设备运行参数、历史故障记录',
     status: 'not_enabled'
@@ -47,7 +47,7 @@ const mockAgents: AgentItem[] = [
     id: '2',
     name: '产线效率监控 Agent',
     description: '实时监控产线OEE指标，当效率低于阈值时发出告警。',
-    category: '生产效率',
+    category: '生产',
     applicableScenarios: '适用于自动化生产线效率监控',
     requiredData: '产线生产数据、计划产量',
     status: 'enabled'
@@ -56,7 +56,7 @@ const mockAgents: AgentItem[] = [
     id: '3',
     name: '质量异常检测 Agent',
     description: '分析产品质量数据，识别异常并及时预警。',
-    category: '质量控制',
+    category: '质控',
     applicableScenarios: '适用于产品质量监控场景',
     requiredData: '质检数据、工艺参数',
     status: 'not_enabled'
@@ -65,14 +65,82 @@ const mockAgents: AgentItem[] = [
     id: '4',
     name: '安全合规监控 Agent',
     description: '监控安全指标，确保生产过程符合安全规范。',
-    category: '安全合规',
+    category: '生产',
     applicableScenarios: '适用于需要严格安全管控的场景',
     requiredData: '安全监测数据、操作记录',
+    status: 'enabled'
+  },
+  {
+    id: '5',
+    name: '销售异常监控 Agent',
+    description: '监控销售数据异常波动，及时发现销售问题并预警。',
+    category: '营销',
+    applicableScenarios: '适用于销售业绩监控',
+    requiredData: '销售数据、市场活动数据',
+    status: 'not_enabled'
+  },
+  {
+    id: '6',
+    name: '财务异常预警 Agent',
+    description: '监控财务指标异常波动，及时发现财务风险。',
+    category: '财务',
+    applicableScenarios: '适用于财务风险管理',
+    requiredData: '财务数据、交易记录',
+    status: 'enabled'
+  },
+  {
+    id: '7',
+    name: '核心员工流失预警 Agent',
+    description: '基于员工行为数据，预测高价值员工离职风险。',
+    category: '人事',
+    applicableScenarios: '适用于人才保留与管理',
+    requiredData: '员工绩效数据、沟通记录、考勤数据',
+    status: 'not_enabled'
+  },
+  {
+    id: '8',
+    name: '研发进度预警 Agent',
+    description: '监控研发项目进度，发现延期风险并及时预警。',
+    category: '研发',
+    applicableScenarios: '适用于研发项目管理',
+    requiredData: '项目计划、工时记录、代码提交记录',
+    status: 'enabled'
+  },
+  {
+    id: '9',
+    name: '经营风险监控 Agent',
+    description: '监控企业关键经营指标，及时发现经营风险。',
+    category: '经营',
+    applicableScenarios: '适用于企业战略管理',
+    requiredData: '经营数据、市场数据、竞争对手数据',
+    status: 'not_enabled'
+  },
+  {
+    id: '10',
+    name: '数据质量监控 Agent',
+    description: '监控企业数据质量，发现数据异常并预警。',
+    category: '其他',
+    applicableScenarios: '适用于数据治理与管理',
+    requiredData: '各系统数据源、数据标准规则',
     status: 'enabled'
   }
 ];
 
-const categories = ['设备状态', '生产效率', '质量控制', '安全合规'];
+const categories = ['全部', '经营', '营销', '生产', '质控', '研发', '财务', '人事', '其他'];
+
+const getCategoryTag = (category: string) => {
+  const categoryColors: Record<string, string> = {
+    '经营': 'gold',
+    '营销': 'geekblue',
+    '生产': 'green',
+    '质控': 'purple',
+    '研发': 'cyan',
+    '财务': 'blue',
+    '人事': 'orange',
+    '其他': 'default'
+  };
+  return <Tag color={categoryColors[category] || 'default'}>{category}</Tag>;
+};
 
 const getStatusTag = (status: AgentItem['status']) => {
   const statusConfig = {
@@ -102,6 +170,14 @@ const AgentMarket: React.FC = () => {
     }, 2000);
   };
 
+  const handleDisableAgent = (agent: AgentItem) => {
+    message.loading({ content: '正在停用Agent...', key: 'disableAgent' });
+    // 模拟停用过程
+    setTimeout(() => {
+      message.success({ content: '告警Agent已停用', key: 'disableAgent' });
+    }, 1000);
+  };
+
   const handleNotifyModalOk = () => {
     form.validateFields().then(values => {
       console.log('表单提交的值：', values);
@@ -111,16 +187,10 @@ const AgentMarket: React.FC = () => {
     });
   };
 
-  const items: TabsProps['items'] = [
-    {
-      key: '全部',
-      label: '全部',
-    },
-    ...categories.map(category => ({
-      key: category,
-      label: category,
-    }))
-  ];
+  const items: TabsProps['items'] = categories.map(category => ({
+    key: category,
+    label: category,
+  }));
 
   const filteredAgents = activeCategory === '全部' 
     ? mockAgents 
@@ -199,6 +269,15 @@ const AgentMarket: React.FC = () => {
                     style={{ fontSize: '12px', padding: '4px 8px', height: 'auto' }}
                   >
                     通知配置
+                  </Button>,
+                  <Button 
+                    type="link" 
+                    icon={<StopOutlined />}
+                    onClick={() => handleDisableAgent(agent)}
+                    disabled={agent.status !== 'enabled'}
+                    style={{ fontSize: '12px', padding: '4px 8px', height: 'auto', color: '#ff4d4f' }}
+                  >
+                    停用
                   </Button>
                 ]}
               >
@@ -206,6 +285,9 @@ const AgentMarket: React.FC = () => {
                   <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 16 }}>
                     {agent.description}
                   </Paragraph>
+                  <div style={{ marginBottom: 8 }}>
+                    {getCategoryTag(agent.category)}
+                  </div>
                   <Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 8 }}>
                     <strong>适用场景：</strong>{agent.applicableScenarios}
                   </Paragraph>

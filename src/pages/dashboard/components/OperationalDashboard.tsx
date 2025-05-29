@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Table, Tag, Space, Button, Grid } from 'antd';
+import { Card, Row, Col, Table, Tag, Space, Button, Grid, Modal, Descriptions } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import EnterpriseDiagnosis from '@/components/EnterpriseDiagnosis';
 import GuideHelper from '@/components/GuideHelper';
 import AIAssistant from '@/components/AIAssistant';
 import FloatingButton from '@/components/AIAssistant/FloatingButton';
@@ -10,17 +9,18 @@ import TaskProgress from '@/components/TaskProgress';
 const { useBreakpoint } = Grid;
 
 const OperationalDashboard: React.FC = () => {
-  const [showDiagnosis, setShowDiagnosis] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [isFirstVisit, setIsFirstVisit] = useState(true);
+  const [isFirstVisit, setIsFirstVisit] = useState(false);
+  const [alertDetailVisible, setAlertDetailVisible] = useState(false);
+  const [currentAlert, setCurrentAlert] = useState<any>(null);
   const screens = useBreakpoint();
 
   useEffect(() => {
     // 检查是否首次访问
     const visited = localStorage.getItem('dashboard_visited');
     if (!visited) {
-      setShowDiagnosis(true);
+      setShowGuide(true);
       setIsFirstVisit(true);
       localStorage.setItem('dashboard_visited', 'true');
     }
@@ -37,38 +37,29 @@ const OperationalDashboard: React.FC = () => {
   const taskProgressData = [
     {
       id: '1',
-      title: '企业问诊',
-      type: 'diagnosis',
-      currentStep: 2,
-      totalSteps: 4,
-      steps: [
-        { title: '基础信息', description: '已完成', status: 'finish' as const },
-        { title: '问卷调查', description: '已完成', status: 'finish' as const },
-        { title: '诊断分析', description: '进行中', status: 'process' as const },
-        { title: '报告生成', description: '待完成', status: 'wait' as const },
-      ],
-      lastUpdateTime: '2024-01-03 15:30:00',
+      title: '营销数据模型任务',
       status: 'processing' as const,
+      submitTime: '2025-05-08 04:00:29',
+      startTime: '2025-05-08 04:00:29',
     },
     {
       id: '2',
-      title: 'ERP数据接入',
-      type: 'data_integration',
-      currentStep: 1,
-      totalSteps: 4,
-      steps: [
-        { title: '连接配置', description: '已完成', status: 'finish' as const },
-        { title: '字段映射', description: '待开始', status: 'wait' as const },
-        { title: '数据验证', description: '待开始', status: 'wait' as const },
-        { title: '启用同步', description: '待开始', status: 'wait' as const },
-      ],
-      lastUpdateTime: '2024-01-03 14:20:00',
+      title: '生产数据模型任务',
       status: 'processing' as const,
+      submitTime: '2025-05-08 04:00:27',
+      startTime: '2025-05-08 04:00:27',
+    },
+    {
+      id: '3',
+      title: '供应链数据模型任务',
+      status: 'completed' as const,
+      submitTime: '2025-05-08 04:00:27',
+      startTime: '2025-05-08 04:00:27',
     },
   ];
 
   // Agent告警数据
-  const agentAlerts = [
+  const [agentAlerts, setAgentAlerts] = useState([
     {
       key: '1',
       title: '设备A温度超标',
@@ -76,6 +67,7 @@ const OperationalDashboard: React.FC = () => {
       level: '高',
       time: '2024-01-03 14:30:00',
       status: '未处理',
+      description: '设备A的温度已经超过安全阈值，当前温度为95°C，安全阈值为85°C。请立即检查冷却系统是否正常工作。',
     },
     {
       key: '2',
@@ -83,16 +75,19 @@ const OperationalDashboard: React.FC = () => {
       type: '生产告警',
       level: '中',
       time: '2024-01-03 13:15:00',
-      status: '处理中',
+      status: '已处理',
+      description: '产线B的生产效率低于预期目标，当前产能仅为计划的78%。可能与上午的设备调整有关。',
     },
-  ];
-
-  const handleDiagnosisClose = () => {
-    setShowDiagnosis(false);
-    if (isFirstVisit) {
-      setShowGuide(true);
-    }
-  };
+    {
+      key: '3',
+      title: '原材料库存不足预警',
+      type: '库存告警',
+      level: '低',
+      time: '2024-01-03 11:45:00',
+      status: '已忽略',
+      description: '主要原材料A的库存低于安全水平，当前库存可支持生产5天。建议及时补充库存。',
+    },
+  ]);
 
   const handleGuideFinish = () => {
     setShowGuide(false);
@@ -137,21 +132,36 @@ const OperationalDashboard: React.FC = () => {
         >
           我要提问
         </Button>
-        <div style={{ marginTop: '10px', color: '#8c8c8c' }}>
-          今日已解答48个问题，准确率98%
-        </div>
       </div>
     </Card>
   );
 
+  // 处理告警处理
+  const handleProcessAlert = (key: string) => {
+    setAgentAlerts(prevAlerts => 
+      prevAlerts.map(alert => 
+        alert.key === key ? { ...alert, status: '已处理' } : alert
+      )
+    );
+  };
+
+  // 处理告警忽略
+  const handleIgnoreAlert = (key: string) => {
+    setAgentAlerts(prevAlerts => 
+      prevAlerts.map(alert => 
+        alert.key === key ? { ...alert, status: '已忽略' } : alert
+      )
+    );
+  };
+
+  // 处理查看告警详情
+  const handleViewAlert = (record: any) => {
+    setCurrentAlert(record);
+    setAlertDetailVisible(true);
+  };
+
   return (
     <div className="operational-dashboard">
-      {/* 企业问诊对话框 */}
-      <EnterpriseDiagnosis
-        visible={showDiagnosis}
-        onClose={handleDiagnosisClose}
-      />
-
       {/* 新手引导 */}
       <GuideHelper
         type="tour"
@@ -165,7 +175,6 @@ const OperationalDashboard: React.FC = () => {
         visible={showAIAssistant}
         onClose={() => setShowAIAssistant(false)}
         industryType="制造业"
-        isGlobal={true}
       />
 
       {/* 任务进展和智能助手区域 */}
@@ -204,15 +213,36 @@ const OperationalDashboard: React.FC = () => {
                   ),
                 },
                 { title: '时间', dataIndex: 'time' },
-                { title: '状态', dataIndex: 'status' },
+                { 
+                  title: '状态', 
+                  dataIndex: 'status',
+                  render: (status: string) => {
+                    const statusConfig = {
+                      '未处理': { color: 'error' },
+                      '已处理': { color: 'success' },
+                      '已忽略': { color: 'default' }
+                    };
+                    return (
+                      <Tag color={statusConfig[status as keyof typeof statusConfig].color}>
+                        {status}
+                      </Tag>
+                    );
+                  }
+                },
                 {
                   title: '操作',
                   key: 'action',
                   render: (_: any, record: any) => (
                     <Space size="small">
-                      <Button type="link" size="small">处理</Button>
                       {record.status === '未处理' && (
-                        <Button type="link" size="small">忽略</Button>
+                        <>
+                          <Button type="link" size="small" onClick={() => handleViewAlert(record)}>查看</Button>
+                          <Button type="link" size="small" onClick={() => handleProcessAlert(record.key)}>处理</Button>
+                          <Button type="link" size="small" onClick={() => handleIgnoreAlert(record.key)}>忽略</Button>
+                        </>
+                      )}
+                      {record.status !== '未处理' && (
+                        <Button type="link" size="small" onClick={() => handleViewAlert(record)}>查看</Button>
                       )}
                     </Space>
                   ),
@@ -222,6 +252,58 @@ const OperationalDashboard: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* 告警详情模态框 */}
+      <Modal
+        title="告警详情"
+        open={alertDetailVisible}
+        onCancel={() => setAlertDetailVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setAlertDetailVisible(false)}>
+            关闭
+          </Button>,
+          currentAlert && currentAlert.status === '未处理' && (
+            <>
+              <Button key="process" type="primary" onClick={() => {
+                handleProcessAlert(currentAlert.key);
+                setAlertDetailVisible(false);
+              }}>
+                处理
+              </Button>
+              <Button key="ignore" onClick={() => {
+                handleIgnoreAlert(currentAlert.key);
+                setAlertDetailVisible(false);
+              }}>
+                忽略
+              </Button>
+            </>
+          )
+        ]}
+      >
+        {currentAlert && (
+          <Descriptions column={1} bordered>
+            <Descriptions.Item label="告警内容">{currentAlert.title}</Descriptions.Item>
+            <Descriptions.Item label="告警类型">{currentAlert.type}</Descriptions.Item>
+            <Descriptions.Item label="告警级别">
+              <Tag color={currentAlert.level === '高' ? 'error' : currentAlert.level === '中' ? 'warning' : 'success'}>
+                {currentAlert.level}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="告警时间">{currentAlert.time}</Descriptions.Item>
+            <Descriptions.Item label="告警状态">
+              <Tag 
+                color={
+                  currentAlert.status === '未处理' ? 'error' : 
+                  currentAlert.status === '已处理' ? 'success' : 'default'
+                }
+              >
+                {currentAlert.status}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="详细描述">{currentAlert.description}</Descriptions.Item>
+          </Descriptions>
+        )}
+      </Modal>
 
       {/* 悬浮智能助手按钮 */}
       <FloatingButton unreadCount={0} />

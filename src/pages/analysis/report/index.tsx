@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Card, List, Tag, Button, Space, Tabs, Alert, message } from 'antd';
+import { Card, List, Tag, Button, Space, Tabs, Alert, message, Modal } from 'antd';
 import { EyeOutlined, DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
+import DocumentPreview from '@/components/DocumentPreview';
 import './index.less';
 
 interface AnalysisReport {
@@ -22,8 +23,24 @@ const AnalysisReport: React.FC = () => {
   const navigate = useNavigate();
   const allReports: AnalysisReport[] = [
     {
+      id: '0',
+      title: '2025年1月营销管理分析报表',
+      domain: '营销',
+      createTime: '2025-01-31 09:30:00',
+      status: 'new',
+      summary: '基于销帮帮(XBB)系统数据的综合营销分析与决策支持，涵盖销售转化、客户管理、业绩分析等核心指标',
+      findings: [
+        '销售转化率7.1%超行业平均水平42%',
+        '月度目标完成81.9%，预计提前完成',
+        '3家重点客户存在流失风险，需重点关注',
+        '656万应收账款需制定分阶段回收方案'
+      ],
+      creator: '系统生成',
+      type: '月度报表'
+    },
+    {
       id: '1',
-      title: '2024年1月生产效率分析报告',
+      title: '2024年1月生产效率分析报表',
       domain: '生产',
       createTime: '2024-01-20 15:30:00',
       status: 'new',
@@ -34,11 +51,11 @@ const AnalysisReport: React.FC = () => {
         '原材料库存周转率提升2.1%',
       ],
       creator: '张三',
-      type: '周期性报告'
+      type: '周期性报表'
     },
     {
       id: '2',
-      title: '2024年1月质量分析报告',
+      title: '2024年1月质量分析报表',
       domain: '质量',
       createTime: '2024-01-20 14:00:00',
       status: 'read',
@@ -49,11 +66,11 @@ const AnalysisReport: React.FC = () => {
         '质量问题主要集中在表面处理环节',
       ],
       creator: '李四',
-      type: '周期性报告'
+      type: '周期性报表'
     },
     {
       id: '3',
-      title: '供应链异常分析报告',
+      title: '供应链异常分析报表',
       domain: '供应链',
       createTime: '2024-01-19 09:45:00',
       status: 'read',
@@ -64,11 +81,11 @@ const AnalysisReport: React.FC = () => {
         '建议增加关键原材料安全库存',
       ],
       creator: '王五',
-      type: '异常报告'
+      type: '异常报表'
     },
     {
       id: '4',
-      title: '设备健康状态分析报告',
+      title: '设备健康状态分析报表',
       domain: '设备',
       createTime: '2024-01-18 16:30:00',
       status: 'new',
@@ -79,11 +96,11 @@ const AnalysisReport: React.FC = () => {
         '装配线传感器数据波动，需校准',
       ],
       creator: '赵六',
-      type: '健康报告'
+      type: '健康报表'
     },
     {
       id: '5',
-      title: '成本效益分析报告',
+      title: '成本效益分析报表',
       domain: '财务',
       createTime: '2024-01-17 14:20:00',
       status: 'read',
@@ -94,17 +111,18 @@ const AnalysisReport: React.FC = () => {
         '人工效率提升4.1%',
       ],
       creator: '张三',
-      type: '专题报告'
+      type: '专题报表'
     }
   ];
 
   const [filteredReports, setFilteredReports] = useState<AnalysisReport[]>(allReports);
-  const [currentTab, setCurrentTab] = useState<string>('all');
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [currentReport, setCurrentReport] = useState<AnalysisReport | null>(null);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
     { label: '全部', value: 'all' },
-    { label: '报告标题', value: 'title' },
+    { label: '报表标题', value: 'title' },
     { label: '生成人', value: 'creator' },
     { label: '业务域', value: 'domain' }
   ];
@@ -117,6 +135,7 @@ const AnalysisReport: React.FC = () => {
       field: 'domain',
       span: 8,
       options: [
+        { label: '营销', value: '营销' },
         { label: '生产', value: '生产' },
         { label: '质量', value: '质量' },
         { label: '供应链', value: '供应链' },
@@ -126,14 +145,14 @@ const AnalysisReport: React.FC = () => {
     },
     { 
       type: 'select', 
-      label: '报告类型', 
+      label: '报表类型', 
       field: 'type',
       span: 8,
       options: [
-        { label: '周期性报告', value: '周期性报告' },
-        { label: '异常报告', value: '异常报告' },
-        { label: '健康报告', value: '健康报告' },
-        { label: '专题报告', value: '专题报告' }
+        { label: '问答型', value: '问答型' },
+        { label: '分析型', value: '分析型' },
+        { label: '监控型', value: '监控型' },
+        { label: '预测型', value: '预测型' }
       ]
     },
     { 
@@ -142,8 +161,9 @@ const AnalysisReport: React.FC = () => {
       field: 'status',
       span: 8,
       options: [
-        { label: '未读', value: 'new' },
-        { label: '已读', value: 'read' }
+        { label: '生成中', value: 'generating' },
+        { label: '已生成', value: 'generated' },
+        { label: '生成失败', value: 'failed' }
       ]
     },
     { 
@@ -171,10 +191,11 @@ const AnalysisReport: React.FC = () => {
   // 快捷筛选
   const quickFilters: QuickFilter[] = [
     { label: '未读', value: { status: 'new' }, color: 'red' },
-    { label: '生产报告', value: { domain: '生产' }, color: 'blue' },
-    { label: '质量报告', value: { domain: '质量' }, color: 'green' },
-    { label: '供应链报告', value: { domain: '供应链' }, color: 'purple' },
-    { label: '设备报告', value: { domain: '设备' }, color: 'orange' }
+    { label: '营销报表', value: { domain: '营销' }, color: 'cyan' },
+    { label: '生产报表', value: { domain: '生产' }, color: 'blue' },
+    { label: '质量报表', value: { domain: '质量' }, color: 'green' },
+    { label: '供应链报表', value: { domain: '供应链' }, color: 'purple' },
+    { label: '设备报表', value: { domain: '设备' }, color: 'orange' }
   ];
 
   // 处理搜索
@@ -246,22 +267,7 @@ const AnalysisReport: React.FC = () => {
       });
     }
     
-    // 应用当前选项卡过滤
-    if (currentTab !== 'all') {
-      filtered = filtered.filter(item => item.domain === currentTab);
-    }
-    
     setFilteredReports(filtered);
-  };
-
-  // 处理选项卡切换
-  const handleTabChange = (key: string) => {
-    setCurrentTab(key);
-    if (key === 'all') {
-      setFilteredReports(allReports);
-    } else {
-      setFilteredReports(allReports.filter(item => item.domain === key));
-    }
   };
 
   // 跳转到报表中心
@@ -269,9 +275,43 @@ const AnalysisReport: React.FC = () => {
     navigate('/report?source=analysis');
   };
 
+  // 处理报告预览
+  const handlePreviewReport = (report: AnalysisReport) => {
+    // 特殊处理2025年1月营销管理分析报表，外链跳转
+    if (report.id === '0' && report.title.includes('2025年1月营销管理分析报表')) {
+      window.open('./marketing_report.html', '_blank');
+      
+      // 标记为已读
+      if (report.status === 'new') {
+        const updatedReports = allReports.map(item => 
+          item.id === report.id ? { ...item, status: 'read' as const } : item
+        );
+        setFilteredReports(filteredReports.map(item => 
+          item.id === report.id ? { ...item, status: 'read' as const } : item
+        ));
+      }
+      return;
+    }
+
+    // 其他报表使用原有的预览逻辑
+    setCurrentReport(report);
+    setPreviewModalVisible(true);
+    
+    // 如果是新报告，标记为已读
+    if (report.status === 'new') {
+      const updatedAllReports = allReports.map(item => 
+        item.id === report.id ? { ...item, status: 'read' as const } : item
+      );
+      // 更新过滤后的报告列表
+      setFilteredReports(filteredReports.map(item => 
+        item.id === report.id ? { ...item, status: 'read' as const } : item
+      ));
+    }
+  };
+
   // 处理报告下载
   const handleDownloadReport = (report: AnalysisReport) => {
-    message.success(`开始下载报告：${report.title}`);
+    message.success(`开始下载报表：${report.title}`);
     // 这里实现实际的下载逻辑，可以使用window.open等方式
     // 模拟下载行为
     setTimeout(() => {
@@ -283,7 +323,7 @@ const AnalysisReport: React.FC = () => {
   const renderListItem = (item: AnalysisReport) => (
     <List.Item
       actions={[
-        <Button type="link" icon={<EyeOutlined />} onClick={goToReportCenter}>查看</Button>,
+        <Button type="link" icon={<EyeOutlined />} onClick={() => handlePreviewReport(item)}>查看</Button>,
         <Button type="link" icon={<DownloadOutlined />} onClick={() => handleDownloadReport(item)}>下载</Button>,
       ]}
     >
@@ -301,64 +341,15 @@ const AnalysisReport: React.FC = () => {
     </List.Item>
   );
 
-  // 生成Tab项
-  const tabItems = [
-    {
-      key: 'all',
-      label: '全部报告',
-      children: (
-        <List
-          dataSource={filteredReports}
-          renderItem={renderListItem}
-        />
-      ),
-    },
-    {
-      key: '生产',
-      label: '生产报告',
-      children: (
-        <List
-          dataSource={filteredReports}
-          renderItem={renderListItem}
-        />
-      ),
-    },
-    {
-      key: '质量',
-      label: '质量报告',
-      children: (
-        <List
-          dataSource={filteredReports}
-          renderItem={renderListItem}
-        />
-      ),
-    },
-    {
-      key: '供应链',
-      label: '供应链报告',
-      children: (
-        <List
-          dataSource={filteredReports}
-          renderItem={renderListItem}
-        />
-      ),
-    },
-  ];
-
   return (
     <div className="analysis-report-page">
       <Card>
         <Alert 
-          message="分析报告"
-          description="所有由智能分析中心生成的分析报告都会显示在此列表中。详细报告内容请点击'查看'按钮前往报表中心查看。"
+          message="分析报表"
+          description="所有由智能分析中心生成的分析报表都会显示在此列表中。点击'查看'按钮可直接预览报表内容。"
           type="info"
           showIcon
           style={{ marginBottom: 16 }}
-          action={
-            <Button type="primary" onClick={goToReportCenter}>
-              前往报表中心查看完整报告
-            </Button>
-          }
         />
         
         <div className="header-actions">
@@ -375,11 +366,41 @@ const AnalysisReport: React.FC = () => {
           </div>
         </div>
 
-        <Tabs
-          defaultActiveKey="all"
-          items={tabItems}
-          onChange={handleTabChange}
+        {/* 直接显示报表列表，不使用选项卡 */}
+        <List
+          dataSource={filteredReports}
+          renderItem={renderListItem}
+          style={{ marginTop: 16 }}
         />
+        
+        {/* 报表预览模态框 */}
+        <Modal
+          title={currentReport?.title || '报表预览'}
+          open={previewModalVisible}
+          onCancel={() => setPreviewModalVisible(false)}
+          width={800}
+          footer={[
+            <Button key="download" type="primary" onClick={() => {
+              if (currentReport) {
+                handleDownloadReport(currentReport);
+              }
+            }}>
+              下载报表
+            </Button>,
+            <Button key="close" onClick={() => setPreviewModalVisible(false)}>
+              关闭
+            </Button>
+          ]}
+          bodyStyle={{ height: '70vh', padding: 0, overflow: 'hidden' }}
+        >
+          {currentReport && (
+            <DocumentPreview 
+              type="pdf"
+              url={`https://arxiv.org/pdf/2003.08934.pdf`} // 使用示例PDF
+              loading={false}
+            />
+          )}
+        </Modal>
       </Card>
     </div>
   );

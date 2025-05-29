@@ -1,5 +1,5 @@
 import { useState, Suspense, useEffect } from 'react';
-import { Layout, Menu, Spin, Button, Space, Drawer, Dropdown } from 'antd';
+import { Layout, Menu, Spin, Button, Space, Drawer, Dropdown, Tag } from 'antd';
 import type { MenuProps } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -17,8 +17,14 @@ import {
   CompassOutlined,
   MessageOutlined,
   QuestionCircleOutlined,
+  LinkOutlined,
+  FlagOutlined,
+  PieChartOutlined,
+  LineChartOutlined,
+  AreaChartOutlined,
+  FundOutlined,
+  DownloadOutlined
 } from '@ant-design/icons';
-import EnterpriseDiagnosis from '@/components/EnterpriseDiagnosis';
 import GuideHelper from '@/components/GuideHelper';
 
 const { Header, Sider, Content } = Layout;
@@ -37,18 +43,57 @@ const menuItems: MenuItem[] = [
     label: '数据管理',
     className: 'ant-menu-submenu-data',
     children: [
-      { key: 'data-source', label: '数据源管理' },
-      { key: 'data-template', label: '线下数据上传' },
-      { key: 'data-mapping', label: '数据映射管理' },
+      { 
+        key: 'data-guide', 
+        label: '数据指引',
+      },
+      { 
+        key: 'data-source-new', 
+        label: '数据源',
+      },
+      { 
+        key: 'data-collection-new', 
+        label: '数据采集',
+      },
+      { 
+        key: 'data-collection', 
+        label: '数据治理',
+      }
     ],
   },
   {
-    key: 'knowledge',
-    icon: <BookOutlined />,
-    label: '知识管理',
+    key: 'data-query',
+    icon: <DatabaseOutlined />,
+    label: '数据查询',
+  },
+  {
+    key: 'data-query-2',
+    icon: <BarChartOutlined />,
+    label: '数据查询2',
     children: [
-      { key: 'doc-manage', label: '文档管理' },
-      { key: 'faq-manage', label: 'FAQ管理' },
+      { key: 'marketing-report', label: '营销数据' },
+      { key: 'customer-data', label: '客户数据' },
+      { key: 'product-data', label: '产品数据' },
+      { key: 'sales-data', label: '销售数据' },
+    ],
+  },
+  {
+    key: 'indicator',
+    icon: <PieChartOutlined />,
+    label: '指标管理',
+    children: [
+      { key: 'data-indicator', label: '标准数据指标' },
+      { key: 'data-model', label: '标准数据模型' },
+    ],
+  },
+  {
+    key: 'target',
+    icon: <AuditOutlined />,
+    label: '目标管理',
+    children: [
+      { key: 'target/setting', label: '目标设置' },
+      { key: 'target/implementation', label: '目标实施' },
+      { key: 'target/progress', label: '目标进度' },
     ],
   },
   {
@@ -57,7 +102,7 @@ const menuItems: MenuItem[] = [
     label: '智能分析中心',
     className: 'ant-menu-submenu-analysis',
     children: [
-      { key: 'analysis-report', label: '分析报告' },
+      { key: 'analysis-report', label: '报表中心' },
       { key: 'agent/market', label: 'Agent市场' },
     ],
   },
@@ -81,9 +126,41 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    key: 'dashboard-center',
+    icon: <FundOutlined />,
+    label: '智能看板中心',
+    children: [
+      { key: 'dashboard-center/business', label: '经营看板' },
+      { key: 'dashboard-center/marketing', label: '营销看板' },
+      { key: 'dashboard-center/production', label: '生产看板' },
+      { key: 'dashboard-center/quality', label: '质控看板' },
+      { key: 'dashboard-center/research', label: '研发看板' },
+      { key: 'dashboard-center/finance', label: '财务看板' },
+    ],
+  },
+  {
+    key: 'knowledge',
+    icon: <BookOutlined />,
+    label: '知识管理',
+    children: [
+      { key: 'doc-manage', label: '文档管理' },
+      { key: 'faq-manage', label: 'FAQ管理' },
+    ],
+  },
+  {
+    key: 'project',
+    icon: <FlagOutlined />,
+    label: '项目管理',
+    children: [
+      { key: 'project/setting', label: '项目设置' },
+      { key: 'project/milestone', label: '项目里程碑' },
+      { key: 'project/task', label: '任务管理' },
+    ],
+  },
+  {
     key: 'report-center',
-    icon: <BarChartOutlined />,
-    label: '报表中心',
+    icon: <DownloadOutlined />,
+    label: '下载管理',
   },
   {
     key: 'help',
@@ -104,7 +181,6 @@ const menuItems: MenuItem[] = [
 
 const RootLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [diagnosisVisible, setDiagnosisVisible] = useState(false);
   const [guideVisible, setGuideVisible] = useState(false);
   // 固定的最近访问功能模块
   const recentItems = [
@@ -130,7 +206,63 @@ const RootLayout = () => {
   const navigate = useNavigate();
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-    navigate(`/${key}`);
+    // 处理外部链接跳转
+    if (key === 'data-source-new') {
+      window.open('http://192.168.1.232:12345/dolphinscheduler/ui/login', '_blank');
+      return;
+    }
+    if (key === 'data-collection-new') {
+      window.open('https://collect.ex12580.net/login?phone=15737111214', '_blank');
+      return;
+    }
+    if (key === 'data-collection') {
+      window.open('https://dc.ex12580.net/#/dashboard', '_blank');
+      return;
+    }
+
+    // 处理内部路由导航
+    if (key.includes('/')) {
+      navigate(`/${key}`);
+    } else {
+      // 处理单级路由
+      const routeMap: Record<string, string> = {
+        'dashboard': '/dashboard',
+        'data-guide': '/data-guide',
+        'data-query': '/data-query',
+        'marketing-report': '/marketing-report',
+        'customer-data': '/customer-data',
+        'product-data': '/product-data',
+        'sales-data': '/sales-data',
+        'data-indicator': '/data-indicator',
+        'data-model': '/data-model',
+        'target-setting': '/target-setting',
+        'target-tracking': '/target-tracking',
+        'analysis-report': '/analysis-report',
+        'agent/market': '/agent/market',
+        'prediction/reports': '/prediction/reports',
+        'prediction/market': '/prediction/market',
+        'alert/overview': '/alert/overview',
+        'alert/list': '/alert/list',
+        'alert/market': '/alert/market',
+        'dashboard-center/business': '/dashboard-center/business',
+        'dashboard-center/marketing': '/dashboard-center/marketing',
+        'dashboard-center/production': '/dashboard-center/production',
+        'dashboard-center/quality': '/dashboard-center/quality',
+        'dashboard-center/research': '/dashboard-center/research',
+        'dashboard-center/finance': '/dashboard-center/finance',
+        'report-center': '/report-center',
+        'knowledge': '/knowledge',
+        'doc-manage': '/doc-manage',
+        'faq-manage': '/faq-manage',
+        'project': '/project',
+        'help': '/help'
+      };
+
+      const route = routeMap[key];
+      if (route) {
+        navigate(route);
+      }
+    }
   };
 
   return (
@@ -183,14 +315,6 @@ const RootLayout = () => {
         <div style={{ flex: 1 }} />
         <Space>
           <Button
-            type="primary"
-            icon={<AuditOutlined />}
-            onClick={() => setDiagnosisVisible(true)}
-            className="ant-btn-diagnosis"
-          >
-            企业诊断
-          </Button>
-          <Button
             icon={<CompassOutlined />}
             onClick={() => setGuideVisible(true)}
             className="ant-btn-guide"
@@ -233,12 +357,6 @@ const RootLayout = () => {
         </Layout>
       </Layout>
 
-      {/* 企业诊断弹窗 */}
-      <EnterpriseDiagnosis
-        visible={diagnosisVisible}
-        onClose={() => setDiagnosisVisible(false)}
-      />
-
       {/* 使用指引 */}
       <GuideHelper
         type="tour"
@@ -246,7 +364,6 @@ const RootLayout = () => {
         visible={guideVisible}
         onClose={() => setGuideVisible(false)}
       />
-
 
     </Layout>
   );

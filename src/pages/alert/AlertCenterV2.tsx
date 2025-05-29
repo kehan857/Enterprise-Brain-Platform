@@ -40,6 +40,50 @@ interface AlertRecord {
 
 const { TabPane } = Tabs;
 
+// 添加引用指标示例数据
+const mockReferenceIndicators = [
+  {
+    id: 'FIN_101',
+    name: '流动资产负债率',
+    domain: 'finance / banking',
+    type: '财务',
+    unit: '%',
+    description: '反映企业流动资产的负债水平'
+  },
+  {
+    id: 'FIN_102',
+    name: '非流动资产负债率',
+    domain: 'finance / banking',
+    type: '财务',
+    unit: '%',
+    description: '衡量企业非流动资产的负债程度'
+  },
+  {
+    id: 'FIN_103',
+    name: '有形资产负债率',
+    domain: 'finance / banking',
+    type: '财务',
+    unit: '%',
+    description: '不含无形资产的负债率计算'
+  },
+  {
+    id: 'FIN_104',
+    name: '资本负债率',
+    domain: 'finance / banking',
+    type: '财务',
+    unit: '%',
+    description: '反映企业长期偿债能力的指标'
+  },
+  {
+    id: 'FIN_105',
+    name: '行业平均资产负债率',
+    domain: 'finance / banking',
+    type: '财务',
+    unit: '%',
+    description: '用于对标行业平均水平'
+  }
+];
+
 const AlertCenterV2: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isAgentModalVisible, setIsAgentModalVisible] = useState(false);
@@ -96,21 +140,6 @@ const AlertCenterV2: React.FC = () => {
           pagination={{ pageSize: 5 }}
         />
       </Card>
-
-      <Row gutter={16} style={{ marginTop: 16 }}>
-        <Col span={12}>
-          <Card title="告警趋势">
-            {/* 这里添加趋势图表组件 */}
-            <div style={{ height: 300 }}>告警趋势图</div>
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="告警类型分布">
-            {/* 这里添加分布图表组件 */}
-            <div style={{ height: 300 }}>告警类型分布图</div>
-          </Card>
-        </Col>
-      </Row>
     </div>
   );
 
@@ -129,13 +158,17 @@ const AlertCenterV2: React.FC = () => {
       dataIndex: 'category',
       key: 'category',
       render: (category: string) => {
-        const categoryColors = {
-          production: 'green',
-          device: 'blue',
-          quality: 'purple',
-          safety: 'red'
+        const categoryColors: Record<string, string> = {
+          '经营': 'gold',
+          '营销': 'geekblue',
+          '生产': 'green',
+          '质控': 'purple',
+          '研发': 'cyan',
+          '财务': 'blue',
+          '人事': 'orange',
+          '其他': 'default'
         };
-        return <Tag color={categoryColors[category]}>{category}</Tag>;
+        return <Tag color={categoryColors[category] || 'default'}>{category}</Tag>;
       }
     },
     {
@@ -181,12 +214,12 @@ const AlertCenterV2: React.FC = () => {
       dataIndex: 'level',
       key: 'level',
       render: (level: string) => {
-        const levelConfig = {
+        const levelConfig: Record<string, { color: string; text: string }> = {
           high: { color: 'red', text: '高' },
           medium: { color: 'orange', text: '中' },
           low: { color: 'blue', text: '低' }
         };
-        return <Tag color={levelConfig[level].color}>{levelConfig[level].text}</Tag>;
+        return <Tag color={levelConfig[level]?.color || 'default'}>{levelConfig[level]?.text || level}</Tag>;
       }
     },
     { title: '触发时间', dataIndex: 'createTime', key: 'createTime' },
@@ -195,13 +228,13 @@ const AlertCenterV2: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => {
-        const statusConfig = {
+        const statusConfig: Record<string, { status: string; text: string }> = {
           unprocessed: { status: 'error', text: '未处理' },
           processing: { status: 'processing', text: '处理中' },
           resolved: { status: 'success', text: '已解决' },
           ignored: { status: 'default', text: '已忽略' }
         };
-        return <Badge status={statusConfig[status].status} text={statusConfig[status].text} />;
+        return <Badge status={statusConfig[status]?.status as any || 'default'} text={statusConfig[status]?.text || status} />;
       }
     },
     { title: '触发Agent', dataIndex: 'agentName', key: 'agentName' },

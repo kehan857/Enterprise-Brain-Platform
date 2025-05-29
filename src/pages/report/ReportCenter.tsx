@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Card, Table, Button, Space, Tag, Typography, Tabs } from 'antd';
+import { Card, Table, Button, Space, Tag, Typography, Tabs, Modal } from 'antd';
 import { EyeOutlined, DownloadOutlined, ShareAltOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../components/SearchComponent';
+import DocumentPreview from '@/components/DocumentPreview';
 import './ReportCenter.less';
 
 const { Title, Paragraph } = Typography;
@@ -113,6 +114,8 @@ const categories = ['经营分析', '生产分析', '销售分析', '质量分�
 const ReportCenter: React.FC = () => {
   const [filteredReports, setFilteredReports] = useState<Report[]>(mockReports);
   const [activeTab, setActiveTab] = useState<string>('all');
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [currentReport, setCurrentReport] = useState<Report | null>(null);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
@@ -293,6 +296,18 @@ const ReportCenter: React.FC = () => {
     }
   };
 
+  // 处理查看报表
+  const handleViewReport = (report: Report) => {
+    setCurrentReport(report);
+    setPreviewModalVisible(true);
+  };
+
+  // 处理下载报表
+  const handleDownloadReport = (report: Report) => {
+    console.log('下载报表:', report);
+    // 实际下载逻辑
+  };
+
   const getStatusTag = (status: Report['status']) => {
     const statusConfig = {
       published: { color: 'success', text: '已发布' },
@@ -375,7 +390,7 @@ const ReportCenter: React.FC = () => {
             type="link"
             size="small"
             icon={<EyeOutlined />}
-            onClick={() => console.log('查看报表', record.id)}
+            onClick={() => handleViewReport(record)}
           >
             查看
           </Button>
@@ -383,7 +398,7 @@ const ReportCenter: React.FC = () => {
             type="link"
             size="small"
             icon={<DownloadOutlined />}
-            onClick={() => console.log('下载报表', record.id)}
+            onClick={() => handleDownloadReport(record)}
           >
             下载
           </Button>
@@ -455,6 +470,35 @@ const ReportCenter: React.FC = () => {
           />
         </Space>
       </Card>
+
+      {/* 报表预览模态框 */}
+      <Modal
+        title={currentReport?.title || '报表预览'}
+        open={previewModalVisible}
+        onCancel={() => setPreviewModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="download" type="primary" onClick={() => {
+            if (currentReport) {
+              handleDownloadReport(currentReport);
+            }
+          }}>
+            下载报表
+          </Button>,
+          <Button key="close" onClick={() => setPreviewModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
+        bodyStyle={{ height: '70vh', padding: 0, overflow: 'hidden' }}
+      >
+        {currentReport && (
+          <DocumentPreview 
+            type="pdf"
+            url="https://arxiv.org/pdf/2003.08934.pdf" // 使用示例PDF作为预览
+            loading={false}
+          />
+        )}
+      </Modal>
     </div>
   );
 };

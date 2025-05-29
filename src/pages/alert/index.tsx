@@ -365,7 +365,6 @@ const AlertCenter: React.FC = () => {
         <div style={{ marginBottom: 16 }}>
           <Card title="告警统计">
             {/* 这里可以添加统计图表组件 */}
-            <div>告警趋势图</div>
           </Card>
         </div>
       ),

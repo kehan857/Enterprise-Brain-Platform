@@ -7,7 +7,7 @@ interface AlertRecord {
   content: string;
   level: 'high' | 'medium' | 'low';
   source: string;
-  status: 'unprocessed' | 'processing' | 'resolved' | 'ignored';
+  status: 'unprocessed' | 'resolved' | 'ignored';
   createTime: string;
   handler?: string;
   handleTime?: string;
@@ -24,7 +24,8 @@ const AlertOverview: React.FC = () => {
     major: 8,
     minor: 11,
     todayNew: 15,
-    unprocessed: 8
+    unprocessed: 8,
+    processRate: 66.7 // 添加处理率数据
   };
 
   // 示例关键告警数据
@@ -47,10 +48,8 @@ const AlertOverview: React.FC = () => {
       content: '近1小时内不良品率达到4.8%，超过预警阈值(3%)，主要不良类型：表面划痕(62%)',
       level: 'high',
       source: '质量检测系统',
-      status: 'processing',
+      status: 'unprocessed',
       createTime: '2024-04-20 09:15:30',
-      handler: '李工',
-      handleTime: '2024-04-20 09:20:18',
       agentName: '质量监控Agent',
       channel: '站内消息,短信',
       receivers: ['质量部主管', '车间经理']
@@ -107,7 +106,7 @@ const AlertOverview: React.FC = () => {
       ) 
     },
     {
-      title: '严重等级',
+      title: '告警等级',
       dataIndex: 'level',
       key: 'level',
       width: 90,
@@ -127,9 +126,8 @@ const AlertOverview: React.FC = () => {
       key: 'status',
       width: 100,
       render: (status: string) => {
-        const statusConfig: Record<string, { status: 'error' | 'processing' | 'success' | 'default' | 'warning'; text: string }> = {
+        const statusConfig: Record<string, { status: 'error' | 'success' | 'default' | 'warning'; text: string }> = {
           unprocessed: { status: 'error', text: '未处理' },
-          processing: { status: 'processing', text: '处理中' },
           resolved: { status: 'success', text: '已解决' },
           ignored: { status: 'default', text: '已忽略' }
         };
@@ -150,9 +148,9 @@ const AlertOverview: React.FC = () => {
   return (
     <div>
       <Row gutter={16}>
-        <Col span={8}>
+        <Col span={6}>
           <Card>
-            <Statistic title="当前活动告警总数" value={alertOverview.total} />
+            <Statistic title="累计活动告警总数" value={alertOverview.total} />
             <div style={{ marginTop: 16 }}>
               <Tag color="red">高: {alertOverview.critical}</Tag>
               <Tag color="orange">中: {alertOverview.major}</Tag>
@@ -160,14 +158,25 @@ const AlertOverview: React.FC = () => {
             </div>
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card>
             <Statistic title="今日新增告警" value={alertOverview.todayNew} />
           </Card>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Card>
-            <Statistic title="待处理告警" value={alertOverview.unprocessed} />
+            <Statistic title="当日待处理告警" value={alertOverview.unprocessed} />
+          </Card>
+        </Col>
+        <Col span={6}>
+          <Card>
+            <Statistic 
+              title="累计告警处理率" 
+              value={alertOverview.processRate} 
+              precision={1}
+              suffix="%" 
+              valueStyle={{ color: '#3f8600' }}
+            />
           </Card>
         </Col>
       </Row>
@@ -188,21 +197,6 @@ const AlertOverview: React.FC = () => {
           scroll={{ x: 1200 }}
         />
       </Card>
-
-      <Row gutter={16} style={{ marginTop: 16 }}>
-        <Col span={12}>
-          <Card title="告警趋势">
-            {/* 这里添加趋势图表组件 */}
-            <div style={{ height: 300 }}>告警趋势图</div>
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="告警类型分布">
-            {/* 这里添加分布图表组件 */}
-            <div style={{ height: 300 }}>告警类型分布图</div>
-          </Card>
-        </Col>
-      </Row>
     </div>
   );
 };

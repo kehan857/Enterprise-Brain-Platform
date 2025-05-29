@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Card, Typography, Table, Button, Space, Tag, Modal, Form, Input, Select, DatePicker, message } from 'antd';
-import { DownloadOutlined, EyeOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DownloadOutlined, EyeOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../components/SearchComponent';
+import DocumentPreview from '@/components/DocumentPreview';
 import './reports.less';
 
 const { Title, Paragraph } = Typography;
@@ -14,7 +15,6 @@ interface PredictionReport {
   type: string;
   createTime: string;
   status: 'processing' | 'completed' | 'failed';
-  accuracy?: number;
   downloadUrl?: string;
   creator?: string;
   description?: string;
@@ -28,7 +28,6 @@ const mockReports: PredictionReport[] = [
     type: '销售预测',
     createTime: '2024-01-20 14:30',
     status: 'completed',
-    accuracy: 0.92,
     downloadUrl: '#',
     creator: '张三',
     description: '基于历史销售数据和市场趋势，预测2024年第一季度各产品线销售情况'
@@ -39,7 +38,6 @@ const mockReports: PredictionReport[] = [
     type: '设备维护',
     createTime: '2024-01-19 16:45',
     status: 'completed',
-    accuracy: 0.88,
     downloadUrl: '#',
     creator: '李四',
     description: '基于设备运行状态数据，预测关键设备可能发生的故障及维护建议'
@@ -59,7 +57,6 @@ const mockReports: PredictionReport[] = [
     type: '质量预测',
     createTime: '2024-01-17 11:30',
     status: 'completed',
-    accuracy: 0.95,
     downloadUrl: '#',
     creator: '赵六',
     description: '基于质检数据，预测产品质量变化趋势和潜在质量风险'
@@ -79,7 +76,6 @@ const mockReports: PredictionReport[] = [
     type: '销售预测',
     createTime: '2024-01-15 10:00',
     status: 'completed',
-    accuracy: 0.85,
     downloadUrl: '#',
     creator: '李四',
     description: '分析和预测市场需求变化趋势，为产品规划提供参考'
@@ -99,7 +95,6 @@ const getStatusTag = (status: PredictionReport['status']) => {
 };
 
 const PredictionReports: React.FC = () => {
-  const [createModalVisible, setCreateModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
   const [selectedReport, setSelectedReport] = useState<PredictionReport | null>(null);
   const [filteredReports, setFilteredReports] = useState<PredictionReport[]>(mockReports);
@@ -142,13 +137,6 @@ const PredictionReports: React.FC = () => {
       placeholder: ['开始日期', '结束日期']
     },
     { 
-      type: 'numberRange', 
-      label: '准确度', 
-      field: 'accuracy',
-      span: 8,
-      placeholder: ['最小值', '最大值']
-    },
-    { 
       type: 'input', 
       label: '创建人', 
       field: 'creator',
@@ -160,9 +148,7 @@ const PredictionReports: React.FC = () => {
   // 排序选项
   const sortOptions: SortOption[] = [
     { label: '创建时间：从新到旧', value: 'createTime,desc' },
-    { label: '创建时间：从旧到新', value: 'createTime,asc' },
-    { label: '准确度：从高到低', value: 'accuracy,desc' },
-    { label: '准确度：从低到高', value: 'accuracy,asc' }
+    { label: '创建时间：从旧到新', value: 'createTime,asc' }
   ];
 
   // 快捷筛选
@@ -173,18 +159,6 @@ const PredictionReports: React.FC = () => {
     { label: '销售预测', value: { type: '销售预测' }, color: 'purple' },
     { label: '设备维护', value: { type: '设备维护' }, color: 'orange' }
   ];
-
-  const handleCreateReport = () => {
-    form.validateFields().then(values => {
-      message.loading({ content: '正在生成预测报告...', key: 'createReport' });
-      // 模拟报告生成过程
-      setTimeout(() => {
-        message.success({ content: '预测报告创建成功', key: 'createReport' });
-        setCreateModalVisible(false);
-        form.resetFields();
-      }, 2000);
-    });
-  };
 
   // 处理搜索
   const handleSearch = (params: Record<string, any>) => {
@@ -239,12 +213,6 @@ const PredictionReports: React.FC = () => {
             const itemDate = new Date(item.createTime);
             return itemDate >= start && itemDate <= end;
           });
-        } else if (key === 'accuracy' && Array.isArray(value) && value.length === 2) {
-          // 准确度范围筛选
-          const [min, max] = value;
-          filtered = filtered.filter(item => 
-            item.accuracy && item.accuracy >= min && item.accuracy <= max
-          );
         } else {
           // 其他普通筛选
           filtered = filtered.filter(item => item[key] === value);
@@ -256,17 +224,10 @@ const PredictionReports: React.FC = () => {
     if (params.sortBy) {
       const [field, order] = params.sortBy.split(',');
       filtered = [...filtered].sort((a, b) => {
-        if (field === 'accuracy') {
-          // 特殊处理准确度排序，因为有些报告可能没有准确度
-          const aValue = a.accuracy || 0;
-          const bValue = b.accuracy || 0;
-          return order === 'asc' ? aValue - bValue : bValue - aValue;
+        if (order === 'asc') {
+          return a[field] > b[field] ? 1 : -1;
         } else {
-          if (order === 'asc') {
-            return a[field] > b[field] ? 1 : -1;
-          } else {
-            return a[field] < b[field] ? 1 : -1;
-          }
+          return a[field] < b[field] ? 1 : -1;
         }
       });
     }
@@ -327,13 +288,6 @@ const PredictionReports: React.FC = () => {
       onFilter: (value, record) => record.status === value,
     },
     {
-      title: '预测准确度',
-      dataIndex: 'accuracy',
-      key: 'accuracy',
-      render: (accuracy?: number) => accuracy ? `${(accuracy * 100).toFixed(1)}%` : '-',
-      sorter: (a, b) => (a.accuracy || 0) - (b.accuracy || 0),
-    },
-    {
       title: '操作',
       key: 'action',
       render: (_, record) => (
@@ -357,14 +311,6 @@ const PredictionReports: React.FC = () => {
               下载
             </Button>
           )}
-          <Button 
-            type="link" 
-            danger 
-            icon={<DeleteOutlined />}
-            onClick={() => message.success('删除成功')}
-          >
-            删除
-          </Button>
         </Space>
       ),
     },
@@ -394,15 +340,6 @@ const PredictionReports: React.FC = () => {
                 onExport={handleExport}
               />
             </div>
-            <div className="action-wrapper">
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />}
-                onClick={() => setCreateModalVisible(true)}
-              >
-                新建预测报告
-              </Button>
-            </div>
           </div>
 
           <Table 
@@ -415,70 +352,42 @@ const PredictionReports: React.FC = () => {
       </Card>
 
       <Modal
-        title="新建预测报告"
-        open={createModalVisible}
-        onOk={handleCreateReport}
-        onCancel={() => {
-          setCreateModalVisible(false);
-          form.resetFields();
-        }}
-      >
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="name"
-            label="报告名称"
-            rules={[{ required: true, message: '请输入报告名称' }]}
-          >
-            <Input placeholder="请输入报告名称" />
-          </Form.Item>
-          <Form.Item
-            name="type"
-            label="预测类型"
-            rules={[{ required: true, message: '请选择预测类型' }]}
-          >
-            <Select placeholder="请选择预测类型">
-              {reportTypes.map(type => (
-                <Select.Option key={type} value={type}>{type}</Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="dateRange"
-            label="预测时间范围"
-            rules={[{ required: true, message: '请选择预测时间范围' }]}
-          >
-            <RangePicker style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="报告描述"
-          >
-            <Input.TextArea rows={4} placeholder="请输入报告描述" />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="预测报告详情"
+        title={selectedReport?.name || '预测报告详情'}
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
-        footer={null}
+        footer={[
+          selectedReport?.status === 'completed' && (
+            <Button 
+              key="download" 
+              type="primary" 
+              icon={<DownloadOutlined />}
+              href={selectedReport?.downloadUrl}
+            >
+              下载报告
+            </Button>
+          ),
+          <Button key="close" onClick={() => setViewModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
         width={800}
+        bodyStyle={{ height: '70vh', padding: 0, overflow: 'hidden' }}
       >
         {selectedReport && (
-          <div>
-            <Title level={4}>{selectedReport.name}</Title>
-            <Paragraph>
-              <Space direction="vertical" size="small">
-                <div>预测类型：{selectedReport.type}</div>
-                <div>创建时间：{selectedReport.createTime}</div>
-                <div>创建人：{selectedReport.creator || '系统生成'}</div>
-                <div>状态：{getStatusTag(selectedReport.status)}</div>
-                <div>预测准确度：{selectedReport.accuracy ? `${(selectedReport.accuracy * 100).toFixed(1)}%` : '-'}</div>
-                <div>报告描述：{selectedReport.description || '无'}</div>
-              </Space>
-            </Paragraph>
-            {/* 这里可以添加更多报告详情内容，如图表等 */}
+          <div style={{ height: '100%' }}>
+            {selectedReport.status === 'completed' ? (
+              <DocumentPreview 
+                type="pdf"
+                url="https://arxiv.org/pdf/2003.08934.pdf" // 使用示例PDF
+                loading={false}
+              />
+            ) : (
+              <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Title level={4} style={{ color: '#999' }}>
+                  {selectedReport.status === 'processing' ? '报告生成中...' : '报告生成失败'}
+                </Title>
+              </div>
+            )}
           </div>
         )}
       </Modal>

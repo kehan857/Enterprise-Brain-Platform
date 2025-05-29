@@ -9,7 +9,7 @@ interface AlertItem {
   title: string;
   level: 'high' | 'medium' | 'low';
   source: string;
-  status: 'unprocessed' | 'processing' | 'resolved';
+  status: 'unprocessed' | 'resolved' | 'ignored';
   createTime: string;
   description?: string;
   category?: string;
@@ -33,7 +33,7 @@ const AlertList: React.FC = () => {
       title: '原材料库存低于安全阈值',
       level: 'medium',
       source: '库存管理Agent',
-      status: 'processing',
+      status: 'unprocessed',
       createTime: '2024-01-03 14:45:00',
       description: 'A类原材料库存量低于安全库存水平，当前库存可支持生产3天',
       category: '库存告警'
@@ -63,7 +63,7 @@ const AlertList: React.FC = () => {
       title: '设备维护提醒',
       level: 'low',
       source: '设备管理Agent',
-      status: 'processing',
+      status: 'unprocessed',
       createTime: '2024-01-03 11:30:00',
       description: '注塑机B即将达到计划维护周期，建议安排维护',
       category: '设备告警'
@@ -73,7 +73,7 @@ const AlertList: React.FC = () => {
       title: '生产计划延期风险',
       level: 'high',
       source: '生产管理Agent',
-      status: 'processing',
+      status: 'unprocessed',
       createTime: '2024-01-03 10:45:00',
       description: '订单XC2024010135的生产进度落后计划15%，存在延期交付风险',
       category: '生产告警'
@@ -114,7 +114,7 @@ const AlertList: React.FC = () => {
   const filters: FilterConfig[] = [
     { 
       type: 'select', 
-      label: '告警级别', 
+      label: '告警等级', 
       field: 'level',
       span: 8,
       options: [
@@ -145,8 +145,8 @@ const AlertList: React.FC = () => {
       span: 8,
       options: [
         { label: '未处理', value: 'unprocessed' },
-        { label: '处理中', value: 'processing' },
-        { label: '已解决', value: 'resolved' }
+        { label: '已解决', value: 'resolved' },
+        { label: '已忽略', value: 'ignored' }
       ]
     },
     { 
@@ -182,8 +182,8 @@ const AlertList: React.FC = () => {
   // 快捷筛选
   const quickFilters: QuickFilter[] = [
     { label: '未处理', value: { status: 'unprocessed' }, color: 'red' },
-    { label: '处理中', value: { status: 'processing' }, color: 'blue' },
     { label: '已解决', value: { status: 'resolved' }, color: 'green' },
+    { label: '已忽略', value: { status: 'ignored' }, color: 'default' },
     { label: '高级别', value: { level: 'high' }, color: 'red' },
     { label: '设备告警', value: { category: '设备告警' }, color: 'orange' }
   ];
@@ -262,6 +262,29 @@ const AlertList: React.FC = () => {
     console.log('导出告警数据:', params);
   };
 
+  // 定义处理告警的函数
+  const handleProcessAlert = (id: string) => {
+    setFilteredData(prevData => 
+      prevData.map(item => 
+        item.id === id ? { ...item, status: 'resolved' } : item
+      )
+    );
+  };
+
+  // 定义忽略告警的函数
+  const handleIgnoreAlert = (id: string) => {
+    setFilteredData(prevData => 
+      prevData.map(item => 
+        item.id === id ? { ...item, status: 'ignored' } : item
+      )
+    );
+  };
+
+  // 定义查看告警详情的函数
+  const handleViewAlert = (id: string) => {
+    console.log('查看告警详情:', id);
+  };
+
   const columns: ColumnsType<AlertItem> = [
     {
       title: '告警标题',
@@ -279,7 +302,7 @@ const AlertList: React.FC = () => {
       )
     },
     {
-      title: '告警级别',
+      title: '告警等级',
       dataIndex: 'level',
       key: 'level',
       width: 100,
@@ -312,8 +335,8 @@ const AlertList: React.FC = () => {
       render: (status: string) => {
         const config = {
           unprocessed: { status: 'error', text: '未处理' },
-          processing: { status: 'processing', text: '处理中' },
           resolved: { status: 'success', text: '已解决' },
+          ignored: { status: 'default', text: '已忽略' },
         };
         return <Badge status={config[status as keyof typeof config].status as any} text={config[status as keyof typeof config].text} />;
       },
@@ -323,6 +346,24 @@ const AlertList: React.FC = () => {
       dataIndex: 'createTime',
       key: 'createTime',
       width: 150,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 150,
+      render: (_, record) => (
+        <Space size="small">
+          {record.status === 'unprocessed' && (
+            <>
+              <Button type="link" size="small" onClick={() => handleProcessAlert(record.id)}>处理</Button>
+              <Button type="link" size="small" onClick={() => handleIgnoreAlert(record.id)}>忽略</Button>
+            </>
+          )}
+          {record.status !== 'unprocessed' && (
+            <Button type="link" size="small" onClick={() => handleViewAlert(record.id)}>查看</Button>
+          )}
+        </Space>
+      ),
     }
   ];
 

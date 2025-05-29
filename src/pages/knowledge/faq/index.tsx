@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, Table, Button, Space, Tree, Tag, Modal, Form, Select, Input, message, Upload } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Card, Table, Button, Space, Tree, Tag, Modal, Form, Select, Input, message, Upload, Menu, Dropdown } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined, QuestionCircleOutlined, FolderOutlined, FolderAddOutlined, MoreOutlined, CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import type { DataNode } from 'antd/es/tree';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
@@ -26,17 +26,19 @@ const treeData: DataNode[] = [
   {
     title: '产品FAQ',
     key: '0-0',
+    icon: <FolderOutlined style={{ color: '#1890ff' }} />,
     children: [
-      { title: '功能问题', key: '0-0-0', isLeaf: true },
-      { title: '使用问题', key: '0-0-1', isLeaf: true },
+      { title: '功能问题', icon: <QuestionCircleOutlined />, key: '0-0-0', isLeaf: true },
+      { title: '使用问题', icon: <QuestionCircleOutlined />, key: '0-0-1', isLeaf: true },
     ],
   },
   {
     title: '技术FAQ',
     key: '0-1',
+    icon: <FolderOutlined style={{ color: '#1890ff' }} />,
     children: [
-      { title: '安装部署', key: '0-1-0', isLeaf: true },
-      { title: '故障排查', key: '0-1-1', isLeaf: true },
+      { title: '安装部署', icon: <QuestionCircleOutlined />, key: '0-1-0', isLeaf: true },
+      { title: '故障排查', icon: <QuestionCircleOutlined />, key: '0-1-1', isLeaf: true },
     ],
   },
 ];
@@ -100,6 +102,11 @@ const FaqManagePage = () => {
   const [form] = Form.useForm();
   const [filteredFaq, setFilteredFaq] = useState<FAQ[]>(faqList);
   const [uploadGuideVisible, setUploadGuideVisible] = useState(false);
+  const [directoryModalVisible, setDirectoryModalVisible] = useState(false);
+  const [directoryForm] = Form.useForm();
+  const [isAddSubDir, setIsAddSubDir] = useState(false);
+  const [selectedDirectory, setSelectedDirectory] = useState<string | null>(null);
+  const [treeDataState, setTreeDataState] = useState<DataNode[]>(treeData);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
@@ -419,17 +426,147 @@ const FaqManagePage = () => {
     applyFilters();
   }, [selectedKeys, faqList]);
 
+  // 显示新建目录模态框
+  const showAddDirectoryModal = (isSubDir: boolean = false) => {
+    directoryForm.resetFields();
+    setIsAddSubDir(isSubDir);
+    if (isSubDir && selectedKeys.length === 0) {
+      message.warning('请先选择一个目录');
+      return;
+    }
+    if (isSubDir) {
+      setSelectedDirectory(selectedKeys[0] as string);
+    } else {
+      setSelectedDirectory(null);
+    }
+    setDirectoryModalVisible(true);
+  };
+
+  // 处理新建目录
+  const handleAddDirectory = () => {
+    directoryForm.validateFields().then(values => {
+      const { directoryName } = values;
+      
+      // 克隆现有的树结构数据
+      const newTreeData = [...treeDataState];
+      
+      if (isAddSubDir && selectedDirectory) {
+        // 添加子目录
+        const findAndAddChild = (nodes: DataNode[]): boolean => {
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            if (node.key === selectedDirectory) {
+              if (!node.children) {
+                node.children = [];
+              }
+              const newKey = `${node.key}-${node.children.length}`;
+              node.children.push({
+                title: directoryName,
+                key: newKey,
+                isLeaf: true
+              });
+              return true;
+            }
+            if (node.children && findAndAddChild(node.children)) {
+              return true;
+            }
+          }
+          return false;
+        };
+        
+        findAndAddChild(newTreeData);
+      } else {
+        // 添加顶级目录
+        const newKey = `0-${newTreeData.length}`;
+        newTreeData.push({
+          title: directoryName,
+          key: newKey,
+          children: []
+        });
+      }
+      
+      setTreeDataState(newTreeData);
+      setDirectoryModalVisible(false);
+      message.success(`成功创建${isAddSubDir ? '子' : ''}目录`);
+    });
+  };
+
   return (
     <div className="faq-manage-page">
       <div className="faq-manage-container">
         <Card
           title="FAQ分类"
+          extra={
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />} 
+              onClick={() => showAddDirectoryModal()}
+            >
+              新建目录
+            </Button>
+          }
           className="category-card"
         >
           <DirectoryTree
             defaultExpandAll
             onSelect={onSelect}
-            treeData={treeData}
+            treeData={treeDataState}
+            showIcon
+            switcherIcon={({ expanded }) => (expanded ? <CaretDownOutlined /> : <CaretRightOutlined />)}
+            onRightClick={({ event, node }) => {
+              event.preventDefault();
+              
+              Modal.info({
+                title: '目录操作',
+                icon: null,
+                content: (
+                  <Menu>
+                    <Menu.Item 
+                      key="add-sub" 
+                      icon={<FolderAddOutlined />}
+                      onClick={() => {
+                        setSelectedKeys([node.key as string]);
+                        showAddDirectoryModal(true);
+                        Modal.destroyAll();
+                      }}
+                    >
+                      新建子目录
+                    </Menu.Item>
+                    <Menu.Item 
+                      key="edit" 
+                      icon={<EditOutlined />}
+                      onClick={() => {
+                        message.info('编辑目录功能开发中');
+                        Modal.destroyAll();
+                      }}
+                    >
+                      编辑
+                    </Menu.Item>
+                    <Menu.Item 
+                      key="delete" 
+                      icon={<DeleteOutlined />}
+                      danger
+                      onClick={() => {
+                        message.info('删除目录功能开发中');
+                        Modal.destroyAll();
+                      }}
+                    >
+                      删除
+                    </Menu.Item>
+                  </Menu>
+                ),
+                okButtonProps: { style: { display: 'none' } },
+                maskClosable: true,
+                mask: false,
+                style: {
+                  position: 'absolute',
+                  left: event.clientX,
+                  top: event.clientY
+                }
+              });
+              
+              return null;
+            }}
           />
         </Card>
 
@@ -552,6 +689,28 @@ const FaqManagePage = () => {
         maxSize={10}
         uploadUrl="/api/knowledge/faq/import"
       />
+
+      {/* 新建目录模态框 */}
+      <Modal
+        title={isAddSubDir ? "新建子目录" : "新建目录"}
+        open={directoryModalVisible}
+        onOk={handleAddDirectory}
+        onCancel={() => setDirectoryModalVisible(false)}
+        destroyOnClose
+      >
+        <Form
+          form={directoryForm}
+          layout="vertical"
+        >
+          <Form.Item
+            name="directoryName"
+            label="目录名称"
+            rules={[{ required: true, message: '请输入目录名称' }]}
+          >
+            <Input placeholder="请输入目录名称" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

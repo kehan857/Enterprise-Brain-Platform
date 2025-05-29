@@ -19,11 +19,67 @@ interface ReportData {
 
 const { RangePicker } = DatePicker;
 
+// 将mockData移到组件外部，避免每次渲染重新创建
+const mockData: ReportData[] = [
+  {
+    key: '0',
+    name: '2025年1月营销管理分析报表',
+    category: '营销',
+    type: '月度报表',
+    createTime: '2025-01-31 09:30:00',
+    status: '已完成',
+    size: '4.8MB',
+    reportId: 'marketing_report_2025_01',
+  },
+  {
+    key: '1',
+    name: '生产效能分析报表',
+    category: '生产',
+    type: '月度报表',
+    createTime: '2024-01-03 14:30:00',
+    status: '已完成',
+    size: '2.5MB',
+  },
+  {
+    key: '2',
+    name: '销售业绩分析报表',
+    category: '营销',
+    type: '周报',
+    createTime: '2024-01-03 15:20:00',
+    status: '生成中',
+    size: '-',
+  },
+  {
+    key: '3',
+    name: '质量分析报表',
+    category: '质控',
+    type: '日报',
+    createTime: '2024-01-03 12:00:00',
+    status: '已完成',
+    size: '1.8MB',
+  },
+  {
+    key: '4',
+    name: '财务月度报表',
+    category: '财务',
+    type: '月度报表',
+    createTime: '2024-01-03 11:30:00',
+    status: '已完成',
+    size: '3.2MB',
+  },
+];
+
 const ReportCenter: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [filteredData, setFilteredData] = useState<ReportData[]>([]);
 
   const handlePreviewReport = (reportId: string) => {
+    // 特殊处理营销管理分析报表，外链跳转到marketing_report.html
+    if (reportId === 'marketing_report_2025_01') {
+      window.open('./marketing_report.html', '_blank');
+      return;
+    }
+    // 其他报表使用原有逻辑
     window.open(`/report?reportId=${reportId}`, '_blank');
   };
 
@@ -37,11 +93,6 @@ const ReportCenter: React.FC = () => {
       title: '业务板块',
       dataIndex: 'category',
       key: 'category',
-    },
-    {
-      title: '报表类型',
-      dataIndex: 'type',
-      key: 'type',
     },
     {
       title: '生成时间',
@@ -86,76 +137,19 @@ const ReportCenter: React.FC = () => {
     },
   ];
 
-  const mockData: ReportData[] = [
-    {
-      key: '5',
-      name: '企业AI快速诊断报告',
-      category: '企业诊断',
-      type: '诊断报告',
-      createTime: '2024-01-20 10:30:00',
-      status: '已完成',
-      size: '1.2MB',
-      reportId: 'QD1705722600000'
-    },
-    {
-      key: '6',
-      name: '企业AI全面诊断报告',
-      category: '企业诊断',
-      type: '诊断报告',
-      createTime: '2024-01-19 15:45:00',
-      status: '已完成',
-      size: '2.8MB',
-      reportId: 'CD1705652700000'
-    },
-    {
-      key: '1',
-      name: '生产效能分析报告',
-      category: '生产',
-      type: '月度报表',
-      createTime: '2024-01-03 14:30:00',
-      status: '已完成',
-      size: '2.5MB',
-    },
-    {
-      key: '2',
-      name: '销售业绩分析报告',
-      category: '营销',
-      type: '周报',
-      createTime: '2024-01-03 15:20:00',
-      status: '生成中',
-      size: '-',
-    },
-    {
-      key: '3',
-      name: '质量分析报告',
-      category: '质控',
-      type: '日报',
-      createTime: '2024-01-03 12:00:00',
-      status: '已完成',
-      size: '1.8MB',
-    },
-    {
-      key: '4',
-      name: '财务月度报告',
-      category: '财务',
-      type: '月度报表',
-      createTime: '2024-01-03 11:30:00',
-      status: '已完成',
-      size: '3.2MB',
-    },
-  ];
-
-  // 初始化过滤后的数据
+  // 初始化过滤后的数据 - 默认按创建时间倒序排列，最新的在前面
   useEffect(() => {
-    setFilteredData(mockData);
+    const sortedData = [...mockData].sort((a, b) => {
+      return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
+    });
+    setFilteredData(sortedData);
   }, []);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
     { label: '全部', value: 'all' },
     { label: '报表名称', value: 'name' },
-    { label: '业务板块', value: 'category' },
-    { label: '报表类型', value: 'type' }
+    { label: '业务板块', value: 'category' }
   ];
 
   // 高级搜索筛选条件
@@ -166,23 +160,10 @@ const ReportCenter: React.FC = () => {
       field: 'category',
       span: 8,
       options: [
-        { label: '企业诊断', value: '企业诊断' },
         { label: '生产', value: '生产' },
         { label: '营销', value: '营销' },
         { label: '质控', value: '质控' },
         { label: '财务', value: '财务' }
-      ]
-    },
-    { 
-      type: 'select', 
-      label: '报表类型', 
-      field: 'type',
-      span: 8,
-      options: [
-        { label: '诊断报告', value: '诊断报告' },
-        { label: '日报', value: '日报' },
-        { label: '周报', value: '周报' },
-        { label: '月度报表', value: '月度报表' }
       ]
     },
     { 
@@ -214,8 +195,6 @@ const ReportCenter: React.FC = () => {
   const quickFilters: QuickFilter[] = [
     { label: '已完成', value: { status: '已完成' }, color: 'green' },
     { label: '生成中', value: { status: '生成中' }, color: 'blue' },
-    { label: '诊断报告', value: { type: '诊断报告' }, color: 'purple' },
-    { label: '企业诊断', value: { category: '企业诊断' }, color: 'cyan' },
     { label: '月度报表', value: { type: '月度报表' }, color: 'orange' }
   ];
 
@@ -229,8 +208,7 @@ const ReportCenter: React.FC = () => {
       const keyword = params._keyword.toLowerCase();
       filtered = filtered.filter(item => 
         item.name.toLowerCase().includes(keyword) ||
-        item.category.toLowerCase().includes(keyword) ||
-        item.type.toLowerCase().includes(keyword)
+        item.category.toLowerCase().includes(keyword)
       );
     } else {
       // 特定字段搜索
@@ -242,6 +220,11 @@ const ReportCenter: React.FC = () => {
         }
       });
     }
+    
+    // 默认按时间倒序排序
+    filtered = filtered.sort((a, b) => {
+      return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
+    });
     
     setFilteredData(filtered);
   };
@@ -277,6 +260,11 @@ const ReportCenter: React.FC = () => {
           return a[field] < b[field] ? 1 : -1;
         }
       });
+    } else {
+      // 如果没有指定排序，默认按时间倒序
+      filtered = filtered.sort((a, b) => {
+        return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
+      });
     }
     
     setFilteredData(filtered);
@@ -292,7 +280,11 @@ const ReportCenter: React.FC = () => {
     // 模拟刷新数据
     setTimeout(() => {
       setLoading(false);
-      setFilteredData(mockData);
+      // 默认按时间倒序排序
+      const sortedData = [...mockData].sort((a, b) => {
+        return new Date(b.createTime).getTime() - new Date(a.createTime).getTime();
+      });
+      setFilteredData(sortedData);
     }, 1000);
   };
 

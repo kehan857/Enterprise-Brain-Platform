@@ -1,0 +1,270 @@
+.data-query-page {
+  .ant-tabs-tab {
+    font-weight: 500;
+    
+    .anticon {
+      margin-right: 6px;
+    }
+  }
+  
+  .ant-tabs-content-holder {
+    padding-top: 16px;
+  }
+
+  // 全局筛选区域样式
+  .global-filter {
+    .ant-card-body {
+      padding: 16px 24px;
+    }
+    
+    .ant-space {
+      width: 100%;
+    }
+  }
+
+  // 统计卡片样式
+  .statistics-card {
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    
+    &:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .ant-statistic-title {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    
+    .ant-statistic-content {
+      .ant-statistic-content-value {
+        font-weight: 600;
+      }
+    }
+  }
+
+  // 紧凑型洞察卡片样式
+  .insight-compact-card {
+    transition: all 0.2s ease;
+    border: 1px solid #f0f0f0;
+    
+    &:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      border-color: #d9d9d9;
+    }
+    
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+    
+    .ant-card-body {
+      padding: 12px !important;
+    }
+  }
+
+  // 洞察卡片样式
+  .insights-card {
+    transition: all 0.2s ease;
+    border: 1px solid #f0f0f0;
+    
+    &:hover {
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      border-color: #d9d9d9;
+    }
+    
+    .insight-content {
+      .insight-title {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: #333;
+      }
+      
+      .insight-description {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      
+      .insight-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        
+        .ant-btn-link {
+          padding: 0;
+          height: auto;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  // 洞察列表样式
+  .insights-list {
+    .ant-list-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: #fafafa;
+      }
+      
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+    
+    .ant-list-item-meta-avatar {
+      margin-right: 12px;
+    }
+    
+    .ant-list-item-meta-title {
+      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .ant-list-item-meta-description {
+      color: #666;
+      line-height: 1.4;
+      font-size: 12px;
+    }
+    
+    .ant-list-item-action {
+      li {
+        padding: 0 4px;
+      }
+    }
+  }
+
+  // 趋势图标样式
+  .trend-icon {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  // 数据表格样式
+  .data-table {
+    .ant-table-thead > tr > th {
+      background: #fafafa;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    
+    .ant-table-tbody > tr > td {
+      font-size: 13px;
+    }
+    
+    .ant-table-pagination {
+      margin-top: 16px;
+    }
+  }
+
+  // 分割线样式
+  .ant-divider {
+    margin: 20px 0;
+  }
+
+  // 响应式设计
+  @media (max-width: 1400px) {
+    .ant-col-16 {
+      flex: 0 0 60%;
+      max-width: 60%;
+    }
+    
+    .ant-col-8 {
+      flex: 0 0 40%;
+      max-width: 40%;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .ant-col-16 {
+      flex: 0 0 100%;
+      max-width: 100%;
+      margin-bottom: 24px;
+    }
+    
+    .ant-col-8 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+    
+    .insight-compact-card {
+      margin-bottom: 8px !important;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .ant-col-12 {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+    
+    .statistics-card {
+      .ant-statistic-content .ant-statistic-content-value {
+        font-size: 18px !important;
+      }
+    }
+    
+    .global-filter {
+      .ant-space {
+        flex-direction: column;
+        align-items: flex-start !important;
+        
+        .ant-space-item {
+          margin-bottom: 8px;
+          width: 100%;
+          
+          > div {
+            width: 100%;
+            
+            .ant-select {
+              width: 100% !important;
+            }
+            
+            .ant-input-search {
+              width: 100% !important;
+            }
+          }
+        }
+      }
+    }
+    
+    .insight-compact-card {
+      margin-bottom: 8px !important;
+      
+      .ant-card-body {
+        padding: 8px !important;
+      }
+    }
+  }
+}
+
+// 模态框样式
+.insight-modal {
+  .ant-modal-body {
+    padding: 24px;
+  }
+  
+  .ant-space-vertical {
+    width: 100%;
+    
+    > .ant-space-item {
+      margin-bottom: 16px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+} 

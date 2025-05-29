@@ -67,10 +67,31 @@ const mockAgents: AgentItem[] = [
     category: '经营',
     status: 'enabled',
     lastReportTime: '2024-01-21 10:00'
+  },
+  {
+    id: '8',
+    name: '知识图谱构建 Agent',
+    description: '从企业知识库中抽取实体和关系，构建领域知识图谱。',
+    category: '其他',
+    status: 'not_enabled'
   }
 ];
 
-const categories = ['经营', '营销', '生产', '质控', '研发', '财务', '人事'];
+const categories = ['经营', '营销', '生产', '质控', '研发', '财务', '人事', '其他'];
+
+const getCategoryTag = (category: string) => {
+  const categoryColors: Record<string, string> = {
+    '经营': 'gold',
+    '营销': 'geekblue',
+    '生产': 'green',
+    '质控': 'purple',
+    '研发': 'cyan',
+    '财务': 'blue',
+    '人事': 'orange',
+    '其他': 'default'
+  };
+  return <Tag color={categoryColors[category] || 'default'}>{category}</Tag>;
+};
 
 const getStatusTag = (status: AgentItem['status']) => {
   const statusConfig = {
@@ -227,6 +248,9 @@ const AgentMarket: React.FC = () => {
                   <Paragraph ellipsis={{ rows: 2 }} style={{ marginBottom: 16 }}>
                     {agent.description}
                   </Paragraph>
+                  <div style={{ marginBottom: 8 }}>
+                    {getCategoryTag(agent.category)}
+                  </div>
                 </div>
                 {agent.lastReportTime && (
                   <Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 0 }}>

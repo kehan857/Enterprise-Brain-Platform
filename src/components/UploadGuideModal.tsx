@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, Upload, Button, Row, Col, Typography, Space, Alert, Divider, message, Card } from 'antd';
-import { UploadOutlined, DownloadOutlined, InboxOutlined, FileExcelOutlined, FilePdfOutlined, FileWordOutlined } from '@ant-design/icons';
+import { Modal, Upload, Button, Typography, Alert, message, Input, Form, Select } from 'antd';
+import { InboxOutlined, InfoCircleOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 
 const { Dragger } = Upload;
-const { Title, Text, Paragraph } = Typography;
+const { Text, Paragraph } = Typography;
 
 export interface UploadGuideModalProps {
   /**
@@ -28,14 +28,6 @@ export interface UploadGuideModalProps {
    */
   description?: string;
   /**
-   * 模板下载按钮文字
-   */
-  templateButtonText?: string;
-  /**
-   * 模板下载URL
-   */
-  templateUrl?: string;
-  /**
    * 上传成功回调
    */
   onSuccess?: (fileList: any[]) => void;
@@ -43,10 +35,6 @@ export interface UploadGuideModalProps {
    * 关闭弹窗回调
    */
   onClose: () => void;
-  /**
-   * 下载模板回调
-   */
-  onDownloadTemplate?: () => void;
   /**
    * 支持的文件类型
    */
@@ -59,34 +47,46 @@ export interface UploadGuideModalProps {
    * 上传文件接口的URL
    */
   uploadUrl?: string;
+  /**
+   * 模板下载按钮文字
+   */
+  templateButtonText?: string;
+  /**
+   * 模板文件URL
+   */
+  templateUrl?: string;
+  /**
+   * 下载模板回调
+   */
+  onDownloadTemplate?: () => void;
 }
 
 const UploadGuideModal: React.FC<UploadGuideModalProps> = ({
   open,
-  title = '文件上传指引',
-  uploadTitle = '上传数据文件',
-  uploadDescription = '上传您的数据文件',
-  description = '请按照以下步骤上传您的数据文件',
-  templateButtonText = '下载模板',
-  templateUrl = '',
+  title = '上传文档',
+  uploadTitle = '上传文件',
+  uploadDescription = '支持单个或批量上传。',
+  description = '请上传文档，系统将自动处理并分析文档内容。',
   onSuccess,
   onClose,
-  onDownloadTemplate,
   acceptTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt', '.csv'],
   maxSize = 10,
-  uploadUrl = '/api/upload'
+  uploadUrl = '/api/upload',
+  templateButtonText,
+  templateUrl,
+  onDownloadTemplate
 }) => {
   const [fileList, setFileList] = useState<any[]>([]);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [form] = Form.useForm();
 
-  // 处理模板下载
-  const handleDownloadTemplate = () => {
-    if (onDownloadTemplate) {
-      onDownloadTemplate();
-    } else if (templateUrl) {
-      window.open(templateUrl, '_blank');
-    }
-  };
+  // 目录数据
+  const directories = [
+    { label: '产品文档', value: '产品文档' },
+    { label: '销售文档', value: '销售文档' },
+    { label: '技术文档', value: '技术文档' },
+    { label: '运营文档', value: '运营文档' },
+  ];
 
   // 处理文件上传前的校验
   const beforeUpload = (file: File) => {
@@ -151,118 +151,146 @@ const UploadGuideModal: React.FC<UploadGuideModalProps> = ({
   // 重置状态
   const handleCancel = () => {
     setFileList([]);
+    form.resetFields();
     onClose();
+  };
+
+  // 处理上传
+  const handleUpload = () => {
+    form.validateFields().then(values => {
+      // 这里可以处理表单数据与文件一起上传
+      if (fileList.length > 0) {
+        if (onSuccess) {
+          onSuccess(fileList);
+        }
+        message.success('文档上传成功');
+        handleCancel();
+      } else {
+        message.error('请先选择文件再上传');
+      }
+    }).catch(error => {
+      console.log('表单验证失败：', error);
+    });
+  };
+
+  // 处理下载模板
+  const handleDownloadTemplate = () => {
+    if (onDownloadTemplate) {
+      onDownloadTemplate();
+    } else if (templateUrl) {
+      window.open(templateUrl, '_blank');
+    }
   };
 
   return (
     <Modal
       title={title}
       open={open}
-      width={800}
+      width={600}
       onCancel={handleCancel}
       footer={[
-        <Button key="back" onClick={handleCancel}>
-          关闭
+        <Button key="cancel" onClick={handleCancel}>
+          取消
         </Button>,
+        <Button 
+          key="upload" 
+          type="primary" 
+          onClick={handleUpload}
+          loading={uploading}
+        >
+          上传
+        </Button>
       ]}
     >
       <Alert
-        message="上传说明"
-        description="请先下载模板文件，按要求填写数据后上传。上传前请确保数据格式与模板一致。"
+        message="文档上传说明"
+        description={description}
         type="info"
-        showIcon
-        style={{ marginBottom: 16 }}
+        icon={<InfoCircleOutlined />}
+        style={{ marginBottom: 24 }}
       />
       
-      <Row gutter={24}>
-        <Col span={12}>
-          <Card title="模板下载" className="guide-card">
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <div style={{ textAlign: 'center', marginBottom: 16 }}>
-                <Space size="large">
-                  <FileExcelOutlined style={{ fontSize: 24, color: '#52c41a' }} />
-                  <FilePdfOutlined style={{ fontSize: 24, color: '#ff4d4f' }} />
-                  <FileWordOutlined style={{ fontSize: 24, color: '#1890ff' }} />
-                </Space>
-              </div>
-              
-              <Paragraph>
-                请下载标准模板，按照模板格式填写您的数据
-              </Paragraph>
-              
-              <ul style={{ marginBottom: 16 }}>
-                <li>请不要修改模板的结构和格式</li>
-                <li>保持必填字段的完整性</li>
-                <li>日期格式建议使用YYYY-MM-DD</li>
-              </ul>
-              
-              <div style={{ marginTop: 'auto', textAlign: 'center' }}>
-                <Button
-                  type="primary"
-                  icon={<DownloadOutlined />}
-                  onClick={handleDownloadTemplate}
-                  disabled={!templateUrl && !onDownloadTemplate}
-                >
-                  {templateButtonText}
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        
-        <Col span={12}>
-          <Card title={uploadTitle} className="guide-card">
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <Paragraph>{uploadDescription}</Paragraph>
-              
-              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
-                支持格式: {acceptTypes.join(', ')} | 单文件最大{maxSize}MB
-              </Text>
-              
-              <Dragger 
-                {...uploadProps} 
-                style={{ 
-                  padding: '20px 0',
-                  marginTop: 8,
-                  background: '#fafafa',
-                  border: '1px dashed #d9d9d9',
-                  borderRadius: '2px',
-                  cursor: 'pointer',
-                }}
-              >
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined style={{ color: '#1890ff', fontSize: 48 }} />
-                </p>
-                <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
-                <p className="ant-upload-hint">
-                  支持单个或批量上传
-                </p>
-              </Dragger>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-      
-      {fileList.length > 0 && (
-        <div style={{ marginTop: 24 }}>
-          <Divider>已选择的文件</Divider>
-          <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
-            {fileList.map((file, index) => (
-              <li key={index} style={{ padding: 8, marginBottom: 8, backgroundColor: '#f5f5f5', borderRadius: 4 }}>
-                <Space>
-                  {file.name.endsWith('.pdf') && <FilePdfOutlined style={{ color: '#ff4d4f' }} />}
-                  {(file.name.endsWith('.doc') || file.name.endsWith('.docx')) && <FileWordOutlined style={{ color: '#1890ff' }} />}
-                  {(file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) && <FileExcelOutlined style={{ color: '#52c41a' }} />}
-                  {file.name} 
-                  {file.status === 'uploading' && <span style={{ color: '#1890ff', fontSize: 12, marginLeft: 8 }}>上传中...</span>}
-                  {file.status === 'done' && <span style={{ color: '#52c41a', fontSize: 12, marginLeft: 8 }}>上传成功</span>}
-                  {file.status === 'error' && <span style={{ color: '#ff4d4f', fontSize: 12, marginLeft: 8 }}>上传失败</span>}
-                </Space>
-              </li>
+      <Form
+        form={form}
+        layout="vertical"
+      >
+        <Form.Item
+          name="directory"
+          label="目标目录"
+          rules={[{ required: true, message: '请选择目标目录' }]}
+        >
+          <Select placeholder="请选择目标目录">
+            {directories.map(dir => (
+              <Select.Option key={dir.value} value={dir.value}>
+                {dir.label}
+              </Select.Option>
             ))}
-          </ul>
-        </div>
-      )}
+          </Select>
+        </Form.Item>
+        
+        <Form.Item
+          name="title"
+          label="文档标题"
+          rules={[{ required: true, message: '请输入文档标题' }]}
+        >
+          <Input placeholder="请输入文档标题" />
+        </Form.Item>
+        
+        <Form.Item
+          name="tags"
+          label="文档标签"
+        >
+          <Select mode="tags" placeholder="请输入标签，按Enter确认" />
+        </Form.Item>
+        
+        {(templateButtonText || templateUrl) && (
+          <Form.Item>
+            <Button 
+              icon={<DownloadOutlined />} 
+              onClick={handleDownloadTemplate}
+              style={{ marginBottom: 16 }}
+            >
+              {templateButtonText || '下载模板'}
+            </Button>
+          </Form.Item>
+        )}
+        
+        <Form.Item
+          name="upload"
+          label="上传文件"
+          required
+          tooltip="支持PDF、Word、Excel等格式"
+        >
+          <Dragger 
+            {...uploadProps}
+            style={{ padding: '20px 0' }}
+          >
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">{uploadTitle}</p>
+            <p className="ant-upload-hint">{uploadDescription}</p>
+            <p className="ant-upload-hint">
+              支持格式: {acceptTypes.join(', ')} | 最大 {maxSize}MB
+            </p>
+          </Dragger>
+          
+          {fileList.length > 0 && (
+            <div style={{ marginTop: 16 }}>
+              <Text strong>已选择的文件:</Text>
+              <ul>
+                {fileList.map((file) => (
+                  <li key={file.uid} style={{ margin: '8px 0' }}>
+                    <Text ellipsis style={{ maxWidth: '100%' }}>
+                      {file.name}
+                    </Text>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Form.Item>
+      </Form>
     </Modal>
   );
 };

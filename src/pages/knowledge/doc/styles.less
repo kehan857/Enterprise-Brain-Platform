@@ -68,6 +68,65 @@
       }
     }
   }
+
+  .header-actions {
+    margin-bottom: 24px;
+    
+    .search-wrapper {
+      width: 100%;
+    }
+  }
+
+  .ant-tree {
+    background-color: transparent;
+    
+    .ant-tree-treenode {
+      padding: 8px 5px;
+      border-radius: 3px;
+      
+      &:hover {
+        background-color: #f5f5f5;
+      }
+      
+      &.ant-tree-treenode-selected {
+        background-color: #e6f7ff;
+      }
+    }
+    
+    .ant-tree-node-content-wrapper {
+      flex: 1;
+      transition: all 0.3s;
+      
+      &.ant-tree-node-selected {
+        background-color: transparent;
+        color: #1890ff;
+        font-weight: 500;
+      }
+      
+      &:hover {
+        background-color: transparent;
+      }
+    }
+    
+    .ant-tree-title {
+      margin-left: 6px;
+    }
+    
+    .ant-tree-switcher {
+      color: #bfbfbf;
+      &:hover {
+        color: #1890ff;
+      }
+    }
+    
+    .ant-tree-iconEle {
+      color: #bfbfbf;
+      
+      &.ant-tree-icon__customize {
+        color: inherit;
+      }
+    }
+  }
 }
 
 /* 搜索组件样式 */

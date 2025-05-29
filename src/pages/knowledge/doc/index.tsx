@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Card, Table, Button, Space, Upload, Tag, Modal, Form, Input, Select, message, Tree } from 'antd';
+import { Card, Table, Button, Space, Tag, Modal, message, Tree, Input, Form, Dropdown, Menu } from 'antd';
 import DocumentPreview from '@/components/DocumentPreview';
-import { PlusOutlined, UploadOutlined, FolderOutlined, FileOutlined, EditOutlined, DeleteOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, FileExcelOutlined, FileWordOutlined, FilePdfOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, EyeOutlined, DownloadOutlined, FileTextOutlined, FileExcelOutlined, FileWordOutlined, FilePdfOutlined, PlusOutlined, EditOutlined, FolderOutlined, FolderAddOutlined, MoreOutlined, CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import type { DataNode, DirectoryTreeProps } from 'antd/es/tree';
 import SearchComponent, { SearchField, FilterConfig, QuickFilter, SortOption } from '../../../components/SearchComponent';
 import UploadGuideModal from '@/components/UploadGuideModal';
 import './styles.less';
+
+const { DirectoryTree } = Tree;
 
 interface Document {
   id: string;
@@ -24,24 +26,23 @@ interface Document {
   [key: string]: any;
 }
 
-const { DirectoryTree } = Tree;
-const { Option } = Select;
-
 const treeData: DataNode[] = [
   {
     title: '产品文档',
     key: '0-0',
+    icon: <FolderOutlined style={{ color: '#1890ff' }} />,
     children: [
-      { title: '产品规格说明', key: '0-0-0', isLeaf: true },
-      { title: '使用手册', key: '0-0-1', isLeaf: true },
+      { title: '产品规格说明', icon: <FileTextOutlined />, key: '0-0-0', isLeaf: true },
+      { title: '使用手册', icon: <FileTextOutlined />, key: '0-0-1', isLeaf: true },
     ],
   },
   {
     title: '工艺文档',
     key: '0-1',
+    icon: <FolderOutlined style={{ color: '#1890ff' }} />,
     children: [
-      { title: '工艺标准', key: '0-1-0', isLeaf: true },
-      { title: '操作规程', key: '0-1-1', isLeaf: true },
+      { title: '工艺标准', icon: <FileTextOutlined />, key: '0-1-0', isLeaf: true },
+      { title: '操作规程', icon: <FileTextOutlined />, key: '0-1-1', isLeaf: true },
     ],
   },
 ];
@@ -120,11 +121,16 @@ const DocManagePage = () => {
     }
   ]);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const [form] = Form.useForm();
   const [filteredData, setFilteredData] = useState<Document[]>(documents);
   const [uploadGuideVisible, setUploadGuideVisible] = useState(false);
+  const [directoryModalVisible, setDirectoryModalVisible] = useState(false);
+  const [directoryForm] = Form.useForm();
+  const [isAddSubDir, setIsAddSubDir] = useState(false);
+  const [selectedDirectory, setSelectedDirectory] = useState<string | null>(null);
+  const [treeDataState, setTreeDataState] = useState<DataNode[]>(treeData);
+  const [previewModalVisible, setPreviewModalVisible] = useState(false);
+  const [currentDocument, setCurrentDocument] = useState<Document | null>(null);
 
   // 搜索字段配置
   const searchFields: SearchField[] = [
@@ -322,13 +328,6 @@ const DocManagePage = () => {
           </Button>
           <Button 
             type="text" 
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            编辑
-          </Button>
-          <Button 
-            type="text" 
             danger 
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record)}
@@ -418,8 +417,7 @@ const DocManagePage = () => {
   };
 
   const handleView = (record: Document) => {
-    message.info(`查看文档：${record.title}`);
-    // 模拟更新浏览次数
+    // 更新浏览次数
     const newDocs = documents.map(item => {
       if (item.id === record.id) {
         return {
@@ -431,6 +429,10 @@ const DocManagePage = () => {
     });
     setDocuments(newDocs);
     setFilteredData(newDocs);
+    
+    // 打开预览模态框
+    setCurrentDocument(record);
+    setPreviewModalVisible(true);
   };
 
   const handleDownload = (record: Document) => {
@@ -449,19 +451,6 @@ const DocManagePage = () => {
     setFilteredData(newDocs);
   };
 
-  const handleAdd = () => {
-    form.resetFields();
-    setIsModalVisible(true);
-  };
-
-  const handleEdit = (record: Document) => {
-    form.setFieldsValue({
-      ...record,
-      tags: record.tags.join(',')
-    });
-    setIsModalVisible(true);
-  };
-
   const handleDelete = (record: Document) => {
     Modal.confirm({
       title: '确认删除',
@@ -472,42 +461,6 @@ const DocManagePage = () => {
         setFilteredData(newData);
         message.success('删除成功');
       }
-    });
-  };
-
-  const handleModalOk = () => {
-    form.validateFields().then(values => {
-      // 处理标签字符串转数组
-      const tags = values.tags ? values.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : [];
-      
-      const newDoc = {
-        ...values,
-        id: values.id || String(Date.now()),
-        tags,
-        size: values.id ? documents.find(item => item.id === values.id)?.size : '0KB',
-        viewCount: values.id ? documents.find(item => item.id === values.id)?.viewCount : 0,
-        downloadCount: values.id ? documents.find(item => item.id === values.id)?.downloadCount : 0,
-        updateTime: new Date().toISOString().split('T')[0],
-        createTime: values.id ? documents.find(item => item.id === values.id)?.createTime : new Date().toISOString().split('T')[0]
-      };
-
-      if (values.id) {
-        // 编辑现有文档
-        const newData = documents.map(item =>
-          item.id === values.id ? newDoc : item
-        );
-        setDocuments(newData);
-        setFilteredData(newData);
-        message.success('修改成功');
-      } else {
-        // 添加新文档
-        const newData = [...documents, newDoc];
-        setDocuments(newData);
-        setFilteredData(newData);
-        message.success('添加成功');
-      }
-
-      setIsModalVisible(false);
     });
   };
 
@@ -537,12 +490,6 @@ const DocManagePage = () => {
     setUploadGuideVisible(false);
   };
 
-  // 处理模板下载
-  const handleDownloadTemplate = () => {
-    message.success('开始下载文档模板');
-    // 这里可以添加实际的模板下载逻辑
-  };
-
   // 处理上传成功
   const handleUploadSuccess = (fileList: any[]) => {
     message.success(`成功上传 ${fileList.length} 个文档`);
@@ -550,17 +497,149 @@ const DocManagePage = () => {
     setUploadGuideVisible(false);
   };
 
+  // 显示新建目录模态框
+  const showAddDirectoryModal = (isSubDir: boolean = false) => {
+    directoryForm.resetFields();
+    setIsAddSubDir(isSubDir);
+    if (isSubDir && selectedKeys.length === 0) {
+      message.warning('请先选择一个目录');
+      return;
+    }
+    if (isSubDir) {
+      setSelectedDirectory(selectedKeys[0] as string);
+    } else {
+      setSelectedDirectory(null);
+    }
+    setDirectoryModalVisible(true);
+  };
+
+  // 处理新建目录
+  const handleAddDirectory = () => {
+    directoryForm.validateFields().then(values => {
+      const { directoryName } = values;
+      
+      // 克隆现有的树结构数据
+      const newTreeData = [...treeDataState];
+      
+      if (isAddSubDir && selectedDirectory) {
+        // 添加子目录
+        const findAndAddChild = (nodes: DataNode[]): boolean => {
+          for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            if (node.key === selectedDirectory) {
+              if (!node.children) {
+                node.children = [];
+              }
+              const newKey = `${node.key}-${node.children.length}`;
+              node.children.push({
+                title: directoryName,
+                key: newKey,
+                isLeaf: true
+              });
+              return true;
+            }
+            if (node.children && findAndAddChild(node.children)) {
+              return true;
+            }
+          }
+          return false;
+        };
+        
+        findAndAddChild(newTreeData);
+      } else {
+        // 添加顶级目录
+        const newKey = `0-${newTreeData.length}`;
+        newTreeData.push({
+          title: directoryName,
+          key: newKey,
+          children: []
+        });
+      }
+      
+      setTreeDataState(newTreeData);
+      setDirectoryModalVisible(false);
+      message.success(`成功创建${isAddSubDir ? '子' : ''}目录`);
+    });
+  };
+
   return (
     <div className="doc-manage-page">
       <Card
         title="文档目录"
+        extra={
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />} 
+            onClick={() => showAddDirectoryModal()}
+          >
+            新建目录
+          </Button>
+        }
         style={{ width: 280 }}
         bodyStyle={{ padding: 0 }}
       >
         <DirectoryTree
           defaultExpandAll
           onSelect={onSelect}
-          treeData={treeData}
+          treeData={treeDataState}
+          showIcon
+          switcherIcon={({ expanded }) => (expanded ? <CaretDownOutlined /> : <CaretRightOutlined />)}
+          onRightClick={({ event, node }) => {
+            event.preventDefault();
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+            
+            Modal.info({
+              title: '目录操作',
+              icon: null,
+              content: (
+                <Menu>
+                  <Menu.Item 
+                    key="add-sub" 
+                    icon={<FolderAddOutlined />}
+                    onClick={() => {
+                      setSelectedKeys([node.key as string]);
+                      showAddDirectoryModal(true);
+                      Modal.destroyAll();
+                    }}
+                  >
+                    新建子目录
+                  </Menu.Item>
+                  <Menu.Item 
+                    key="edit" 
+                    icon={<EditOutlined />}
+                    onClick={() => {
+                      message.info('编辑目录功能开发中');
+                      Modal.destroyAll();
+                    }}
+                  >
+                    编辑
+                  </Menu.Item>
+                  <Menu.Item 
+                    key="delete" 
+                    icon={<DeleteOutlined />}
+                    danger
+                    onClick={() => {
+                      message.info('删除目录功能开发中');
+                      Modal.destroyAll();
+                    }}
+                  >
+                    删除
+                  </Menu.Item>
+                </Menu>
+              ),
+              okButtonProps: { style: { display: 'none' } },
+              maskClosable: true,
+              mask: false,
+              style: {
+                position: 'absolute',
+                left: event.clientX,
+                top: event.clientY
+              }
+            });
+            
+            return null;
+          }}
         />
       </Card>
 
@@ -568,21 +647,12 @@ const DocManagePage = () => {
         title="文档管理"
         style={{ flex: 1 }}
         extra={
-          <Space>
-            <Button 
-              icon={<UploadOutlined />} 
-              onClick={showUploadGuide}
-            >
-              上传文档
-            </Button>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />} 
-              onClick={handleAdd}
-            >
-              新建文档
-            </Button>
-          </Space>
+          <Button 
+            icon={<UploadOutlined />} 
+            onClick={showUploadGuide}
+          >
+            上传文档
+          </Button>
         }
       >
         <div className="header-actions">
@@ -608,87 +678,24 @@ const DocManagePage = () => {
         />
       </Card>
 
+      {/* 新建目录模态框 */}
       <Modal
-        title={form.getFieldValue('id') ? '编辑文档' : '新建文档'}
-        open={isModalVisible}
-        onOk={handleModalOk}
-        onCancel={() => setIsModalVisible(false)}
+        title={isAddSubDir ? "新建子目录" : "新建目录"}
+        open={directoryModalVisible}
+        onOk={handleAddDirectory}
+        onCancel={() => setDirectoryModalVisible(false)}
         destroyOnClose
-        width={700}
       >
         <Form
-          form={form}
+          form={directoryForm}
           layout="vertical"
         >
-          <Form.Item name="id" hidden>
-            <Input />
-          </Form.Item>
           <Form.Item
-            name="title"
-            label="文档标题"
-            rules={[{ required: true, message: '请输入文档标题' }]}
+            name="directoryName"
+            label="目录名称"
+            rules={[{ required: true, message: '请输入目录名称' }]}
           >
-            <Input placeholder="请输入文档标题" />
-          </Form.Item>
-          <Form.Item
-            name="docType"
-            label="文档类型"
-            rules={[{ required: true, message: '请选择文档类型' }]}
-          >
-            <Select placeholder="请选择文档类型">
-              <Option value="pdf">PDF文档</Option>
-              <Option value="word">Word文档</Option>
-              <Option value="excel">Excel文档</Option>
-              <Option value="text">文本文档</Option>
-              <Option value="other">其他类型</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="category"
-            label="文档类别"
-            rules={[{ required: true, message: '请选择文档类别' }]}
-          >
-            <Select placeholder="请选择文档类别">
-              <Option value="质量管理">质量管理</Option>
-              <Option value="销售分析">销售分析</Option>
-              <Option value="设备管理">设备管理</Option>
-              <Option value="人力资源">人力资源</Option>
-              <Option value="产品管理">产品管理</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="tags"
-            label="标签"
-            help="多个标签请用逗号分隔"
-          >
-            <Input placeholder="请输入标签，多个标签请用逗号分隔" />
-          </Form.Item>
-          <Form.Item
-            name="creator"
-            label="创建人"
-            rules={[{ required: true, message: '请输入创建人' }]}
-          >
-            <Input placeholder="请输入创建人" />
-          </Form.Item>
-          <Form.Item
-            name="status"
-            label="状态"
-            rules={[{ required: true, message: '请选择状态' }]}
-          >
-            <Select placeholder="请选择状态">
-              <Option value="published">已发布</Option>
-              <Option value="draft">草稿</Option>
-              <Option value="archived">已归档</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="file"
-            label="上传文档"
-            rules={[{ required: !form.getFieldValue('id'), message: '请上传文档文件' }]}
-          >
-            <Upload>
-              <Button icon={<UploadOutlined />}>上传文件</Button>
-            </Upload>
+            <Input placeholder="请输入目录名称" />
           </Form.Item>
         </Form>
       </Modal>
@@ -698,17 +705,49 @@ const DocManagePage = () => {
         open={uploadGuideVisible}
         onClose={closeUploadGuide}
         title="文档上传指引"
-        description="请按照以下步骤上传您的文档资料"
+        description="请直接上传您的文档资料"
         uploadTitle="上传文档文件"
         uploadDescription="您可以上传PDF、Word、Excel等格式文档"
-        templateButtonText="下载文档模板"
-        templateUrl="/templates/document-template.xlsx"
-        onDownloadTemplate={handleDownloadTemplate}
         onSuccess={handleUploadSuccess}
         acceptTypes={['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt']}
         maxSize={20}
         uploadUrl="/api/knowledge/doc/upload"
       />
+
+      {/* 文档预览模态框 */}
+      <Modal
+        title={currentDocument?.title || '文档预览'}
+        open={previewModalVisible}
+        onCancel={() => setPreviewModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="download" type="primary" onClick={() => {
+            if (currentDocument) {
+              handleDownload(currentDocument);
+            }
+          }}>
+            下载文档
+          </Button>,
+          <Button key="close" onClick={() => setPreviewModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
+        bodyStyle={{ height: '70vh', padding: 0, overflow: 'hidden' }}
+      >
+        {currentDocument && (
+          <DocumentPreview 
+            type={currentDocument.docType}
+            url={currentDocument.docType === 'pdf' 
+              ? 'https://arxiv.org/pdf/2003.08934.pdf'
+              : currentDocument.docType === 'excel'
+              ? '/sample-data/sample.xlsx'
+              : currentDocument.docType === 'word'
+              ? '/sample-data/sample.docx'
+              : '/sample-data/sample.txt'}
+            loading={false}
+          />
+        )}
+      </Modal>
     </div>
   );
 };
