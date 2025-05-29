@@ -55,6 +55,10 @@ const CustomerData = lazy(() => import('@/pages/data/customer-data'));
 const ProductData = lazy(() => import('@/pages/data/product-data'));
 const SalesData = lazy(() => import('@/pages/data/sales-data'));
 const MarketingAnalytics = lazy(() => import('@/pages/marketing/analytics'));
+const CustomerOverview = lazy(() => import('@/pages/marketing/analytics/customer-overview'));
+const ContractAnalysis = lazy(() => import('@/pages/marketing/analytics/contract-analysis'));
+const NewCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/new-customer-analysis'));
+const PotentialCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/potential-customer-analysis'));
 
 export const routes: RouteObject[] = [
   {
@@ -304,5 +308,21 @@ export const routes: RouteObject[] = [
   {
     path: 'marketing-analytics',
     element: <MarketingAnalytics />
+  },
+  {
+    path: 'customer-overview',
+    element: <CustomerOverview />
+  },
+  {
+    path: 'contract-analysis',
+    element: <ContractAnalysis />
+  },
+  {
+    path: 'new-customer-analysis',
+    element: <NewCustomerAnalysis />
+  },
+  {
+    path: 'potential-customer-analysis',
+    element: <PotentialCustomerAnalysis />
   }
 ];

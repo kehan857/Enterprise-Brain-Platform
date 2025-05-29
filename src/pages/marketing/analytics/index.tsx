@@ -26,6 +26,7 @@ import {
   ShoppingCartOutlined
 } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -152,6 +153,7 @@ const customerCategories = [
 const MarketingAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<RangeValue>([dayjs().subtract(30, 'day'), dayjs()]);
   const [selectedPeriod, setSelectedPeriod] = useState('current_month');
+  const navigate = useNavigate();
 
   // 渲染趋势图标
   const renderTrendIcon = (value: number) => {
@@ -240,7 +242,16 @@ const MarketingAnalytics: React.FC = () => {
                 flexDirection: 'column',
                 justifyContent: 'space-between'
               }}
-              onClick={() => console.log(`点击${metric.title}进入下钻页面`)}
+              onClick={() => {
+                const routeMap: Record<string, string> = {
+                  'total-customers': '/customer-overview',
+                  'total-contract-amount': '/contract-analysis',
+                  'total-payment': '/payment-analysis', // 暂时跳转到合同分析
+                  'total-receivables': '/receivables-analysis' // 暂时跳转到合同分析
+                };
+                const route = routeMap[metric.key] || '/customer-overview';
+                navigate(route);
+              }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
@@ -314,7 +325,16 @@ const MarketingAnalytics: React.FC = () => {
                 transition: 'all 0.3s ease',
                 height: '200px'
               }}
-              onClick={() => console.log(`点击${category.title}进入下钻页面`)}
+              onClick={() => {
+                const routeMap: Record<string, string> = {
+                  'new-customers': '/new-customer-analysis',
+                  'old-customers': '/customer-overview',
+                  'big-customers': '/customer-overview',
+                  'potential-customers': '/potential-customer-analysis'
+                };
+                const route = routeMap[category.key] || '/customer-overview';
+                navigate(route);
+              }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
