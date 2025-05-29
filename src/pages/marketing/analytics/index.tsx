@@ -23,7 +23,11 @@ import {
   CustomerServiceOutlined,
   DollarOutlined,
   AccountBookOutlined,
-  ShoppingCartOutlined
+  ShoppingCartOutlined,
+  BulbOutlined,
+  RiseOutlined,
+  FallOutlined,
+  AlertOutlined
 } from '@ant-design/icons';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
@@ -150,6 +154,42 @@ const customerCategories = [
   }
 ];
 
+// 智能洞察数据
+const intelligentInsights = [
+  {
+    type: 'positive',
+    title: '新客户转化表现优异',
+    content: '本月新客户转化率达12.5%，超出目标25%，展会渠道贡献最为突出',
+    trend: 'up',
+    impact: 'high',
+    suggestion: '建议加大展会投入，扩大优质渠道覆盖'
+  },
+  {
+    type: 'warning',
+    title: '应收账款风险提醒',
+    content: '当前应收账款3135万元，其中逾期账款占比15.2%，需重点关注',
+    trend: 'stable',
+    impact: 'medium',
+    suggestion: '建议启动专项回款行动，重点跟进大额逾期客户'
+  },
+  {
+    type: 'opportunity',
+    title: '大客户增长机会',
+    content: '大客户合同金额占比29.1%，同比增长8.9%，仍有较大提升空间',
+    trend: 'up',
+    impact: 'high',
+    suggestion: '建议针对潜在大客户制定专门的营销策略'
+  },
+  {
+    type: 'info',
+    title: '区域发展不均衡',
+    content: '华东区客户贡献33.5%，西南区仅13.9%，区域发展不够均衡',
+    trend: 'stable',
+    impact: 'medium',
+    suggestion: '建议加强西南区市场开发，平衡区域发展'
+  }
+];
+
 const MarketingAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<RangeValue>([dayjs().subtract(30, 'day'), dayjs()]);
   const [selectedPeriod, setSelectedPeriod] = useState('current_month');
@@ -181,6 +221,78 @@ const MarketingAnalytics: React.FC = () => {
         strokeColor={strokeColor}
         format={() => `${completion}%`}
       />
+    );
+  };
+
+  // 处理核心指标点击下钻
+  const handleMetricClick = (metricKey: string) => {
+    const routeMap = {
+      'total-customers': '/customer-overview',
+      'total-contract-amount': '/contract-analysis',
+      'total-payment': '/payment-analysis', // 需要创建回款分析页面
+      'total-receivables': '/receivables-analysis' // 需要创建应收账款分析页面
+    };
+    const route = routeMap[metricKey];
+    if (route) {
+      navigate(route);
+    }
+  };
+
+  // 渲染智能洞察卡片
+  const renderInsightCard = (insight: typeof intelligentInsights[0], index: number) => {
+    const getInsightIcon = () => {
+      switch (insight.type) {
+        case 'positive':
+          return <RiseOutlined style={{ color: '#52c41a' }} />;
+        case 'warning':
+          return <AlertOutlined style={{ color: '#faad14' }} />;
+        case 'opportunity':
+          return <TrophyOutlined style={{ color: '#1890ff' }} />;
+        default:
+          return <BulbOutlined style={{ color: '#722ed1' }} />;
+      }
+    };
+
+    const getInsightColor = () => {
+      switch (insight.type) {
+        case 'positive':
+          return { bg: '#f6ffed', border: '#b7eb8f', text: '#52c41a' };
+        case 'warning':
+          return { bg: '#fff7e6', border: '#ffd591', text: '#faad14' };
+        case 'opportunity':
+          return { bg: '#f0f9ff', border: '#91d5ff', text: '#1890ff' };
+        default:
+          return { bg: '#f9f0ff', border: '#d3adf7', text: '#722ed1' };
+      }
+    };
+
+    const colors = getInsightColor();
+
+    return (
+      <Card 
+        key={index}
+        size="small" 
+        className="metric-card"
+        style={{ 
+          background: colors.bg,
+          border: `1px solid ${colors.border}`,
+          cursor: 'pointer'
+        }}
+        hoverable
+      >
+        <div className="flex-start mb-8">
+          {getInsightIcon()}
+          <span style={{ marginLeft: '8px', fontWeight: '600', color: colors.text }}>
+            {insight.title}
+          </span>
+        </div>
+        <div style={{ fontSize: '12px', color: '#595959', marginBottom: '8px' }}>
+          {insight.content}
+        </div>
+        <div style={{ fontSize: '11px', color: '#8c8c8c', fontStyle: 'italic' }}>
+          💡 {insight.suggestion}
+        </div>
+      </Card>
     );
   };
 
@@ -230,7 +342,12 @@ const MarketingAnalytics: React.FC = () => {
               <Card 
                 size="small" 
                 className="metric-card"
-                style={{ borderColor: `${metric.color}20` }}
+                style={{ 
+                  borderColor: `${metric.color}20`,
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleMetricClick(metric.key)}
+                hoverable
               >
                 <Statistic
                   title={metric.title}
@@ -256,6 +373,9 @@ const MarketingAnalytics: React.FC = () => {
                       环比: {renderTrendIcon(metric.monthOnMonth)} {Math.abs(metric.monthOnMonth)}%
                     </span>
                   </div>
+                </div>
+                <div className="text-center mt-8" style={{ fontSize: '10px', color: '#8c8c8c' }}>
+                  点击查看详细分析 →
                 </div>
               </Card>
             </Col>
@@ -287,8 +407,8 @@ const MarketingAnalytics: React.FC = () => {
                 onClick={() => {
                   const routeMap = {
                     'new-customers': '/new-customer-analysis',
-                    'old-customers': '/customer-overview',
-                    'big-customers': '/customer-overview',
+                    'old-customers': '/old-customer-analysis',
+                    'big-customers': '/big-customer-analysis',
                     'potential-customers': '/potential-customer-analysis'
                   };
                   navigate(routeMap[category.key]);
@@ -346,6 +466,9 @@ const MarketingAnalytics: React.FC = () => {
                     className="custom-progress"
                   />
                 </div>
+                <div className="text-center mt-8" style={{ fontSize: '10px', color: '#8c8c8c' }}>
+                  点击查看专项分析 →
+                </div>
               </Card>
             </Col>
           ))}
@@ -356,68 +479,24 @@ const MarketingAnalytics: React.FC = () => {
       <Card 
         title={
           <div className="flex-start">
-            <LineChartOutlined style={{ color: '#722ed1', marginRight: 8 }} />
+            <BulbOutlined style={{ color: '#722ed1', marginRight: 8 }} />
             智能分析洞察
           </div>
         }
         className="analysis-card card-mb-24"
         extra={
           <Button type="primary" size="small" className="btn-primary">
-            生成洞察
+            生成更多洞察
           </Button>
         }
       >
-        <div className="chart-placeholder chart-placeholder-sm flex-center">
-          <LineChartOutlined className="chart-placeholder-icon" />
-          <Text type="secondary">智能洞察功能开发中，敬请期待...</Text>
-        </div>
-      </Card>
-
-      {/* 功能规划预告 */}
-      <Card 
-        title="下钻分析功能"
-        className="analysis-card"
-        size="small"
-      >
-        <Text type="secondary" style={{ fontSize: '13px' }}>
-          点击上方各个指标卡片，可进入对应的详细分析页面，包括：
-        </Text>
-        <div style={{ marginTop: '12px' }}>
-          <Space wrap>
-            <Button 
-              type="link" 
-              size="small" 
-              onClick={() => navigate('/customer-overview')}
-              className="btn-link"
-            >
-              客户总体分析看板
-            </Button>
-            <Button 
-              type="link" 
-              size="small" 
-              onClick={() => navigate('/contract-analysis')}
-              className="btn-link"
-            >
-              合同金额分析看板
-            </Button>
-            <Button 
-              type="link" 
-              size="small" 
-              onClick={() => navigate('/new-customer-analysis')}
-              className="btn-link"
-            >
-              新客户分析看板
-            </Button>
-            <Button 
-              type="link" 
-              size="small" 
-              onClick={() => navigate('/potential-customer-analysis')}
-              className="btn-link"
-            >
-              待转化客户分析看板
-            </Button>
-          </Space>
-        </div>
+        <Row gutter={[16, 16]}>
+          {intelligentInsights.map((insight, index) => (
+            <Col key={index} xs={24} sm={12} lg={6}>
+              {renderInsightCard(insight, index)}
+            </Col>
+          ))}
+        </Row>
       </Card>
     </div>
   );

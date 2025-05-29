@@ -58,6 +58,8 @@ const MarketingAnalytics = lazy(() => import('@/pages/marketing/analytics'));
 const CustomerOverview = lazy(() => import('@/pages/marketing/analytics/customer-overview'));
 const ContractAnalysis = lazy(() => import('@/pages/marketing/analytics/contract-analysis'));
 const NewCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/new-customer-analysis'));
+const OldCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/old-customer-analysis'));
+const BigCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/big-customer-analysis'));
 const PotentialCustomerAnalysis = lazy(() => import('@/pages/marketing/analytics/potential-customer-analysis'));
 
 // 第三阶段：三级页面
@@ -325,6 +327,14 @@ export const routes: RouteObject[] = [
   {
     path: 'new-customer-analysis',
     element: <NewCustomerAnalysis />
+  },
+  {
+    path: 'old-customer-analysis',
+    element: <OldCustomerAnalysis />
+  },
+  {
+    path: 'big-customer-analysis',
+    element: <BigCustomerAnalysis />
   },
   {
     path: 'potential-customer-analysis',

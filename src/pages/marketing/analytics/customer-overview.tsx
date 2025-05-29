@@ -19,7 +19,9 @@ import {
   BarChartOutlined,
   PieChartOutlined,
   EnvironmentOutlined,
-  TrophyOutlined
+  TrophyOutlined,
+  RiseOutlined,
+  FallOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -155,6 +157,16 @@ const regionData = [
   { name: '其他区域', value: 1402, percent: 9.0, color: '#13c2c2' }
 ];
 
+// 趋势图数据
+const trendData = [
+  { month: '1月', value: 12800 },
+  { month: '2月', value: 13200 },
+  { month: '3月', value: 13800 },
+  { month: '4月', value: 14300 },
+  { month: '5月', value: 14800 },
+  { month: '6月', value: 15627 }
+];
+
 const CustomerOverview: React.FC = () => {
   const navigate = useNavigate();
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
@@ -255,6 +267,43 @@ const CustomerOverview: React.FC = () => {
     }
   ];
 
+  // 渲染简单趋势图
+  const renderTrendChart = () => (
+    <div style={{ height: '200px', padding: '20px', background: '#fafafa', borderRadius: '6px' }}>
+      <div style={{ marginBottom: '16px', fontWeight: 'bold', color: '#262626' }}>
+        客户数量趋势 (近6个月)
+      </div>
+      <div style={{ display: 'flex', alignItems: 'end', height: '120px', gap: '8px' }}>
+        {trendData.map((item, index) => (
+          <div key={index} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div 
+              style={{ 
+                width: '100%', 
+                height: `${(item.value / 16000) * 100}px`,
+                background: index === trendData.length - 1 ? '#52c41a' : '#1890ff',
+                borderRadius: '2px 2px 0 0',
+                marginBottom: '4px',
+                display: 'flex',
+                alignItems: 'end',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '10px',
+                fontWeight: 'bold',
+                paddingBottom: '2px'
+              }}
+            >
+              {(item.value / 1000).toFixed(1)}k
+            </div>
+            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>{item.month}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: '8px', fontSize: '12px', color: '#52c41a', textAlign: 'center' }}>
+        <RiseOutlined /> 月增长率: 5.6%
+      </div>
+    </div>
+  );
+
   // 渲染分布分析卡片
   const renderDistributionCard = (
     title: string, 
@@ -336,10 +385,7 @@ const CustomerOverview: React.FC = () => {
             </div>
           </Col>
           <Col xs={24} sm={12} md={16}>
-            <div className="chart-placeholder flex-center">
-              <LineChartOutlined className="chart-placeholder-icon" />
-              <Text type="secondary">客户数量/类型切换趋势图 (图表组件待集成)</Text>
-            </div>
+            {renderTrendChart()}
           </Col>
         </Row>
       </Card>
