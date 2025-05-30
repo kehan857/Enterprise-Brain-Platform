@@ -39,6 +39,10 @@ interface ContractRecord {
   status: string;
   businessUnit: string;
   deliveryDate: string;
+  productType: string;
+  productName: string;
+  department: string;
+  team: string;
 }
 
 const contractData: ContractRecord[] = [
@@ -51,7 +55,11 @@ const contractData: ContractRecord[] = [
     salesperson: '王五',
     status: '执行中',
     businessUnit: '华南事业部',
-    deliveryDate: '2024-06-30'
+    deliveryDate: '2024-06-30',
+    productType: '仪电',
+    productName: '防爆显示控制终端',
+    department: '智能制造部',
+    team: '监控组'
   },
   {
     key: '2',
@@ -62,7 +70,11 @@ const contractData: ContractRecord[] = [
     salesperson: '张三',
     status: '已完成',
     businessUnit: '华北事业部',
-    deliveryDate: '2024-05-20'
+    deliveryDate: '2024-05-20',
+    productType: '箱柜',
+    productName: '隔爆型三相异步电动机',
+    department: '工控事业部',
+    team: '隔爆组'
   },
   {
     key: '3',
@@ -73,7 +85,11 @@ const contractData: ContractRecord[] = [
     salesperson: '孙七',
     status: '执行中',
     businessUnit: '华南事业部',
-    deliveryDate: '2024-07-25'
+    deliveryDate: '2024-07-25',
+    productType: '灯具开关',
+    productName: '防爆扬声器',
+    department: '客户服务部',
+    team: '生产组'
   },
   {
     key: '4',
@@ -84,7 +100,11 @@ const contractData: ContractRecord[] = [
     salesperson: '李四',
     status: '已发货',
     businessUnit: '华东事业部',
-    deliveryDate: '2024-04-10'
+    deliveryDate: '2024-04-10',
+    productType: '暖通',
+    productName: '防爆空调机',
+    department: '空调事业部',
+    team: '空调组'
   },
   {
     key: '5',
@@ -95,7 +115,11 @@ const contractData: ContractRecord[] = [
     salesperson: '赵六',
     status: '待发货',
     businessUnit: '华东事业部',
-    deliveryDate: '2024-05-10'
+    deliveryDate: '2024-05-10',
+    productType: '仪电',
+    productName: '防爆摄像仪',
+    department: '技术管理部',
+    team: '技术组'
   }
 ];
 
@@ -291,6 +315,35 @@ const ContractAnalysis: React.FC = () => {
       title: '交货日期',
       dataIndex: 'deliveryDate',
       width: 100
+    },
+    {
+      title: '产品类型',
+      dataIndex: 'productType',
+      width: 100,
+      render: (type: string) => {
+        const colorMap = {
+          '箱柜': 'blue',
+          '灯具开关': 'green', 
+          '暖通': 'orange',
+          '仪电': 'purple'
+        };
+        return <Tag color={colorMap[type] || 'default'}>{type}</Tag>;
+      }
+    },
+    {
+      title: '产品名称',
+      dataIndex: 'productName',
+      width: 180
+    },
+    {
+      title: '部门名称',
+      dataIndex: 'department',
+      width: 120
+    },
+    {
+      title: '班组名称',
+      dataIndex: 'team',
+      width: 120
     }
   ];
 
@@ -586,7 +639,7 @@ const ContractAnalysis: React.FC = () => {
           columns={columns}
           dataSource={contractData}
           className="custom-table"
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1700 }}
           pagination={{
             total: 292,
             pageSize: 10,

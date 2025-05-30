@@ -189,6 +189,10 @@ interface OverdueReceivableRecord {
   salesperson: string;
   riskLevel: string;
   action: string;
+  productType: string;
+  productName: string;
+  department: string;
+  team: string;
 }
 
 const overdueReceivableData: OverdueReceivableRecord[] = [
@@ -203,7 +207,11 @@ const overdueReceivableData: OverdueReceivableRecord[] = [
     dueDate: '2024-01-15',
     salesperson: '赵六',
     riskLevel: '高',
-    action: '法务介入'
+    action: '法务介入',
+    productType: '暖通',
+    productName: '防爆空调机',
+    department: '空调事业部',
+    team: '空调组'
   },
   {
     key: '2',
@@ -216,7 +224,11 @@ const overdueReceivableData: OverdueReceivableRecord[] = [
     dueDate: '2024-01-28',
     salesperson: '钱八',
     riskLevel: '中',
-    action: '催收函'
+    action: '催收函',
+    productType: '仪电',
+    productName: '防爆摄像仪',
+    department: '技术管理部',
+    team: '技术组'
   },
   {
     key: '3',
@@ -229,7 +241,11 @@ const overdueReceivableData: OverdueReceivableRecord[] = [
     dueDate: '2024-02-12',
     salesperson: '周九',
     riskLevel: '低',
-    action: '电话催收'
+    action: '电话催收',
+    productType: '灯具开关',
+    productName: '防爆话站',
+    department: '智能制造部',
+    team: '通讯电热组'
   }
 ];
 
@@ -508,6 +524,35 @@ const ReceivablesAnalysis: React.FC = () => {
       title: '业务员',
       dataIndex: 'salesperson',
       width: 80
+    },
+    {
+      title: '产品类型',
+      dataIndex: 'productType',
+      width: 100,
+      render: (type: string) => {
+        const colorMap = {
+          '箱柜': 'blue',
+          '灯具开关': 'green', 
+          '暖通': 'orange',
+          '仪电': 'purple'
+        };
+        return <Tag color={colorMap[type] || 'default'}>{type}</Tag>;
+      }
+    },
+    {
+      title: '产品名称',
+      dataIndex: 'productName',
+      width: 180
+    },
+    {
+      title: '部门名称',
+      dataIndex: 'department',
+      width: 120
+    },
+    {
+      title: '班组名称',
+      dataIndex: 'team',
+      width: 120
     }
   ];
 
@@ -890,7 +935,7 @@ const ReceivablesAnalysis: React.FC = () => {
           columns={overdueColumns}
           dataSource={overdueReceivableData}
           className="custom-table"
-          scroll={{ x: 1400 }}
+          scroll={{ x: 1900 }}
           pagination={{
             total: 72,
             pageSize: 10,
