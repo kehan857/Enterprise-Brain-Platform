@@ -24,6 +24,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getProductId, getTeamId, getSalespersonId, getCustomerId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -266,7 +267,7 @@ const ContractAnalysis: React.FC = () => {
       dataIndex: 'customerName',
       width: 180,
       render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
+        <Button type="link" size="small" onClick={() => navigate(`/customer-360/${getCustomerId(name)}`)}>
           {name}
         </Button>
       )
@@ -288,7 +289,7 @@ const ContractAnalysis: React.FC = () => {
       dataIndex: 'salesperson',
       width: 80,
       render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(name)}`)}>
           {name}
         </Button>
       )
@@ -333,7 +334,20 @@ const ContractAnalysis: React.FC = () => {
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 180
+      width: 180,
+      render: (name: string, record: ContractRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            // 根据产品名称映射到产品ID
+            const productId = getProductId(name);
+            navigate(`/product-detail/${productId}`);
+          }}
+        >
+          {name}
+        </Button>
+      )
     },
     {
       title: '部门名称',
@@ -343,7 +357,20 @@ const ContractAnalysis: React.FC = () => {
     {
       title: '班组名称',
       dataIndex: 'team',
-      width: 120
+      width: 120,
+      render: (team: string, record: ContractRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            // 根据班组名称映射到班组ID
+            const teamId = getTeamId(team);
+            navigate(`/team-detail/${teamId}`);
+          }}
+        >
+          {team}
+        </Button>
+      )
     }
   ];
 
@@ -470,7 +497,7 @@ const ContractAnalysis: React.FC = () => {
                     }}>
                       {person.rank}
                     </div>
-                    <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${person.rank}`)}>
+                    <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(person.name)}`)}>
                       {person.name}
                     </Button>
                   </div>

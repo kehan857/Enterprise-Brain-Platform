@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   Row, 
@@ -30,6 +30,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getSalespersonId, getContractId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -247,16 +248,17 @@ const Customer360: React.FC = () => {
   const { customerId } = useParams();
   const [activeTab, setActiveTab] = useState('contracts');
 
+  // 确保页面加载时滚动到顶部
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [customerId]);
+
   const contractColumns: ColumnsType<ContractRecord> = [
     {
       title: '合同编号',
       dataIndex: 'contractCode',
-      render: (code: string, record: ContractRecord) => (
-        <Button 
-          type="link" 
-          size="small" 
-          onClick={() => navigate(`/contract-detail/${record.key}`)}
-        >
+      render: (code: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/contract-detail/${getContractId(code)}`)}>
           {code}
         </Button>
       )
@@ -446,7 +448,9 @@ const Customer360: React.FC = () => {
               </Descriptions.Item>
               <Descriptions.Item label="负责业务员">
                 <TeamOutlined style={{ marginRight: 4 }} />
-                {customerInfo.salesperson}
+                <Button type="link" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(customerInfo.salesperson)}`)}>
+                  {customerInfo.salesperson}
+                </Button>
               </Descriptions.Item>
               <Descriptions.Item label="客户地址">
                 <EnvironmentOutlined style={{ marginRight: 4 }} />

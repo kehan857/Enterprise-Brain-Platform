@@ -30,6 +30,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getProductId, getTeamId, getSalespersonId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -160,23 +161,6 @@ const industryData = [
   { name: '其他', count: 19, percent: 8.2, amount: 121, color: '#13c2c2' }
 ];
 
-// 丢失原因分析数据
-const lossReasonData = [
-  { reason: '价格过高', count: 125, percent: 35.8, color: '#ff4d4f' },
-  { reason: '产品不匹配', count: 89, percent: 25.5, color: '#faad14' },
-  { reason: '交期太长', count: 67, percent: 19.2, color: '#13c2c2' },
-  { reason: '服务不满意', count: 42, percent: 12.0, color: '#722ed1' },
-  { reason: '其他原因', count: 26, percent: 7.5, color: '#8c8c8c' }
-];
-
-// 阶段分布时长分析数据
-const stageDurationData = [
-  { stage: '有效询盘', avgDays: 7, maxDays: 15, color: '#1890ff' },
-  { stage: '方案沟通', avgDays: 21, maxDays: 45, color: '#52c41a' },
-  { stage: '商务谈判', avgDays: 35, maxDays: 60, color: '#faad14' },
-  { stage: '合同签订', avgDays: 14, maxDays: 30, color: '#722ed1' }
-];
-
 const PotentialCustomerAnalysis: React.FC = () => {
   const navigate = useNavigate();
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
@@ -205,7 +189,7 @@ const PotentialCustomerAnalysis: React.FC = () => {
       dataIndex: 'salesperson',
       width: 80,
       render: (name: string) => (
-        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${name === '张三' ? '1' : name === '李四' ? '2' : '3'}`)}>
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(name)}`)}>
           {name}
         </Button>
       )
@@ -283,7 +267,20 @@ const PotentialCustomerAnalysis: React.FC = () => {
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 160
+      width: 160,
+      render: (name: string, record: PotentialCustomerRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            // 根据产品名称映射到产品ID
+            const productId = getProductId(name);
+            navigate(`/product-detail/${productId}`);
+          }}
+        >
+          {name}
+        </Button>
+      )
     },
     {
       title: '部门名称',
@@ -293,7 +290,20 @@ const PotentialCustomerAnalysis: React.FC = () => {
     {
       title: '班组名称',
       dataIndex: 'team',
-      width: 120
+      width: 120,
+      render: (team: string, record: PotentialCustomerRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            // 根据班组名称映射到班组ID
+            const teamId = getTeamId(team);
+            navigate(`/team-detail/${teamId}`);
+          }}
+        >
+          {team}
+        </Button>
+      )
     }
   ];
 
@@ -453,70 +463,6 @@ const PotentialCustomerAnalysis: React.FC = () => {
                     <div className="data-item-desc">
                       {range.percent}% | ¥{range.amount.toLocaleString()}万
                     </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24} sm={12}>
-          <Card 
-            title={
-              <div className="flex-start">
-                <ClockCircleOutlined style={{ color: '#722ed1', marginRight: 8 }} />
-                阶段分布时长分析
-              </div>
-            }
-            className="analysis-card"
-            size="small"
-          >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
-              {stageDurationData.map((duration, index) => (
-                <div key={index} className="data-item">
-                  <div className="data-item-left">
-                    <div 
-                      className="data-item-indicator"
-                      style={{ backgroundColor: duration.color }}
-                    />
-                    <span className="data-item-label">{duration.stage}</span>
-                  </div>
-                  <div className="data-item-right">
-                    <div className="data-item-value">{duration.avgDays}天</div>
-                    <div className="data-item-desc">平均停留时长</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
-        
-        <Col xs={24} sm={12}>
-          <Card 
-            title={
-              <div className="flex-start">
-                <WarningOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
-                丢失原因分析
-              </div>
-            }
-            className="analysis-card"
-            size="small"
-          >
-            <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
-              {lossReasonData.map((reason, index) => (
-                <div key={index} className="data-item">
-                  <div className="data-item-left">
-                    <div 
-                      className="data-item-indicator"
-                      style={{ backgroundColor: reason.color }}
-                    />
-                    <span className="data-item-label">{reason.reason}</span>
-                  </div>
-                  <div className="data-item-right">
-                    <div className="data-item-value">{reason.count}位</div>
-                    <div className="data-item-desc">占比: {reason.percent}%</div>
                   </div>
                 </div>
               ))}

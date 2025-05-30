@@ -17,7 +17,6 @@ import {
   ArrowLeftOutlined,
   ShoppingCartOutlined,
   LineChartOutlined,
-  BarChartOutlined,
   PieChartOutlined,
   TrophyOutlined,
   DollarOutlined,
@@ -30,6 +29,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getProductId, getTeamId, getSalespersonId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -258,15 +258,6 @@ const ageAnalysisData = [
   { age: '180天以上', amount: 70, percent: 2.3, count: 8, risk: '坏账', color: '#ff4d4f' }
 ];
 
-// 事业部欠款分析数据
-const businessUnitDebtData = [
-  { unit: '精密仪器事业部', amount: 1280, percent: 40.8, customerCount: 45, avgDays: 38, color: '#1890ff' },
-  { unit: '智能制造事业部', amount: 890, percent: 28.4, customerCount: 32, avgDays: 28, color: '#52c41a' },
-  { unit: '自动化设备事业部', amount: 520, percent: 16.6, customerCount: 28, avgDays: 35, color: '#722ed1' },
-  { unit: '系统集成事业部', amount: 285, percent: 9.1, customerCount: 18, avgDays: 25, color: '#faad14' },
-  { unit: '技术服务事业部', amount: 160, percent: 5.1, customerCount: 12, avgDays: 22, color: '#13c2c2' }
-];
-
 // 应收账款趋势数据
 const receivableTrendData = [
   { month: '1月', amount: 3850, turnover: 2.1 },
@@ -365,7 +356,12 @@ const ReceivablesAnalysis: React.FC = () => {
     {
       title: '业务员',
       dataIndex: 'salesperson',
-      width: 80
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(name)}`)}>
+          {name}
+        </Button>
+      )
     }
   ];
 
@@ -397,7 +393,7 @@ const ReceivablesAnalysis: React.FC = () => {
       dataIndex: 'salesperson',
       width: 100,
       render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(name)}`)}>
           {name}
         </Button>
       )
@@ -463,7 +459,16 @@ const ReceivablesAnalysis: React.FC = () => {
     {
       title: '客户名称',
       dataIndex: 'customerName',
-      width: 180
+      width: 180,
+      render: (name: string, record: OverdueReceivableRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => navigate(`/customer-360/${record.key}`)}
+        >
+          {name}
+        </Button>
+      )
     },
     {
       title: '合同金额(万)',
@@ -523,7 +528,12 @@ const ReceivablesAnalysis: React.FC = () => {
     {
       title: '业务员',
       dataIndex: 'salesperson',
-      width: 80
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(name)}`)}>
+          {name}
+        </Button>
+      )
     },
     {
       title: '产品类型',
@@ -542,7 +552,20 @@ const ReceivablesAnalysis: React.FC = () => {
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 180
+      width: 180,
+      render: (name: string, record: OverdueReceivableRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            // 根据产品名称映射到产品ID
+            const productId = getProductId(name);
+            navigate(`/product-detail/${productId}`);
+          }}
+        >
+          {name}
+        </Button>
+      )
     },
     {
       title: '部门名称',
@@ -552,7 +575,20 @@ const ReceivablesAnalysis: React.FC = () => {
     {
       title: '班组名称',
       dataIndex: 'team',
-      width: 120
+      width: 120,
+      render: (team: string, record: OverdueReceivableRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            // 根据班组名称映射到班组ID
+            const teamId = getTeamId(team);
+            navigate(`/team-detail/${teamId}`);
+          }}
+        >
+          {team}
+        </Button>
+      )
     }
   ];
 
@@ -620,40 +656,6 @@ const ReceivablesAnalysis: React.FC = () => {
               <div className="data-item-value">¥{item.amount.toLocaleString()}万</div>
               <div className="data-item-desc">
                 占比: {item.percent}% | {item.count}笔 | {item.risk}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-
-  // 渲染事业部欠款分析
-  const renderBusinessUnitDebtAnalysis = () => (
-    <Card 
-      title={
-        <div className="flex-start">
-          <BarChartOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-          事业部欠款分析
-        </div>
-      }
-      className="analysis-card"
-      size="small"
-    >
-      <div style={{ maxHeight: '200px', overflowY: 'auto' }} className="custom-scrollbar">
-        {businessUnitDebtData.map((unit, index) => (
-          <div key={index} className="data-item">
-            <div className="data-item-left">
-              <div 
-                className="data-item-indicator"
-                style={{ backgroundColor: unit.color }}
-              />
-              <span className="data-item-label">{unit.unit}</span>
-            </div>
-            <div className="data-item-right">
-              <div className="data-item-value">¥{unit.amount.toLocaleString()}万</div>
-              <div className="data-item-desc">
-                占比: {unit.percent}% | {unit.customerCount}位 | 平均{unit.avgDays}天
               </div>
             </div>
           </div>
@@ -766,62 +768,9 @@ const ReceivablesAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 事业部分析和风险预警 */}
-      <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24} lg={12}>
-          {renderBusinessUnitDebtAnalysis()}
-        </Col>
-        
-        <Col xs={24} lg={12}>
-          <Card 
-            title={
-              <div className="flex-start">
-                <AlertOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
-                风险预警分析
-              </div>
-            }
-            className="analysis-card"
-            size="small"
-          >
-            <div style={{ padding: '8px 0' }}>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <div className="risk-item" style={{ background: '#fff2f0', border: '1px solid #ffccc7', padding: '12px', borderRadius: '6px' }}>
-                    <div style={{ color: '#ff4d4f', fontWeight: 'bold', marginBottom: '4px' }}>
-                      🚨 高风险客户
-                    </div>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff4d4f' }}>12位</div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>逾期金额¥880万</div>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div className="risk-item" style={{ background: '#fff7e6', border: '1px solid #ffd591', padding: '12px', borderRadius: '6px' }}>
-                    <div style={{ color: '#fa8c16', fontWeight: 'bold', marginBottom: '4px' }}>
-                      ⚠ 预警客户
-                    </div>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#fa8c16' }}>28位</div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>61-90天账龄</div>
-                  </div>
-                </Col>
-              </Row>
-              <div style={{ marginTop: '12px', padding: '8px', background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: '6px' }}>
-                <div style={{ fontSize: '12px', color: '#52c41a', fontWeight: 'bold' }}>
-                  💡 建议措施：
-                </div>
-                <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
-                  1. 对高风险客户启动法务程序<br/>
-                  2. 完善客户信用评级体系<br/>
-                  3. 优化合同付款条件设计
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
       {/* 客户和业务员欠款排行 */}
-      <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24} lg={12}>
+      <Row gutter={[16, 16]} className="card-mb-24" style={{ display: 'flex', alignItems: 'stretch' }}>
+        <Col xs={24} lg={12} style={{ height: '100%' }}>
           <Card 
             title={
               <div className="flex-start">
@@ -831,6 +780,8 @@ const ReceivablesAnalysis: React.FC = () => {
             }
             className="analysis-card"
             size="small"
+            style={{ height: '100%', minHeight: '400px' }}
+            bodyStyle={{ padding: '16px 24px' }}
           >
             <Table
               columns={customerColumns}
@@ -838,11 +789,12 @@ const ReceivablesAnalysis: React.FC = () => {
               className="custom-table"
               pagination={false}
               size="small"
+              style={{ minHeight: '300px' }}
             />
           </Card>
         </Col>
         
-        <Col xs={24} lg={12}>
+        <Col xs={24} lg={12} style={{ height: '100%' }}>
           <Card 
             title={
               <div className="flex-start">
@@ -852,6 +804,8 @@ const ReceivablesAnalysis: React.FC = () => {
             }
             className="analysis-card"
             size="small"
+            style={{ height: '100%', minHeight: '400px' }}
+            bodyStyle={{ padding: '16px 24px' }}
           >
             <Table
               columns={salespersonColumns}
@@ -859,6 +813,7 @@ const ReceivablesAnalysis: React.FC = () => {
               className="custom-table"
               pagination={false}
               size="small"
+              style={{ minHeight: '300px' }}
             />
           </Card>
         </Col>
@@ -873,16 +828,6 @@ const ReceivablesAnalysis: React.FC = () => {
           </div>
         }
         className="analysis-card"
-        extra={
-          <Space>
-            <Button type="primary" danger size="small">
-              批量催收
-            </Button>
-            <Button type="default" size="small">
-              导出催收单
-            </Button>
-          </Space>
-        }
       >
         <div className="filter-section">
           <div className="filter-row">

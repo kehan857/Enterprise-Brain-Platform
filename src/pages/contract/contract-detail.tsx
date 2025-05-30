@@ -32,6 +32,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getSalespersonId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -569,7 +570,9 @@ const ContractDetail: React.FC = () => {
               </Descriptions.Item>
               <Descriptions.Item label="负责业务员">
                 <UserOutlined style={{ marginRight: 4 }} />
-                {contractInfo.salesperson}
+                <Button type="link" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(contractInfo.salesperson)}`)}>
+                  {contractInfo.salesperson}
+                </Button>
               </Descriptions.Item>
               <Descriptions.Item label="所属事业部">{contractInfo.businessUnit}</Descriptions.Item>
               <Descriptions.Item label="付款条款" span={2}>{contractInfo.paymentTerms}</Descriptions.Item>

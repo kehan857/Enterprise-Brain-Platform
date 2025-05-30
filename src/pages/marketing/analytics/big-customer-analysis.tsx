@@ -28,6 +28,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getProductId, getTeamId, getSalespersonId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -187,7 +188,7 @@ const BigCustomerAnalysis: React.FC = () => {
       dataIndex: 'salesperson',
       width: 80,
       render: (name: string) => (
-        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${name === '张三' ? '1' : name === '李四' ? '2' : '3'}`)}>
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${getSalespersonId(name)}`)}>
           {name}
         </Button>
       )
@@ -265,7 +266,19 @@ const BigCustomerAnalysis: React.FC = () => {
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 180
+      width: 180,
+      render: (name: string, record: BigCustomerRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            const productId = getProductId(name);
+            navigate(`/product-detail/${productId}`);
+          }}
+        >
+          {name}
+        </Button>
+      )
     },
     {
       title: '部门名称',
@@ -275,7 +288,19 @@ const BigCustomerAnalysis: React.FC = () => {
     {
       title: '班组名称',
       dataIndex: 'team',
-      width: 120
+      width: 120,
+      render: (team: string, record: BigCustomerRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            const teamId = getTeamId(team);
+            navigate(`/team-detail/${teamId}`);
+          }}
+        >
+          {team}
+        </Button>
+      )
     }
   ];
 

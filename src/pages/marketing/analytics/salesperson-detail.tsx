@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Card, 
   Row, 
@@ -38,6 +38,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
+import { getProductId, getTeamId, getCustomerId } from '@/utils/navigation';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -306,22 +307,17 @@ const salespersonContractData: { [key: string]: SalespersonContractRecord[] } = 
   ]
 };
 
-// 业绩趋势数据
-const performanceTrendData = [
-  { month: '2023-10', contracts: 8, amount: 2300, customers: 5 },
-  { month: '2023-11', contracts: 12, amount: 3500, customers: 7 },
-  { month: '2023-12', contracts: 15, amount: 4200, customers: 9 },
-  { month: '2024-01', contracts: 18, amount: 5100, customers: 12 },
-  { month: '2024-02', contracts: 22, amount: 6800, customers: 15 },
-  { month: '2024-03', contracts: 25, amount: 7500, customers: 18 }
-];
-
 const SalespersonDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [searchKeyword, setSearchKeyword] = useState<string>('');
   const [selectedCustomerType, setSelectedCustomerType] = useState<string>('all');
   const [selectedContractStatus, setSelectedContractStatus] = useState<string>('all');
+
+  // 确保页面加载时滚动到顶部
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   // 获取业务员信息
   const salesperson = salespersonData[id || '1'];
@@ -361,12 +357,8 @@ const SalespersonDetail: React.FC = () => {
       title: '客户名称',
       dataIndex: 'customerName',
       width: 180,
-      render: (name: string, record: SalespersonCustomerRecord) => (
-        <Button 
-          type="link" 
-          size="small" 
-          onClick={() => navigate(`/customer-360/${record.key}`)}
-        >
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/customer-360/${getCustomerId(name)}`)}>
           {name}
         </Button>
       )
@@ -446,7 +438,19 @@ const SalespersonDetail: React.FC = () => {
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 160
+      width: 160,
+      render: (name: string, record: SalespersonCustomerRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            const productId = getProductId(name);
+            navigate(`/product-detail/${productId}`);
+          }}
+        >
+          {name}
+        </Button>
+      )
     },
     {
       title: '部门名称',
@@ -456,7 +460,19 @@ const SalespersonDetail: React.FC = () => {
     {
       title: '班组名称',
       dataIndex: 'team',
-      width: 120
+      width: 120,
+      render: (team: string, record: SalespersonCustomerRecord) => (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => {
+            const teamId = getTeamId(team);
+            navigate(`/team-detail/${teamId}`);
+          }}
+        >
+          {team}
+        </Button>
+      )
     }
   ];
 

@@ -68,6 +68,8 @@ const ReceivablesAnalysis = lazy(() => import('@/pages/marketing/analytics/recei
 const Customer360 = lazy(() => import('@/pages/customer/customer-360'));
 const ContractDetail = lazy(() => import('@/pages/contract/contract-detail'));
 const SalespersonDetail = lazy(() => import('@/pages/marketing/analytics/salesperson-detail'));
+const ProductDetail = lazy(() => import('@/pages/product/product-detail'));
+const TeamDetail = lazy(() => import('@/pages/team/team-detail'));
 
 export const routes: RouteObject[] = [
   {
@@ -362,5 +364,13 @@ export const routes: RouteObject[] = [
   {
     path: 'salesperson-detail/:salespersonId',
     element: <SalespersonDetail />
+  },
+  {
+    path: 'product-detail/:productId',
+    element: <ProductDetail />
+  },
+  {
+    path: 'team-detail/:teamId',
+    element: <TeamDetail />
   }
 ];

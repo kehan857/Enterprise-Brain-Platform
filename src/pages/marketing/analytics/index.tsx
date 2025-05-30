@@ -69,15 +69,15 @@ const coreMetrics = [
   {
     key: 'total-payment',
     title: '总回款金额',
-    value: 12543,
+    value: 3123,
     unit: '万元',
-    target: 12000,
-    completion: 104.53,
+    target: 3000,
+    completion: 104.1,
     yearOnYear: 6.3,
     monthOnMonth: 2.1,
     icon: <AccountBookOutlined />,
     color: '#13c2c2',
-    trend: [9800, 10500, 11200, 11800, 12200, 12543]
+    trend: [2480, 2650, 2820, 2950, 3050, 3123]
   },
   {
     key: 'total-receivables',
@@ -499,9 +499,6 @@ const MarketingAnalytics: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <div className="text-center mt-8" style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  点击查看详细分析 →
-                </div>
               </Card>
             </Col>
           ))}
@@ -518,16 +515,23 @@ const MarketingAnalytics: React.FC = () => {
         }
         className="analysis-card card-mb-24"
       >
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ display: 'flex', alignItems: 'stretch' }}>
           {customerCategories.map((category) => (
-            <Col key={category.key} xs={24} sm={12} md={12} lg={6}>
+            <Col key={category.key} xs={24} sm={12} md={12} lg={6} className="flex-fill">
               <Card 
                 size="small" 
-                className="metric-card"
+                className="metric-card flex-fill"
                 style={{ 
                   borderColor: `${category.color}20`,
                   background: `${category.color}05`,
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  height: '100%'
+                }}
+                bodyStyle={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
                 }}
                 onClick={() => {
                   const routeMap = {
@@ -540,48 +544,49 @@ const MarketingAnalytics: React.FC = () => {
                 }}
                 hoverable
               >
-                <div className="flex-between mb-16">
-                  <div className="flex-start">
-                    {React.cloneElement(category.icon, { 
-                      style: { color: category.color, fontSize: '20px' } 
-                    })}
-                    <span style={{ marginLeft: '8px', fontWeight: '600' }}>
-                      {category.title}
+                <div>
+                  <div className="flex-between mb-16">
+                    <div className="flex-start">
+                      {React.cloneElement(category.icon, { 
+                        style: { color: category.color, fontSize: '20px' } 
+                      })}
+                      <span style={{ marginLeft: '8px', fontWeight: '600' }}>
+                        {category.title}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#8c8c8c', textAlign: 'right' }}>
+                      {category.description}
+                    </div>
+                  </div>
+
+                  <div className="flex-between mb-12">
+                    <div>
+                      <div style={{ fontSize: '12px', color: '#8c8c8c' }}>客户数量</div>
+                      <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
+                        {category.count.toLocaleString()}位
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                        {category.key === 'potential-customers' ? '预计金额' : '合同金额'}
+                      </div>
+                      <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
+                        {category.amount.toLocaleString()}万元
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex-between mb-12">
+                    <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                      {category.rateLabel}: {category.rate}%
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                      同比: {renderTrendIcon(category.yearOnYear)} {Math.abs(category.yearOnYear)}%
                     </span>
                   </div>
                 </div>
 
-                <div className="flex-between mb-12">
-                  <div>
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>客户数量</div>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
-                      {category.count.toLocaleString()}位
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                      {category.key === 'potential-customers' ? '预计金额' : '合同金额'}
-                    </div>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
-                      {category.amount.toLocaleString()}万元
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex-between mb-12">
-                  <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                    {category.rateLabel}: {category.rate}%
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                    同比: {renderTrendIcon(category.yearOnYear)} {Math.abs(category.yearOnYear)}%
-                  </span>
-                </div>
-
-                <div className="text-center" style={{ fontSize: '11px', color: '#8c8c8c' }}>
-                  {category.description}
-                </div>
-
-                <div className="mt-8">
+                <div>
                   <Text type="secondary" style={{ fontSize: '11px' }}>
                     目标完成率: {category.completion}%
                   </Text>
@@ -592,9 +597,6 @@ const MarketingAnalytics: React.FC = () => {
                     format={() => `${category.completion}%`}
                     className="custom-progress"
                   />
-                </div>
-                <div className="text-center mt-8" style={{ fontSize: '10px', color: '#8c8c8c' }}>
-                  点击查看专项分析 →
                 </div>
               </Card>
             </Col>
