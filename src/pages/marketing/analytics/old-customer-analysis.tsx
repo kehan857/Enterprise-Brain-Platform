@@ -10,7 +10,8 @@ import {
   Breadcrumb,
   Statistic,
   Select,
-  Tag
+  Tag,
+  Input
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -23,7 +24,8 @@ import {
   DollarOutlined,
   BulbOutlined,
   HeartOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -46,7 +48,6 @@ interface OldCustomerRecord {
   region: string;
   firstContract: string;
   lastContract: string;
-  loyaltyLevel: string;
 }
 
 const oldCustomerData: OldCustomerRecord[] = [
@@ -63,8 +64,7 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 2850,
     region: '上海市浦东新区',
     firstContract: '2022-05-15',
-    lastContract: '2024-01-10',
-    loyaltyLevel: '高'
+    lastContract: '2024-01-10'
   },
   {
     key: '2',
@@ -79,8 +79,7 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 7200,
     region: '深圳市南山区',
     firstContract: '2021-08-15',
-    lastContract: '2024-03-01',
-    loyaltyLevel: '极高'
+    lastContract: '2024-03-01'
   },
   {
     key: '3',
@@ -95,8 +94,7 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 2300,
     region: '广州市天河区',
     firstContract: '2023-01-20',
-    lastContract: '2024-02-25',
-    loyaltyLevel: '中'
+    lastContract: '2024-02-25'
   },
   {
     key: '4',
@@ -111,8 +109,7 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 10500,
     region: '天津市滨海新区',
     firstContract: '2020-03-10',
-    lastContract: '2024-02-15',
-    loyaltyLevel: '极高'
+    lastContract: '2024-02-15'
   },
   {
     key: '5',
@@ -127,8 +124,7 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 1350,
     region: '成都市高新区',
     firstContract: '2023-06-20',
-    lastContract: '2024-01-25',
-    loyaltyLevel: '中'
+    lastContract: '2024-01-25'
   }
 ];
 
@@ -138,22 +134,6 @@ const repurchaseBehaviorData = [
   { period: '6-12个月', count: 125, percent: 45.5, avgAmount: 420, color: '#1890ff' },
   { period: '12-24个月', count: 48, percent: 17.5, avgAmount: 320, color: '#faad14' },
   { period: '24个月以上', count: 12, percent: 4.6, avgAmount: 180, color: '#ff4d4f' }
-];
-
-// 老客户活跃度分析数据
-const activityLevelData = [
-  { level: '极高活跃', count: 156, percent: 12.6, amount: 4800, color: '#52c41a' },
-  { level: '高活跃', count: 342, percent: 27.7, amount: 2850, color: '#1890ff' },
-  { level: '中等活跃', count: 498, percent: 40.4, amount: 1250, color: '#faad14' },
-  { level: '低活跃', count: 238, percent: 19.3, amount: 480, color: '#ff7875' }
-];
-
-// 老客户流失风险数据
-const churnRiskData = [
-  { risk: '无风险', count: 865, percent: 70.1, lastOrder: '近3个月', color: '#52c41a' },
-  { risk: '低风险', count: 245, percent: 19.9, lastOrder: '3-6个月', color: '#1890ff' },
-  { risk: '中风险', count: 89, percent: 7.2, lastOrder: '6-12个月', color: '#faad14' },
-  { risk: '高风险', count: 35, percent: 2.8, lastOrder: '12个月以上', color: '#ff4d4f' }
 ];
 
 // 老客户产品偏好分析数据
@@ -168,20 +148,9 @@ const productPreferenceData = [
 const OldCustomerAnalysis: React.FC = () => {
   const navigate = useNavigate();
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
-  const [selectedLoyalty, setSelectedLoyalty] = useState<string>('all');
-  const [selectedActivity, setSelectedActivity] = useState<string>('all');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
 
   const columns: ColumnsType<OldCustomerRecord> = [
-    {
-      title: '业务员',
-      dataIndex: 'salesperson',
-      width: 80,
-      render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
-          {name}
-        </Button>
-      )
-    },
     {
       title: '客户名称',
       dataIndex: 'customerName',
@@ -192,6 +161,16 @@ const OldCustomerAnalysis: React.FC = () => {
           size="small" 
           onClick={() => navigate(`/customer-360/${record.key}`)}
         >
+          {name}
+        </Button>
+      )
+    },
+    {
+      title: '业务员',
+      dataIndex: 'salesperson',
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${name === '张三' ? '1' : name === '李四' ? '2' : '3'}`)}>
           {name}
         </Button>
       )
@@ -209,19 +188,6 @@ const OldCustomerAnalysis: React.FC = () => {
       title: '行业',
       dataIndex: 'industry',
       width: 100
-    },
-    {
-      title: '忠诚度',
-      dataIndex: 'loyaltyLevel',
-      width: 80,
-      render: (level: string) => {
-        let color = 'default';
-        if (level === '极高') color = 'red';
-        else if (level === '高') color = 'orange';
-        else if (level === '中') color = 'blue';
-        else color = 'default';
-        return <Tag color={color}>{level}</Tag>;
-      }
     },
     {
       title: '合同数量',
@@ -286,7 +252,7 @@ const OldCustomerAnalysis: React.FC = () => {
                 className="data-item-indicator"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="data-item-label">{item.period || item.level || item.risk || item.product}</span>
+              <span className="data-item-label">{item.period || item.product}</span>
             </div>
             <div className="data-item-right">
               <div className="data-item-value">{item[valueKey]}{unitSuffix}</div>
@@ -332,9 +298,13 @@ const OldCustomerAnalysis: React.FC = () => {
 
       {/* 核心指标回顾区 */}
       <Card className="analysis-card card-mb-24">
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ display: 'flex', alignItems: 'stretch' }}>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="老客户数量"
                 value={1234}
@@ -343,14 +313,16 @@ const OldCustomerAnalysis: React.FC = () => {
                 prefix={<TeamOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 1200位</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>102.8%</Tag>
                 <Tag color="green">同比↑3.8%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="累计合同金额"
                 value={8765}
@@ -359,14 +331,16 @@ const OldCustomerAnalysis: React.FC = () => {
                 prefix={<DollarOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 8500万元</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>103.1%</Tag>
                 <Tag color="green">同比↑6.2%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="复购率"
                 value={68.2}
@@ -375,8 +349,6 @@ const OldCustomerAnalysis: React.FC = () => {
                 prefix={<TrophyOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 65%</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>104.9%</Tag>
                 <Tag color="green">同比↑2.5%</Tag>
               </div>
             </Card>
@@ -391,24 +363,6 @@ const OldCustomerAnalysis: React.FC = () => {
             '复购行为分析',
             repurchaseBehaviorData,
             <ClockCircleOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-          )}
-        </Col>
-        
-        <Col xs={24} lg={12}>
-          {renderAnalysisCard(
-            '客户活跃度分析',
-            activityLevelData,
-            <LineChartOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-          )}
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24} lg={12}>
-          {renderAnalysisCard(
-            '流失风险分析',
-            churnRiskData,
-            <BarChartOutlined style={{ color: '#faad14', marginRight: 8 }} />
           )}
         </Col>
         
@@ -429,6 +383,18 @@ const OldCustomerAnalysis: React.FC = () => {
         <div className="filter-section">
           <div className="filter-row">
             <div className="filter-item">
+              <span className="filter-label">搜索:</span>
+              <Input
+                placeholder="搜索客户名称、业务员"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+                allowClear
+              />
+            </div>
+
+            <div className="filter-item">
               <span className="filter-label">行业筛选:</span>
               <Select
                 value={selectedIndustry}
@@ -440,36 +406,6 @@ const OldCustomerAnalysis: React.FC = () => {
                 <Option value="智能制造">智能制造</Option>
                 <Option value="电子信息">电子信息</Option>
                 <Option value="汽车制造">汽车制造</Option>
-              </Select>
-            </div>
-            
-            <div className="filter-item">
-              <span className="filter-label">忠诚度筛选:</span>
-              <Select
-                value={selectedLoyalty}
-                onChange={setSelectedLoyalty}
-                style={{ width: 150 }}
-              >
-                <Option value="all">全部等级</Option>
-                <Option value="极高">极高忠诚</Option>
-                <Option value="高">高忠诚</Option>
-                <Option value="中">中忠诚</Option>
-                <Option value="低">低忠诚</Option>
-              </Select>
-            </div>
-            
-            <div className="filter-item">
-              <span className="filter-label">活跃度筛选:</span>
-              <Select
-                value={selectedActivity}
-                onChange={setSelectedActivity}
-                style={{ width: 150 }}
-              >
-                <Option value="all">全部活跃度</Option>
-                <Option value="极高活跃">极高活跃</Option>
-                <Option value="高活跃">高活跃</Option>
-                <Option value="中等活跃">中等活跃</Option>
-                <Option value="低活跃">低活跃</Option>
               </Select>
             </div>
           </div>

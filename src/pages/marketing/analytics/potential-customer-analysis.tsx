@@ -11,7 +11,8 @@ import {
   Statistic,
   Select,
   Tag,
-  Progress
+  Progress,
+  Input
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -24,7 +25,8 @@ import {
   WarningOutlined,
   TrophyOutlined,
   DollarOutlined,
-  BulbOutlined
+  BulbOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -157,18 +159,9 @@ const PotentialCustomerAnalysis: React.FC = () => {
   const [selectedStage, setSelectedStage] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedPriceRange, setSelectedPriceRange] = useState<string>('all');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
 
   const columns: ColumnsType<PotentialCustomerRecord> = [
-    {
-      title: '业务员',
-      dataIndex: 'salesperson',
-      width: 80,
-      render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
-          {name}
-        </Button>
-      )
-    },
     {
       title: '客户名称',
       dataIndex: 'customerName',
@@ -179,6 +172,16 @@ const PotentialCustomerAnalysis: React.FC = () => {
           size="small" 
           onClick={() => navigate(`/customer-360/${record.key}`)}
         >
+          {name}
+        </Button>
+      )
+    },
+    {
+      title: '业务员',
+      dataIndex: 'salesperson',
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${name === '张三' ? '1' : name === '李四' ? '2' : '3'}`)}>
           {name}
         </Button>
       )
@@ -271,9 +274,13 @@ const PotentialCustomerAnalysis: React.FC = () => {
 
       {/* 核心指标回顾区 */}
       <Card className="analysis-card card-mb-24">
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ display: 'flex', alignItems: 'stretch' }}>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="待转化客户数"
                 value={234}
@@ -282,14 +289,16 @@ const PotentialCustomerAnalysis: React.FC = () => {
                 prefix={<CustomerServiceOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 200位</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>117%</Tag>
                 <Tag color="green">同比↑22.1%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="预计合同金额"
                 value={1876}
@@ -298,14 +307,16 @@ const PotentialCustomerAnalysis: React.FC = () => {
                 prefix={<DollarOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 1800万元</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>104.2%</Tag>
                 <Tag color="green">同比↑18.5%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="预计转化率"
                 value={15.8}
@@ -314,8 +325,6 @@ const PotentialCustomerAnalysis: React.FC = () => {
                 prefix={<TrophyOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 15%</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>105.3%</Tag>
                 <Tag color="green">同比↑1.8%</Tag>
               </div>
             </Card>
@@ -470,6 +479,18 @@ const PotentialCustomerAnalysis: React.FC = () => {
       >
         <div className="filter-section">
           <div className="filter-row">
+            <div className="filter-item">
+              <span className="filter-label">搜索:</span>
+              <Input
+                placeholder="搜索客户名称、业务员"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+                allowClear
+              />
+            </div>
+
             <div className="filter-item">
               <span className="filter-label">阶段筛选:</span>
               <Select

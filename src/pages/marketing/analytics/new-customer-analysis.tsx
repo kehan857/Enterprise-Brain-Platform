@@ -11,7 +11,8 @@ import {
   Statistic,
   Select,
   Tag,
-  Progress
+  Progress,
+  Input
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -20,10 +21,11 @@ import {
   BarChartOutlined,
   PieChartOutlined,
   EnvironmentOutlined,
-  FunnelPlotOutlined,
   TrophyOutlined,
   DollarOutlined,
-  BulbOutlined
+  BulbOutlined,
+  RiseOutlined,
+  SearchOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -140,32 +142,14 @@ const regionDistributionData = [
   { name: '西南区', count: 71, percent: 15.5, amount: 185, color: '#faad14' }
 ];
 
-// 新客户转化漏斗数据
-const conversionFunnelData = [
-  { stage: '首次接触', count: 3650, percent: 100, color: '#f0f0f0' },
-  { stage: '有效沟通', count: 1825, percent: 50, color: '#d9d9d9' },
-  { stage: '需求确认', count: 912, percent: 25, color: '#bfbfbf' },
-  { stage: '方案报价', count: 456, percent: 12.5, color: '#8c8c8c' },
-  { stage: '成功签约', count: 456, percent: 12.5, color: '#52c41a' }
-];
-
 const NewCustomerAnalysis: React.FC = () => {
   const navigate = useNavigate();
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
   const [selectedSource, setSelectedSource] = useState<string>('all');
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
 
   const columns: ColumnsType<NewCustomerRecord> = [
-    {
-      title: '业务员',
-      dataIndex: 'salesperson',
-      width: 80,
-      render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
-          {name}
-        </Button>
-      )
-    },
     {
       title: '客户名称',
       dataIndex: 'customerName',
@@ -176,6 +160,16 @@ const NewCustomerAnalysis: React.FC = () => {
           size="small" 
           onClick={() => navigate(`/customer-360/${record.key}`)}
         >
+          {name}
+        </Button>
+      )
+    },
+    {
+      title: '业务员',
+      dataIndex: 'salesperson',
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${name === '张三' ? '1' : name === '李四' ? '2' : '3'}`)}>
           {name}
         </Button>
       )
@@ -322,9 +316,13 @@ const NewCustomerAnalysis: React.FC = () => {
 
       {/* 核心指标回顾区 */}
       <Card className="analysis-card card-mb-24">
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ display: 'flex', alignItems: 'stretch' }}>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '130px' }}
+            >
               <Statistic
                 title="新客户数量"
                 value={456}
@@ -333,41 +331,43 @@ const NewCustomerAnalysis: React.FC = () => {
                 prefix={<UserAddOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 400位</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>114%</Tag>
                 <Tag color="green">同比↑15.2%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '130px' }}
+            >
               <Statistic
                 title="新客户合同金额"
-                value={2345}
+                value={8567}
                 suffix="万元"
                 valueStyle={{ fontSize: '24px', color: '#52c41a' }}
                 prefix={<DollarOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 2200万元</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>106.6%</Tag>
-                <Tag color="green">同比↑18.3%</Tag>
+                <Tag color="green">同比↑12.8%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '130px' }}
+            >
               <Statistic
                 title="转化率"
-                value={12.5}
+                value={68.5}
                 suffix="%"
-                valueStyle={{ fontSize: '24px', color: '#722ed1' }}
-                prefix={<TrophyOutlined />}
+                valueStyle={{ fontSize: '24px', color: '#faad14' }}
+                prefix={<RiseOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 10%</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>125%</Tag>
-                <Tag color="green">同比↑2.1%</Tag>
+                <Tag color="red">同比↓2.1%</Tag>
               </div>
             </Card>
           </Col>
@@ -470,27 +470,6 @@ const NewCustomerAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      {/* 新客户转化漏斗 */}
-      <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24}>
-          <Card 
-            title={
-              <div className="flex-start">
-                <FunnelPlotOutlined style={{ color: '#fa8c16', marginRight: 8 }} />
-                新客户转化漏斗
-              </div>
-            }
-            className="analysis-card"
-            size="small"
-          >
-            <div className="chart-placeholder chart-placeholder-sm flex-center">
-              <FunnelPlotOutlined className="chart-placeholder-icon" />
-              <Text type="secondary">转化漏斗图表 (图表组件待集成)</Text>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-
       {/* 新客户列表明细 */}
       <Card 
         title="新客户列表明细" 
@@ -498,6 +477,18 @@ const NewCustomerAnalysis: React.FC = () => {
       >
         <div className="filter-section">
           <div className="filter-row">
+            <div className="filter-item">
+              <span className="filter-label">搜索:</span>
+              <Input
+                placeholder="搜索客户名称、业务员"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+                allowClear
+              />
+            </div>
+
             <div className="filter-item">
               <span className="filter-label">行业筛选:</span>
               <Select

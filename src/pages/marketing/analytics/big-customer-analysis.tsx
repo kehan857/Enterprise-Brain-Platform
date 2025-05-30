@@ -10,7 +10,8 @@ import {
   Breadcrumb,
   Statistic,
   Select,
-  Tag
+  Tag,
+  Input
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -23,8 +24,7 @@ import {
   DollarOutlined,
   BulbOutlined,
   RiseOutlined,
-  StarOutlined,
-  SafetyOutlined
+  SearchOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnsType } from 'antd/es/table';
@@ -46,8 +46,6 @@ interface BigCustomerRecord {
   region: string;
   firstContract: string;
   lastContract: string;
-  riskLevel: string;
-  serviceSatisfaction: number;
 }
 
 const bigCustomerData: BigCustomerRecord[] = [
@@ -63,9 +61,7 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 15.2,
     region: '深圳市南山区',
     firstContract: '2020-08-15',
-    lastContract: '2024-03-01',
-    riskLevel: '低',
-    serviceSatisfaction: 95
+    lastContract: '2024-03-01'
   },
   {
     key: '2',
@@ -79,9 +75,7 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 8.9,
     region: '北京市朝阳区',
     firstContract: '2019-03-10',
-    lastContract: '2024-02-28',
-    riskLevel: '极低',
-    serviceSatisfaction: 98
+    lastContract: '2024-02-28'
   },
   {
     key: '3',
@@ -95,9 +89,7 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 22.1,
     region: '上海市浦东新区',
     firstContract: '2021-06-20',
-    lastContract: '2024-01-15',
-    riskLevel: '低',
-    serviceSatisfaction: 92
+    lastContract: '2024-01-15'
   },
   {
     key: '4',
@@ -111,9 +103,7 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 5.6,
     region: '天津市滨海新区',
     firstContract: '2020-11-05',
-    lastContract: '2024-02-10',
-    riskLevel: '中',
-    serviceSatisfaction: 88
+    lastContract: '2024-02-10'
   },
   {
     key: '5',
@@ -127,9 +117,7 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 18.7,
     region: '广州市天河区',
     firstContract: '2019-09-15',
-    lastContract: '2024-03-05',
-    riskLevel: '极低',
-    serviceSatisfaction: 96
+    lastContract: '2024-03-05'
   }
 ];
 
@@ -150,47 +138,12 @@ const industryDistributionData = [
   { industry: '其他行业', count: 9, percent: 10.1, amount: 178, color: '#13c2c2' }
 ];
 
-// 大客户关键产品/服务分析数据
-const productServiceAnalysisData = [
-  { product: '智能化产线', count: 45, amount: 1850, percent: 40.5, satisfaction: 94, color: '#1890ff' },
-  { product: '大型设备', count: 32, amount: 1320, percent: 28.9, satisfaction: 92, color: '#52c41a' },
-  { product: '系统集成', count: 28, amount: 890, percent: 19.5, satisfaction: 90, color: '#722ed1' },
-  { product: '技术服务', count: 23, amount: 508, percent: 11.1, satisfaction: 96, color: '#faad14' }
-];
-
-// 大客户满意度/健康度数据
-const healthScoreData = [
-  { level: '优秀', score: '90-100', count: 52, percent: 58.4, color: '#52c41a' },
-  { level: '良好', score: '80-89', count: 25, percent: 28.1, color: '#1890ff' },
-  { level: '一般', score: '70-79', count: 9, percent: 10.1, color: '#faad14' },
-  { level: '待改善', score: '<70', count: 3, percent: 3.4, color: '#ff4d4f' }
-];
-
-// 大客户风险预警数据
-const riskWarningData = [
-  { risk: '极低风险', count: 42, percent: 47.2, indicators: '持续增长,高满意度', color: '#52c41a' },
-  { risk: '低风险', count: 28, percent: 31.5, indicators: '稳定合作,满意度良好', color: '#1890ff' },
-  { risk: '中风险', count: 15, percent: 16.9, indicators: '增长放缓,需要关注', color: '#faad14' },
-  { risk: '高风险', count: 4, percent: 4.4, indicators: '满意度下降,流失风险', color: '#ff4d4f' }
-];
-
 const BigCustomerAnalysis: React.FC = () => {
   const navigate = useNavigate();
   const [selectedIndustry, setSelectedIndustry] = useState<string>('all');
-  const [selectedRisk, setSelectedRisk] = useState<string>('all');
-  const [selectedSatisfaction, setSelectedSatisfaction] = useState<string>('all');
+  const [searchKeyword, setSearchKeyword] = useState<string>('');
 
   const columns: ColumnsType<BigCustomerRecord> = [
-    {
-      title: '业务员',
-      dataIndex: 'salesperson',
-      width: 80,
-      render: (name: string) => (
-        <Button type="link" size="small" onClick={() => console.log(`查看${name}的详情`)}>
-          {name}
-        </Button>
-      )
-    },
     {
       title: '客户名称',
       dataIndex: 'customerName',
@@ -201,6 +154,16 @@ const BigCustomerAnalysis: React.FC = () => {
           size="small" 
           onClick={() => navigate(`/customer-360/${record.key}`)}
         >
+          {name}
+        </Button>
+      )
+    },
+    {
+      title: '业务员',
+      dataIndex: 'salesperson',
+      width: 80,
+      render: (name: string) => (
+        <Button type="link" size="small" onClick={() => navigate(`/salesperson-detail/${name === '张三' ? '1' : name === '李四' ? '2' : '3'}`)}>
           {name}
         </Button>
       )
@@ -248,32 +211,6 @@ const BigCustomerAnalysis: React.FC = () => {
       render: (rate: number) => (
         <span style={{ color: rate > 0 ? '#52c41a' : '#ff4d4f' }}>
           {rate > 0 ? '↑' : '↓'}{Math.abs(rate)}%
-        </span>
-      )
-    },
-    {
-      title: '风险等级',
-      dataIndex: 'riskLevel',
-      width: 100,
-      render: (level: string) => {
-        let color = 'default';
-        if (level === '极低') color = 'green';
-        else if (level === '低') color = 'blue';
-        else if (level === '中') color = 'orange';
-        else if (level === '高') color = 'red';
-        return <Tag color={color}>{level}风险</Tag>;
-      }
-    },
-    {
-      title: '满意度',
-      dataIndex: 'serviceSatisfaction',
-      width: 100,
-      sorter: (a, b) => a.serviceSatisfaction - b.serviceSatisfaction,
-      render: (score: number) => (
-        <span style={{ 
-          color: score >= 95 ? '#52c41a' : score >= 90 ? '#1890ff' : score >= 80 ? '#faad14' : '#ff4d4f' 
-        }}>
-          {score}分
         </span>
       )
     },
@@ -367,9 +304,13 @@ const BigCustomerAnalysis: React.FC = () => {
 
       {/* 核心指标回顾区 */}
       <Card className="analysis-card card-mb-24">
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ display: 'flex', alignItems: 'stretch' }}>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="大客户数量"
                 value={89}
@@ -378,14 +319,16 @@ const BigCustomerAnalysis: React.FC = () => {
                 prefix={<CrownOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 80位</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>111.3%</Tag>
                 <Tag color="green">同比↑8.9%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="大客户合同金额"
                 value={4568}
@@ -394,14 +337,16 @@ const BigCustomerAnalysis: React.FC = () => {
                 prefix={<DollarOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 4200万元</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>108.8%</Tag>
                 <Tag color="green">同比↑18.5%</Tag>
               </div>
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card size="small" className="metric-card">
+            <Card 
+              size="small" 
+              className="metric-card"
+              style={{ height: '160px' }}
+            >
               <Statistic
                 title="合同金额占比"
                 value={29.1}
@@ -410,8 +355,6 @@ const BigCustomerAnalysis: React.FC = () => {
                 prefix={<TrophyOutlined />}
               />
               <div className="mt-8">
-                <Text type="secondary">目标: 28%</Text>
-                <Tag color="green" style={{ marginLeft: 8 }}>103.9%</Tag>
                 <Tag color="green">同比↑2.3%</Tag>
               </div>
             </Card>
@@ -440,78 +383,6 @@ const BigCustomerAnalysis: React.FC = () => {
         </Col>
       </Row>
 
-      <Row gutter={[16, 16]} className="card-mb-24">
-        <Col xs={24} lg={12}>
-          {renderAnalysisCard(
-            '关键产品/服务分析',
-            productServiceAnalysisData,
-            <StarOutlined style={{ color: '#722ed1', marginRight: 8 }} />,
-            'count',
-            '项'
-          )}
-        </Col>
-        
-        <Col xs={24} lg={12}>
-          {renderAnalysisCard(
-            '客户健康度分析',
-            healthScoreData,
-            <SafetyOutlined style={{ color: '#13c2c2', marginRight: 8 }} />
-          )}
-        </Col>
-      </Row>
-
-      {/* 大客户风险预警 */}
-      <Card 
-        title={
-          <div className="flex-start">
-            <SafetyOutlined style={{ color: '#faad14', marginRight: 8 }} />
-            大客户风险预警分析
-          </div>
-        }
-        className="analysis-card card-mb-24"
-        size="small"
-      >
-        <Row gutter={16}>
-          {riskWarningData.map((risk, index) => (
-            <Col xs={24} sm={12} md={6} key={index}>
-              <div className="data-item" style={{ 
-                background: risk.color === '#52c41a' ? '#f6ffed' : 
-                           risk.color === '#1890ff' ? '#f0f9ff' :
-                           risk.color === '#faad14' ? '#fff7e6' : '#fff2f0',
-                border: `1px solid ${risk.color}40`
-              }}>
-                <div style={{ width: '100%' }}>
-                  <div style={{ 
-                    color: risk.color, 
-                    fontWeight: 'bold', 
-                    marginBottom: '4px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
-                    <div 
-                      style={{
-                        width: '8px',
-                        height: '8px',
-                        backgroundColor: risk.color,
-                        borderRadius: '50%',
-                        marginRight: '8px'
-                      }}
-                    />
-                    {risk.risk}
-                  </div>
-                  <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '4px' }}>
-                    {risk.count}位 ({risk.percent}%)
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#666' }}>
-                    {risk.indicators}
-                  </div>
-                </div>
-              </div>
-            </Col>
-          ))}
-        </Row>
-      </Card>
-
       {/* 大客户列表明细 */}
       <Card 
         title="大客户列表明细" 
@@ -519,6 +390,18 @@ const BigCustomerAnalysis: React.FC = () => {
       >
         <div className="filter-section">
           <div className="filter-row">
+            <div className="filter-item">
+              <span className="filter-label">搜索:</span>
+              <Input
+                placeholder="搜索客户名称、业务员"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                prefix={<SearchOutlined />}
+                style={{ width: 200 }}
+                allowClear
+              />
+            </div>
+
             <div className="filter-item">
               <span className="filter-label">行业筛选:</span>
               <Select
@@ -531,36 +414,6 @@ const BigCustomerAnalysis: React.FC = () => {
                 <Option value="电子信息">电子信息</Option>
                 <Option value="智能制造">智能制造</Option>
                 <Option value="汽车制造">汽车制造</Option>
-              </Select>
-            </div>
-            
-            <div className="filter-item">
-              <span className="filter-label">风险等级:</span>
-              <Select
-                value={selectedRisk}
-                onChange={setSelectedRisk}
-                style={{ width: 150 }}
-              >
-                <Option value="all">全部等级</Option>
-                <Option value="极低">极低风险</Option>
-                <Option value="低">低风险</Option>
-                <Option value="中">中风险</Option>
-                <Option value="高">高风险</Option>
-              </Select>
-            </div>
-            
-            <div className="filter-item">
-              <span className="filter-label">满意度:</span>
-              <Select
-                value={selectedSatisfaction}
-                onChange={setSelectedSatisfaction}
-                style={{ width: 150 }}
-              >
-                <Option value="all">全部等级</Option>
-                <Option value="excellent">优秀(95+)</Option>
-                <Option value="good">良好(90-94)</Option>
-                <Option value="average">一般(80-89)</Option>
-                <Option value="poor">待提升(&lt;80)</Option>
               </Select>
             </div>
           </div>
