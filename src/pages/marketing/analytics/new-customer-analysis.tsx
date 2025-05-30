@@ -46,6 +46,10 @@ interface NewCustomerRecord {
   firstOrderAmount: number;
   paymentStatus: string;
   shipmentStatus: string;
+  productType: string;
+  productName: string;
+  department: string;
+  team: string;
 }
 
 const newCustomerData: NewCustomerRecord[] = [
@@ -60,7 +64,11 @@ const newCustomerData: NewCustomerRecord[] = [
     firstContractDate: '2024-02-20',
     firstOrderAmount: 580,
     paymentStatus: '已回款',
-    shipmentStatus: '已发货'
+    shipmentStatus: '已发货',
+    productType: '箱柜',
+    productName: '隔爆型三相异步电动机',
+    department: '工控事业部',
+    team: '隔爆组'
   },
   {
     key: '2',
@@ -73,7 +81,11 @@ const newCustomerData: NewCustomerRecord[] = [
     firstContractDate: '2024-03-10',
     firstOrderAmount: 180,
     paymentStatus: '部分回款',
-    shipmentStatus: '待发货'
+    shipmentStatus: '待发货',
+    productType: '灯具开关',
+    productName: '防爆扬声器',
+    department: '物资部',
+    team: '钣金组'
   },
   {
     key: '3',
@@ -86,7 +98,11 @@ const newCustomerData: NewCustomerRecord[] = [
     firstContractDate: '2024-01-25',
     firstOrderAmount: 320,
     paymentStatus: '已回款',
-    shipmentStatus: '已发货'
+    shipmentStatus: '已发货',
+    productType: '暖通',
+    productName: '防爆空调机',
+    department: '空调事业部',
+    team: '空调组'
   },
   {
     key: '4',
@@ -99,7 +115,11 @@ const newCustomerData: NewCustomerRecord[] = [
     firstContractDate: '2024-02-15',
     firstOrderAmount: 150,
     paymentStatus: '待回款',
-    shipmentStatus: '已发货'
+    shipmentStatus: '已发货',
+    productType: '仪电',
+    productName: '防爆显示控制终端',
+    department: '技术管理部',
+    team: '监控组'
   },
   {
     key: '5',
@@ -112,7 +132,11 @@ const newCustomerData: NewCustomerRecord[] = [
     firstContractDate: '2024-03-05',
     firstOrderAmount: 750,
     paymentStatus: '部分回款',
-    shipmentStatus: '执行中'
+    shipmentStatus: '执行中',
+    productType: '仪电',
+    productName: '防爆网桥',
+    department: '智能制造部',
+    team: '通讯电热组'
   }
 ];
 
@@ -233,6 +257,35 @@ const NewCustomerAnalysis: React.FC = () => {
         else if (status === '待发货') color = 'orange';
         return <Tag color={color}>{status}</Tag>;
       }
+    },
+    {
+      title: '产品类型',
+      dataIndex: 'productType',
+      width: 100,
+      render: (type: string) => {
+        const colorMap = {
+          '箱柜': 'blue',
+          '灯具开关': 'green', 
+          '暖通': 'orange',
+          '仪电': 'purple'
+        };
+        return <Tag color={colorMap[type] || 'default'}>{type}</Tag>;
+      }
+    },
+    {
+      title: '产品名称',
+      dataIndex: 'productName',
+      width: 180
+    },
+    {
+      title: '部门名称',
+      dataIndex: 'department',
+      width: 120
+    },
+    {
+      title: '班组名称',
+      dataIndex: 'team',
+      width: 120
     }
   ];
 
@@ -525,7 +578,7 @@ const NewCustomerAnalysis: React.FC = () => {
           columns={columns}
           dataSource={newCustomerData}
           className="custom-table"
-          scroll={{ x: 1200 }}
+          scroll={{ x: 1800 }}
           pagination={{
             total: 456,
             pageSize: 10,

@@ -48,6 +48,10 @@ interface OldCustomerRecord {
   region: string;
   firstContract: string;
   lastContract: string;
+  productType: string;
+  productName: string;
+  department: string;
+  team: string;
 }
 
 const oldCustomerData: OldCustomerRecord[] = [
@@ -64,7 +68,11 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 2850,
     region: '上海市浦东新区',
     firstContract: '2022-05-15',
-    lastContract: '2024-01-10'
+    lastContract: '2024-01-10',
+    productType: '箱柜',
+    productName: '隔爆型三相异步电动机',
+    department: '工控事业部',
+    team: '隔爆组'
   },
   {
     key: '2',
@@ -79,7 +87,11 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 7200,
     region: '深圳市南山区',
     firstContract: '2021-08-15',
-    lastContract: '2024-03-01'
+    lastContract: '2024-03-01',
+    productType: '仪电',
+    productName: '防爆话站',
+    department: '智能制造部',
+    team: '通讯电热组'
   },
   {
     key: '3',
@@ -94,7 +106,11 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 2300,
     region: '广州市天河区',
     firstContract: '2023-01-20',
-    lastContract: '2024-02-25'
+    lastContract: '2024-02-25',
+    productType: '灯具开关',
+    productName: '防爆扬声器',
+    department: '客户服务部',
+    team: '生产组'
   },
   {
     key: '4',
@@ -109,7 +125,11 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 10500,
     region: '天津市滨海新区',
     firstContract: '2020-03-10',
-    lastContract: '2024-02-15'
+    lastContract: '2024-02-15',
+    productType: '暖通',
+    productName: '防爆空调机',
+    department: '空调事业部',
+    team: '空调组'
   },
   {
     key: '5',
@@ -124,7 +144,11 @@ const oldCustomerData: OldCustomerRecord[] = [
     paymentAmount: 1350,
     region: '成都市高新区',
     firstContract: '2023-06-20',
-    lastContract: '2024-01-25'
+    lastContract: '2024-01-25',
+    productType: '仪电',
+    productName: '防爆摄像仪',
+    department: '技术管理部',
+    team: '技术组'
   }
 ];
 
@@ -222,6 +246,26 @@ const OldCustomerAnalysis: React.FC = () => {
     {
       title: '最近签约',
       dataIndex: 'lastContract',
+      width: 100
+    },
+    {
+      title: '产品类型',
+      dataIndex: 'productType',
+      width: 100
+    },
+    {
+      title: '产品名称',
+      dataIndex: 'productName',
+      width: 100
+    },
+    {
+      title: '部门名称',
+      dataIndex: 'department',
+      width: 100
+    },
+    {
+      title: '班组名称',
+      dataIndex: 'team',
       width: 100
     }
   ];
@@ -415,7 +459,7 @@ const OldCustomerAnalysis: React.FC = () => {
           columns={columns}
           dataSource={oldCustomerData}
           className="custom-table"
-          scroll={{ x: 1400 }}
+          scroll={{ x: 1800 }}
           pagination={{
             total: 1234,
             pageSize: 10,

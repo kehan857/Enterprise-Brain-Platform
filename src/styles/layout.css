@@ -77,6 +77,7 @@
   border-radius: 8px;
   transition: all 0.3s ease;
   border: 1px solid #f0f0f0;
+  min-height: 130px;
 }
 
 .metric-card:hover {
@@ -93,6 +94,64 @@
 .metric-card .ant-statistic-content {
   font-size: 24px;
   font-weight: 600;
+}
+
+/* 专门针对营销数据页面的核心指标卡片 */
+.marketing-analytics .core-metrics-card {
+  height: 220px !important;
+  min-height: 220px !important;
+  max-height: 220px !important;
+}
+
+.marketing-analytics .core-metrics-card .ant-card-body {
+  height: calc(220px - 57px) !important;
+  max-height: calc(220px - 57px) !important;
+  padding: 16px !important;
+  overflow: hidden;
+}
+
+/* 专门针对营销数据页面的客户分类卡片 */
+.marketing-analytics .customer-category-card {
+  height: 300px !important;
+  min-height: 300px !important;
+  max-height: 300px !important;
+}
+
+.marketing-analytics .customer-category-card .ant-card-body {
+  height: calc(300px - 57px) !important;
+  max-height: calc(300px - 57px) !important;
+  padding: 16px !important;
+  overflow: hidden;
+}
+
+/* 专门针对营销数据页面的智能洞察卡片 */
+.marketing-analytics .insight-card {
+  height: 180px !important;
+  min-height: 180px !important;
+  max-height: 180px !important;
+}
+
+.marketing-analytics .insight-card .ant-card-body {
+  height: calc(180px - 57px) !important;
+  max-height: calc(180px - 57px) !important;
+  padding: 16px !important;
+  overflow: hidden;
+}
+
+/* 确保营销数据页面所有Row中的Col等高 */
+.marketing-analytics .ant-row[style*="alignItems: stretch"] {
+  display: flex !important;
+  align-items: stretch !important;
+}
+
+.marketing-analytics .ant-row[style*="alignItems: stretch"] .ant-col {
+  display: flex !important;
+  height: auto !important;
+}
+
+.marketing-analytics .ant-row[style*="alignItems: stretch"] .ant-col .ant-card {
+  width: 100% !important;
+  flex: 1 !important;
 }
 
 /* 进度条统一样式 */
@@ -454,6 +513,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between !important;
 }
 
 .flex-fill.ant-col {
@@ -470,7 +530,26 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-between !important;
+}
+
+/* 确保Row中的所有Col都有相同的高度 */
+.ant-row[style*="alignItems: stretch"] .ant-col {
+  display: flex !important;
+}
+
+.ant-row[style*="alignItems: stretch"] .ant-col .ant-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-row[style*="alignItems: stretch"] .ant-col .ant-card .ant-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between !important;
 }
 
 .text-center {

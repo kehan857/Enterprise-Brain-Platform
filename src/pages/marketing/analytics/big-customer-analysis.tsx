@@ -46,6 +46,10 @@ interface BigCustomerRecord {
   region: string;
   firstContract: string;
   lastContract: string;
+  productType: string;
+  productName: string;
+  department: string;
+  team: string;
 }
 
 const bigCustomerData: BigCustomerRecord[] = [
@@ -61,7 +65,11 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 15.2,
     region: '深圳市南山区',
     firstContract: '2020-08-15',
-    lastContract: '2024-03-01'
+    lastContract: '2024-03-01',
+    productType: '仪电',
+    productName: '防爆显示控制终端',
+    department: '智能制造部',
+    team: '监控组'
   },
   {
     key: '2',
@@ -75,7 +83,11 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 8.9,
     region: '北京市朝阳区',
     firstContract: '2019-03-10',
-    lastContract: '2024-02-28'
+    lastContract: '2024-02-28',
+    productType: '箱柜',
+    productName: '隔爆型三相异步电动机',
+    department: '工控事业部',
+    team: '隔爆组'
   },
   {
     key: '3',
@@ -89,7 +101,11 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 22.1,
     region: '上海市浦东新区',
     firstContract: '2021-06-20',
-    lastContract: '2024-01-15'
+    lastContract: '2024-01-15',
+    productType: '暖通',
+    productName: '防爆空调机',
+    department: '空调事业部',
+    team: '空调组'
   },
   {
     key: '4',
@@ -103,7 +119,11 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 5.6,
     region: '天津市滨海新区',
     firstContract: '2020-11-05',
-    lastContract: '2024-02-10'
+    lastContract: '2024-02-10',
+    productType: '灯具开关',
+    productName: '防爆话站',
+    department: '物资部',
+    team: '通讯电热组'
   },
   {
     key: '5',
@@ -117,7 +137,11 @@ const bigCustomerData: BigCustomerRecord[] = [
     growthRate: 18.7,
     region: '广州市天河区',
     firstContract: '2019-09-15',
-    lastContract: '2024-03-05'
+    lastContract: '2024-03-05',
+    productType: '仪电',
+    productName: '防爆网桥',
+    department: '客户服务部',
+    team: '技术组'
   }
 ];
 
@@ -223,6 +247,35 @@ const BigCustomerAnalysis: React.FC = () => {
       title: '最近签约',
       dataIndex: 'lastContract',
       width: 100
+    },
+    {
+      title: '产品类型',
+      dataIndex: 'productType',
+      width: 100,
+      render: (type: string) => {
+        const colorMap = {
+          '箱柜': 'blue',
+          '灯具开关': 'green', 
+          '暖通': 'orange',
+          '仪电': 'purple'
+        };
+        return <Tag color={colorMap[type] || 'default'}>{type}</Tag>;
+      }
+    },
+    {
+      title: '产品名称',
+      dataIndex: 'productName',
+      width: 180
+    },
+    {
+      title: '部门名称',
+      dataIndex: 'department',
+      width: 120
+    },
+    {
+      title: '班组名称',
+      dataIndex: 'team',
+      width: 120
     }
   ];
 
@@ -423,7 +476,7 @@ const BigCustomerAnalysis: React.FC = () => {
           columns={columns}
           dataSource={bigCustomerData}
           className="custom-table"
-          scroll={{ x: 1500 }}
+          scroll={{ x: 1900 }}
           pagination={{
             total: 89,
             pageSize: 10,

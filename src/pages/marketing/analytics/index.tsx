@@ -154,45 +154,122 @@ const customerCategories = [
   }
 ];
 
-// 智能洞察数据
-const intelligentInsights = [
-  {
-    type: 'positive',
-    title: '新客户转化表现优异',
-    content: '本月新客户转化率达12.5%，超出目标25%，展会渠道贡献最为突出',
-    trend: 'up',
-    impact: 'high',
-    suggestion: '建议加大展会投入，扩大优质渠道覆盖'
-  },
-  {
-    type: 'warning',
-    title: '应收账款风险提醒',
-    content: '当前应收账款3135万元，其中逾期账款占比15.2%，需重点关注',
-    trend: 'stable',
-    impact: 'medium',
-    suggestion: '建议启动专项回款行动，重点跟进大额逾期客户'
-  },
-  {
-    type: 'opportunity',
-    title: '大客户增长机会',
-    content: '大客户合同金额占比29.1%，同比增长8.9%，仍有较大提升空间',
-    trend: 'up',
-    impact: 'high',
-    suggestion: '建议针对潜在大客户制定专门的营销策略'
-  },
-  {
-    type: 'info',
-    title: '区域发展不均衡',
-    content: '华东区客户贡献33.5%，西南区仅13.9%，区域发展不够均衡',
-    trend: 'stable',
-    impact: 'medium',
-    suggestion: '建议加强西南区市场开发，平衡区域发展'
-  }
+// 智能洞察数据 - 多组可选内容
+const intelligentInsightsPool = [
+  // 第一组洞察
+  [
+    {
+      type: 'positive',
+      title: '新客户转化表现优异',
+      content: '本月新客户转化率达12.5%，超出目标25%，展会渠道贡献最为突出',
+      trend: 'up',
+      impact: 'high',
+      suggestion: '建议加大展会投入，扩大优质渠道覆盖'
+    },
+    {
+      type: 'warning',
+      title: '应收账款风险提醒',
+      content: '当前应收账款3135万元，其中逾期账款占比15.2%，需重点关注',
+      trend: 'stable',
+      impact: 'medium',
+      suggestion: '建议启动专项回款行动，重点跟进大额逾期客户'
+    },
+    {
+      type: 'opportunity',
+      title: '大客户增长机会',
+      content: '大客户合同金额占比29.1%，同比增长8.9%，仍有较大提升空间',
+      trend: 'up',
+      impact: 'high',
+      suggestion: '建议针对潜在大客户制定专门的营销策略'
+    },
+    {
+      type: 'info',
+      title: '区域发展不均衡',
+      content: '华东区客户贡献33.5%，西南区仅13.9%，区域发展不够均衡',
+      trend: 'stable',
+      impact: 'medium',
+      suggestion: '建议加强西南区市场开发，平衡区域发展'
+    }
+  ],
+  // 第二组洞察
+  [
+    {
+      type: 'opportunity',
+      title: '合同签约趋势向好',
+      content: '本季度合同签约金额环比增长8.1%，订单数量增长15.2%，呈现良好态势',
+      trend: 'up',
+      impact: 'high',
+      suggestion: '建议保持当前营销策略，适当扩大团队规模以支撑增长'
+    },
+    {
+      type: 'positive',
+      title: '老客户忠诚度提升',
+      content: '老客户复购率达68.2%，较去年同期提升3.8%，客户粘性显著增强',
+      trend: 'up',
+      impact: 'high',
+      suggestion: '建议推出老客户专属服务包，进一步提升客户价值'
+    },
+    {
+      type: 'warning',
+      title: '新客户获取成本上升',
+      content: '新客户获取成本较上季度上升18%，需要优化获客渠道效率',
+      trend: 'down',
+      impact: 'medium',
+      suggestion: '建议分析各渠道ROI，重点投入高效获客渠道'
+    },
+    {
+      type: 'info',
+      title: '行业竞争加剧趋势',
+      content: '制造业客户平均成交周期延长15天，反映行业竞争更加激烈',
+      trend: 'stable',
+      impact: 'medium',
+      suggestion: '建议加强产品差异化，提升服务响应速度'
+    }
+  ],
+  // 第三组洞察
+  [
+    {
+      type: 'positive',
+      title: '高价值客户集中度提升',
+      content: 'TOP20客户贡献了总收入的65%，客户结构不断优化，盈利能力增强',
+      trend: 'up',
+      impact: 'high',
+      suggestion: '建议建立大客户专属服务团队，深化合作关系'
+    },
+    {
+      type: 'opportunity',
+      title: '数字化转型需求爆发',
+      content: '智能制造相关需求同比增长22.1%，数字化转型成为客户主要需求',
+      trend: 'up',
+      impact: 'high',
+      suggestion: '建议加大智能化解决方案投入，抢占市场先机'
+    },
+    {
+      type: 'info',
+      title: '季节性波动明显',
+      content: '第四季度通常是合同签约高峰，约占全年签约量的40%',
+      trend: 'stable',
+      impact: 'medium',
+      suggestion: '建议提前布局四季度营销活动，做好资源储备'
+    },
+    {
+      type: 'warning',
+      title: '小客户流失率偏高',
+      content: '年合同额<10万的小客户流失率达25%，需要关注服务质量',
+      trend: 'down',
+      impact: 'medium',
+      suggestion: '建议建立小客户服务标准化流程，降低服务成本'
+    }
+  ]
 ];
 
 const MarketingAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<RangeValue>([dayjs().subtract(30, 'day'), dayjs()]);
   const [selectedPeriod, setSelectedPeriod] = useState('current_month');
+  const [showInsights, setShowInsights] = useState(false);
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
+  const [currentInsights, setCurrentInsights] = useState(intelligentInsightsPool[0]);
+  const [analysisStep, setAnalysisStep] = useState('');
   const navigate = useNavigate();
 
   // 渲染趋势图标
@@ -238,8 +315,45 @@ const MarketingAnalytics: React.FC = () => {
     }
   };
 
+  // 处理生成洞察
+  const handleGenerateInsights = async () => {
+    setIsGeneratingInsights(true);
+    setShowInsights(false);
+    
+    // 模拟AI分析步骤
+    const steps = [
+      '正在分析客户数据...',
+      '正在识别趋势模式...',
+      '正在生成业务洞察...',
+      '正在优化建议方案...'
+    ];
+    
+    let currentStep = 0;
+    setAnalysisStep(steps[0]);
+    
+    const stepInterval = setInterval(() => {
+      currentStep++;
+      if (currentStep < steps.length) {
+        setAnalysisStep(steps[currentStep]);
+      } else {
+        clearInterval(stepInterval);
+      }
+    }, 400); // 每400ms更新一个步骤
+    
+    // 模拟AI生成洞察的过程
+    setTimeout(() => {
+      clearInterval(stepInterval);
+      // 随机选择一组洞察内容
+      const randomIndex = Math.floor(Math.random() * intelligentInsightsPool.length);
+      setCurrentInsights(intelligentInsightsPool[randomIndex]);
+      setShowInsights(true);
+      setIsGeneratingInsights(false);
+      setAnalysisStep('');
+    }, Math.random() * 1000 + 1500); // 1.5-2.5秒的随机时间，更真实
+  };
+
   // 渲染智能洞察卡片
-  const renderInsightCard = (insight: typeof intelligentInsights[0], index: number) => {
+  const renderInsightCard = (insight: typeof currentInsights[0], index: number) => {
     const getInsightIcon = () => {
       switch (insight.type) {
         case 'positive':
@@ -272,22 +386,30 @@ const MarketingAnalytics: React.FC = () => {
       <Card 
         key={index}
         size="small" 
-        className="metric-card"
+        className="metric-card insight-card"
         style={{ 
           background: colors.bg,
           border: `1px solid ${colors.border}`,
           cursor: 'pointer'
         }}
         hoverable
+        bodyStyle={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}
       >
-        <div className="flex-start mb-8">
-          {getInsightIcon()}
-          <span style={{ marginLeft: '8px', fontWeight: '600', color: colors.text }}>
-            {insight.title}
-          </span>
-        </div>
-        <div style={{ fontSize: '12px', color: '#595959', marginBottom: '8px' }}>
-          {insight.content}
+        <div>
+          <div className="flex-start mb-8">
+            {getInsightIcon()}
+            <span style={{ marginLeft: '8px', fontWeight: '600', color: colors.text }}>
+              {insight.title}
+            </span>
+          </div>
+          <div style={{ fontSize: '12px', color: '#595959', marginBottom: '8px' }}>
+            {insight.content}
+          </div>
         </div>
         <div style={{ fontSize: '11px', color: '#8c8c8c', fontStyle: 'italic' }}>
           💡 {insight.suggestion}
@@ -308,12 +430,14 @@ const MarketingAnalytics: React.FC = () => {
           <Select 
             value={selectedPeriod} 
             onChange={setSelectedPeriod} 
-            style={{ width: 120 }}
+            style={{ width: 140 }}
           >
             <Option value="current_month">本月</Option>
             <Option value="last_month">上月</Option>
             <Option value="current_quarter">本季度</Option>
             <Option value="last_quarter">上季度</Option>
+            <Option value="current_year">本年</Option>
+            <Option value="last_year">去年</Option>
           </Select>
           <RangePicker 
             value={timeRange}
@@ -435,7 +559,9 @@ const MarketingAnalytics: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>合同金额</div>
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                      {category.key === 'potential-customers' ? '预计金额' : '合同金额'}
+                    </div>
                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: category.color }}>
                       {category.amount.toLocaleString()}万元
                     </div>
@@ -486,18 +612,67 @@ const MarketingAnalytics: React.FC = () => {
         }
         className="analysis-card card-mb-24"
         extra={
-          <Button type="primary" size="small" className="btn-primary">
-            生成更多洞察
+          <Button 
+            type="primary" 
+            size="small" 
+            className="btn-primary" 
+            onClick={handleGenerateInsights}
+            loading={isGeneratingInsights}
+            disabled={isGeneratingInsights}
+          >
+            {isGeneratingInsights ? '生成中...' : '生成洞察'}
           </Button>
         }
       >
-        <Row gutter={[16, 16]}>
-          {intelligentInsights.map((insight, index) => (
-            <Col key={index} xs={24} sm={12} lg={6}>
-              {renderInsightCard(insight, index)}
-            </Col>
-          ))}
-        </Row>
+        {!showInsights && !isGeneratingInsights && (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '40px 20px',
+            color: '#8c8c8c',
+            fontSize: '14px'
+          }}>
+            <BulbOutlined style={{ fontSize: '32px', color: '#d9d9d9', marginBottom: '12px' }} />
+            <div>点击"生成洞察"按钮，AI将基于当前数据为您生成智能分析洞察</div>
+          </div>
+        )}
+        
+        {isGeneratingInsights && (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '40px 20px',
+            color: '#1890ff'
+          }}>
+            <BulbOutlined style={{ fontSize: '32px', color: '#1890ff', marginBottom: '12px' }} />
+            <div style={{ fontSize: '14px', marginBottom: '8px' }}>AI正在分析数据...</div>
+            <div style={{ fontSize: '12px', color: '#8c8c8c', marginBottom: '8px' }}>
+              {analysisStep || '正在启动智能分析引擎...'}
+            </div>
+            <div style={{ fontSize: '11px', color: '#bfbfbf' }}>
+              基于FastGPT工作流的企业大脑智能分析
+            </div>
+          </div>
+        )}
+
+        {showInsights && !isGeneratingInsights && (
+          <>
+            <div style={{ marginBottom: '16px', textAlign: 'right' }}>
+              <Button 
+                size="small" 
+                onClick={handleGenerateInsights}
+                style={{ fontSize: '12px' }}
+              >
+                🔄 重新生成
+              </Button>
+            </div>
+            <Row gutter={[16, 16]}>
+              {currentInsights.map((insight, index) => (
+                <Col key={index} xs={24} sm={12} lg={6}>
+                  {renderInsightCard(insight, index)}
+                </Col>
+              ))}
+            </Row>
+          </>
+        )}
       </Card>
     </div>
   );
